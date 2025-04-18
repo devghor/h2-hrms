@@ -1,0 +1,5 @@
+{
+    "editor.formatOnSave": true,
+    "laravel-pint.enable": true,
+    "editor.defaultFormatter": "open-southeners.laravel-pint"
+}
