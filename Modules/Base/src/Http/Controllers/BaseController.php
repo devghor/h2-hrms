@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Modules\Base\Http\Controllers;
 
 use Illuminate\Routing\Controller;
-use Modules\Base\Traits\ApiResponseTrait;
+use Modules\Base\Traits\HttpResponseTrait;
 
 class BaseController extends Controller
 {
-    use ApiResponseTrait;
+    use HttpResponseTrait;
 
     protected function getPerPage(): int
     {

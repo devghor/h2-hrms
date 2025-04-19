@@ -47,7 +47,7 @@ final class AuthController extends BaseController
                 'user' => $user,
             ]);
         } catch (Exception $e) {
-            return $this->errorResponse(['error' => $e->getMessage()], StatusCodeEnum::UNPROCESSABLE_ENTITY);
+            return $this->errorResponse($e->getMessage(), 'Login failed');
         }
     }
 
@@ -82,7 +82,7 @@ final class AuthController extends BaseController
                 'token_type' => 'Bearer',
             ]);
         } catch (Exception $e) {
-            return $this->errorResponse(['error' => $e->getMessage()], StatusCodeEnum::UNPROCESSABLE_ENTITY);
+            return $this->errorResponse($e->getMessage(), 'Refresh token failed');
         }
     }
 
@@ -108,7 +108,7 @@ final class AuthController extends BaseController
         try {
             return $this->successResponse('User fetched successfully', $request->user());
         } catch (Exception $e) {
-            return $this->errorResponse('Failed to fetch user data', ['error' => $e->getMessage()], StatusCodeEnum::UNPROCESSABLE_ENTITY);
+            return $this->errorResponse($e->getMessage(), 'Failed to fetch user data');
         }
     }
 }
