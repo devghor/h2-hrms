@@ -1,9 +1,7 @@
 <?php
 
-declare(strict_types=1);
-
 return [
     App\Providers\AppServiceProvider::class,
-    // Ohter module depenedent on base module so it should be loaded first
+    App\Providers\Filament\AdminPanelProvider::class,
     Modules\Base\Providers\BaseServiceProvider::class,
 ];
