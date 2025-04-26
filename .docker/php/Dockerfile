@@ -31,8 +31,9 @@ RUN apk add --no-cache su-exec \
     postgresql-dev \
     rabbitmq-c-dev \
     linux-headers \
+    libzip-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql pdo_pgsql opcache bcmath sockets pcntl
+    && docker-php-ext-install gd pdo pdo_mysql pdo_pgsql opcache bcmath sockets pcntl exif intl zip
 
 RUN apk add --no-cache nodejs \
     npm
