@@ -1,4 +1,5 @@
 'use client';
+import { handleSignOut } from '@/app/actions/auth-action';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,17 +11,17 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { UserAvatarProfile } from '@/components/user-avatar-profile';
-import { SignOutButton, useUser } from '@clerk/nextjs';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 export function UserNav() {
-  const { user } = useUser();
+  const { data: session } = useSession();
   const router = useRouter();
-  if (user) {
+  if (session?.user) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
-            <UserAvatarProfile user={user} />
+            <UserAvatarProfile user={session.user} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -32,10 +33,10 @@ export function UserNav() {
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col space-y-1'>
               <p className='text-sm leading-none font-medium'>
-                {user.fullName}
+                {session.user.fullName}
               </p>
               <p className='text-muted-foreground text-xs leading-none'>
-                {user.emailAddresses[0].emailAddress}
+                {session.user.emailAddress}
               </p>
             </div>
           </DropdownMenuLabel>
@@ -50,7 +51,11 @@ export function UserNav() {
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <SignOutButton redirectUrl='/auth/sign-in' />
+            <form action={handleSignOut}>
+              <Button variant='default' type='submit'>
+                Sign Out
+              </Button>
+            </form>{' '}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

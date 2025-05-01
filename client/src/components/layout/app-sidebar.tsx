@@ -31,7 +31,6 @@ import {
 import { UserAvatarProfile } from '@/components/user-avatar-profile';
 import { navItems } from '@/constants/data';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { useUser } from '@clerk/nextjs';
 import {
   IconBell,
   IconChevronRight,
@@ -41,12 +40,14 @@ import {
   IconPhotoUp,
   IconUserCircle
 } from '@tabler/icons-react';
-import { SignOutButton } from '@clerk/nextjs';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { Icons } from '../icons';
 import { OrgSwitcher } from '../org-switcher';
+import { Button } from '../ui/button';
+import { handleSignOut } from '@/app/actions/auth-action';
 export const company = {
   name: 'Acme Inc',
   logo: IconPhotoUp,
@@ -62,7 +63,7 @@ const tenants = [
 export default function AppSidebar() {
   const pathname = usePathname();
   const { isOpen } = useMediaQuery();
-  const { user } = useUser();
+  const { data: session } = useSession();
   const router = useRouter();
   const handleSwitchTenant = (_tenantId: string) => {
     // Tenant switching functionality would be implemented here
@@ -152,11 +153,11 @@ export default function AppSidebar() {
                   size='lg'
                   className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
                 >
-                  {user && (
+                  {session?.user && (
                     <UserAvatarProfile
                       className='h-8 w-8 rounded-lg'
                       showInfo
-                      user={user}
+                      user={session?.user}
                     />
                   )}
                   <IconChevronsDown className='ml-auto size-4' />
@@ -170,11 +171,11 @@ export default function AppSidebar() {
               >
                 <DropdownMenuLabel className='p-0 font-normal'>
                   <div className='px-1 py-1.5'>
-                    {user && (
+                    {session?.user && (
                       <UserAvatarProfile
                         className='h-8 w-8 rounded-lg'
                         showInfo
-                        user={user}
+                        user={session?.user}
                       />
                     )}
                   </div>
@@ -200,7 +201,11 @@ export default function AppSidebar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <IconLogout className='mr-2 h-4 w-4' />
-                  <SignOutButton redirectUrl='/auth/sign-in' />
+                  <form action={handleSignOut}>
+                    <Button variant='default' type='submit'>
+                      Sign Out
+                    </Button>
+                  </form>{' '}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

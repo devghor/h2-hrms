@@ -22,7 +22,7 @@ This is a starter template using the following stack:
 - Schema Validations - [Zod](https://zod.dev)
 - State Management - [Zustand](https://zustand-demo.pmnd.rs)
 - Search params state manager - [Nuqs](https://nuqs.47ng.com/)
-- Auth - [Clerk](https://go.clerk.com/ILdYhn7)
+- Auth - [Authjs](https://github.com/nabind47/authjs)
 - Tables - [Tanstack Data Tables](https://ui.shadcn.com/docs/components/data-table) • [Dice UI](https://www.diceui.com/docs/components/data-table)
 - Forms - [React Hook Form](https://ui.shadcn.com/docs/components/form)
 - Command+k interface - [kbar](https://kbar.vercel.app/)
