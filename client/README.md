@@ -1,67 +1,109 @@
-# Shadcn Admin Dashboard
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/9113740/201498864-2a900c64-d88f-4ed4-b5cf-770bcb57e1f5.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/9113740/201498152-b171abb8-9225-487a-821c-6ff49ee48579.png">
+</picture>
 
-Admin Dashboard UI crafted with Shadcn and Vite. Built with responsiveness and accessibility in mind.
+<div align="center"><strong>Next.js Admin Dashboard Starter Template With Shadcn-ui</strong></div>
+<div align="center">Built with the Next.js 15 App Router</div>
+<br />
+<div align="center">
+<a href="https://dub.sh/shadcn-dashboard">View Demo</a>
+<span>
+</div>
 
-![alt text](public/images/shadcn-admin.png)
+## Overview
 
-I've been creating dashboard UIs at work and for my personal projects. I always wanted to make a reusable collection of dashboard UI for future projects; and here it is now. While I've created a few custom components, some of the code is directly adapted from ShadcnUI examples.
+This is a starter template using the following stack:
 
-> This is not a starter project (template) though. I'll probably make one in the future.
+- Framework - [Next.js 15](https://nextjs.org/13)
+- Language - [TypeScript](https://www.typescriptlang.org)
+- Styling - [Tailwind CSS v4](https://tailwindcss.com)
+- Components - [Shadcn-ui](https://ui.shadcn.com)
+- Schema Validations - [Zod](https://zod.dev)
+- State Management - [Zustand](https://zustand-demo.pmnd.rs)
+- Search params state manager - [Nuqs](https://nuqs.47ng.com/)
+- Auth - [Clerk](https://go.clerk.com/ILdYhn7)
+- Tables - [Tanstack Data Tables](https://ui.shadcn.com/docs/components/data-table) • [Dice UI](https://www.diceui.com/docs/components/data-table)
+- Forms - [React Hook Form](https://ui.shadcn.com/docs/components/form)
+- Command+k interface - [kbar](https://kbar.vercel.app/)
+- Linting - [ESLint](https://eslint.org)
+- Pre-commit Hooks - [Husky](https://typicode.github.io/husky/)
+- Formatting - [Prettier](https://prettier.io)
 
-## Features
+_If you are looking for a React admin dashboard starter, here is the [repo](https://github.com/Kiranism/react-shadcn-dashboard-starter)._
 
-- Light/dark mode
-- Responsive
-- Accessible
-- With built-in Sidebar component
-- Global Search Command
-- 10+ pages
-- Extra custom components
+## Pages
 
-## Tech Stack
+| Pages                                                                                 | Specifications                                                                                                                                                                                                                                                          |
+| :------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Signup / Signin](https://next-shadcn-dashboard-starter.vercel.app/auth/sign-up)      | Authentication with **Clerk** provides secure authentication and user management with multiple sign-in options including passwordless authentication, social logins, and enterprise SSO - all designed to enhance security while delivering a seamless user experience. |
+| [Dashboard (Overview)](https://next-shadcn-dashboard-starter.vercel.app/dashboard)    | Cards with recharts graphs for analytics.Parallel routes in the overview sections with independent loading, error handling, and isolated component rendering .                                                                                                          |
+| [Product](https://next-shadcn-dashboard-starter.vercel.app/dashboard/product)         | Tanstack tables with server side searching, filter, pagination by Nuqs which is a Type-safe search params state manager in nextjs                                                                                                                                       |
+| [Product/new](https://next-shadcn-dashboard-starter.vercel.app/dashboard/product/new) | A Product Form with shadcn form (react-hook-form + zod).                                                                                                                                                                                                                |
+| [Profile](https://next-shadcn-dashboard-starter.vercel.app/dashboard/profile)         | Clerk's full-featured account management UI that allows users to manage their profile and security settings                                                                                                                                                             |
+| [Kanban Board](https://next-shadcn-dashboard-starter.vercel.app/dashboard/kanban)     | A Drag n Drop task management board with dnd-kit and zustand to persist state locally.                                                                                                                                                                                  |
+| [Not Found](https://next-shadcn-dashboard-starter.vercel.app/dashboard/notfound)      | Not Found Page Added in the root level                                                                                                                                                                                                                                  |
+| -                                                                                     | -                                                                                                                                                                                                                                                                       |
 
-**UI:** [ShadcnUI](https://ui.shadcn.com) (TailwindCSS + RadixUI)
+## Feature based organization
 
-**Build Tool:** [Vite](https://vitejs.dev/)
-
-**Routing:** [TanStack Router](https://tanstack.com/router/latest)
-
-**Type Checking:** [TypeScript](https://www.typescriptlang.org/)
-
-**Linting/Formatting:** [Eslint](https://eslint.org/) & [Prettier](https://prettier.io/)
-
-**Icons:** [Tabler Icons](https://tabler.io/icons)
-
-## Run Locally
-
-Clone the project
-
-```bash
-  git clone https://github.com/satnaing/shadcn-admin.git
+```plaintext
+src/
+├── app/ # Next.js App Router directory
+│ ├── (auth)/ # Auth route group
+│ │ ├── (signin)/
+│ ├── (dashboard)/ # Dashboard route group
+│ │ ├── layout.tsx
+│ │ ├── loading.tsx
+│ │ └── page.tsx
+│ └── api/ # API routes
+│
+├── components/ # Shared components
+│ ├── ui/ # UI components (buttons, inputs, etc.)
+│ └── layout/ # Layout components (header, sidebar, etc.)
+│
+├── features/ # Feature-based modules
+│ ├── feature/
+│ │ ├── components/ # Feature-specific components
+│ │ ├── actions/ # Server actions
+│ │ ├── schemas/ # Form validation schemas
+│ │ └── utils/ # Feature-specific utilities
+│ │
+├── lib/ # Core utilities and configurations
+│ ├── auth/ # Auth configuration
+│ ├── db/ # Database utilities
+│ └── utils/ # Shared utilities
+│
+├── hooks/ # Custom hooks
+│ └── use-debounce.ts
+│
+├── stores/ # Zustand stores
+│ └── dashboard-store.ts
+│
+└── types/ # TypeScript types
+└── index.ts
 ```
 
-Go to the project directory
+## Getting Started
 
-```bash
-  cd shadcn-admin
+> [!NOTE]  
+> We are using **Next 15** with **React 19**, follow these steps:
+
+Clone the repo:
+
+```
+git clone https://github.com/Kiranism/next-shadcn-dashboard-starter.git
 ```
 
-Install dependencies
+- `pnpm install` ( we have legacy-peer-deps=true added in the .npmrc)
+- Create a `.env.local` file by copying the example environment file:
+  `cp env.example.txt .env.local`
+- Add the required environment variables to the `.env.local` file.
+- `pnpm run dev`
 
-```bash
-  pnpm install
-```
+You should now be able to access the application at http://localhost:3000.
 
-Start the server
+> [!WARNING]
+> After cloning or forking the repository, be cautious when pulling or syncing with the latest changes, as this may result in breaking conflicts.
 
-```bash
-  pnpm run dev
-```
-
-## Author
-
-Crafted with 🤍 by [@satnaing](https://github.com/satnaing)
-
-## License
-
-Licensed under the [MIT License](https://choosealicense.com/licenses/mit/)
+Cheers! 🥂
