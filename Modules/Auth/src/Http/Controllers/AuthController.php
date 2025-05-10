@@ -44,7 +44,14 @@ final class AuthController extends BaseController
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken,
                 'token_type' => 'Bearer',
-                'user' => $user,
+                'user' => [
+                    'id'=> $user->id,
+                    'name'=> $user->name,
+                    'full_name'=> $user->name,
+                    'email'=> $user->email,
+                    'image'=> null,
+                    'roles'=> ['superadmin', 'admin'],
+                ],
             ]);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 'Login failed');

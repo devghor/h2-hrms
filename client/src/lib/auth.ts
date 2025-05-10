@@ -1,5 +1,6 @@
-import NextAuth from 'next-auth';
+import NextAuth, { User } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import axiosInstance from './axios';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -9,38 +10,40 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: {}
       },
       authorize: async (credentials) => {
-        console.log(credentials);
-        let user = null;
-        user = {
-          id: '1',
-          name: 'Aditya Singh',
-          email: 'jojo@jojo.com',
-          role: 'admin'
-        };
-
-        if (!user) {
-          console.log('Invalid credentials');
-          return null;
+        try {
+          const { data } = await axiosInstance.post('auth/login', credentials);
+          const { user } = data.data;
+          return {
+            id: user.id,
+            name: user.name,
+            fullName: user.full_name,
+            emailAddress: user.email,
+            imageUrl: user.image,
+            roles: user.roles,
+            accessToken: data.data.access_token,
+            refreshToken: data.data.refresh_token
+          } as User;
+        } catch (error) {
+          console.log(error);
         }
 
-        return user;
+        return false;
       }
     })
   ],
   callbacks: {
     jwt({ token, user, trigger, session }) {
       if (user) {
-        token.id = user.id as string;
-        token.role = user.role as string;
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
+        token.roles = user.roles;
       }
-      if (trigger === 'update' && session) {
-        token = { ...token, ...session };
-      }
+
       return token;
     },
     session({ session, token }) {
       session.user.id = token.id;
-      session.user.role = token.role;
+      session.user.roles = token.role;
       return session;
     }
   },

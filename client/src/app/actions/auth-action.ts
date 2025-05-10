@@ -14,7 +14,7 @@ export async function handleCredentialsSignin({
     await signIn('credentials', { email, password, redirectTo: '/' });
   } catch (error) {
     if (error instanceof AuthError) {
-      switch (error.type) {
+      switch (error?.type) {
         case 'CredentialsSignin':
           return {
             message: 'Invalid credentials'
@@ -38,5 +38,5 @@ export async function handleGoogleSignin() {
 }
 
 export async function handleSignOut() {
-  await signOut();
+  await signOut({ redirectTo: '/auth/sign-in' });
 }

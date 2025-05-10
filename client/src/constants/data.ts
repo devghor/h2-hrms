@@ -11,6 +11,13 @@ export type Product = {
   updated_at: string;
 };
 
+export type Post = {
+  id: number;
+  title: string;
+  body: string;
+  userId: number;
+};
+
 //Info: The following data is used for the sidebar navigation and Cmd K bar.
 export const navItems: NavItem[] = [
   {

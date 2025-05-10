@@ -7,9 +7,12 @@ import type { Metadata, Viewport } from 'next';
 import { cookies } from 'next/headers';
 import NextTopLoader from 'nextjs-toploader';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
 import './globals.css';
 import './theme.css';
 import { SessionProvider } from 'next-auth/react';
+import QueryProvider from '@/components/providers/query-provider';
 
 const META_THEME_COLORS = {
   light: '#ffffff',
@@ -70,7 +73,10 @@ export default async function RootLayout({
             >
               <Providers activeThemeValue={activeThemeValue as string}>
                 <Toaster />
-                {children}
+                <QueryProvider>
+                  <ReactQueryDevtools initialIsOpen={false} />
+                  {children}
+                </QueryProvider>
               </Providers>
             </ThemeProvider>
           </SessionProvider>
