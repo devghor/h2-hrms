@@ -22,11 +22,16 @@ final class AuthController extends BaseController
             // Validate request
             $request->validate([
                 /**
-                 * Email.
-                 * @var email
-                 * @example {"lat": 50.450001, "long": 30.523333}
+                 * User Email.
+                 * @var string
+                 * @example "sa@app.com"
                  */
                 'email' => 'required|email',
+                /**
+                 * User Password.
+                 * @var string
+                 * @example "password"
+                 */
                 'password' => 'required',
             ]);
 
