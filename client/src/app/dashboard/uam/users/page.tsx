@@ -15,19 +15,9 @@ type pageProps = {
 };
 
 export default async function Page(props: pageProps) {
-  const searchParams = await props.searchParams;
-  searchParamsCache.parse(searchParams);
-
   return (
     <PageContainer scrollable={false}>
-      <PageHeader title='Blog' />
-      <Suspense
-        fallback={
-          <DataTableSkeleton columnCount={5} rowCount={8} filterCount={2} />
-        }
-      >
-        <PostList />
-      </Suspense>
+      <PageHeader title='Users' description='User managements' />
     </PageContainer>
   );
 }

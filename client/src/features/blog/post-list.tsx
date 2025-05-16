@@ -1,7 +1,7 @@
 import React from 'react';
 import { PostTable } from './post-table';
 import { columns } from './post-table/columns';
-import { fetchProduct } from '@/app/actions/product';
+import { fetchProduct } from '@/services/product';
 import { searchParamsCache } from '@/lib/searchparams';
 
 export default async function TestList() {

@@ -7,5 +7,10 @@ export const paths = {
   dashboard: '/dashboard/overview',
   home: '/',
   settings: '/settings',
-  profile: '/profile'
+  profile: '/profile',
+  uam: {
+    users: '/dashboard/uam/users',
+    roles: '/dashboard/uam/roles',
+    permissions: '/dashboard/uam/permissions'
+  }
 };

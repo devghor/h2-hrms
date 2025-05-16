@@ -47,7 +47,7 @@ import * as React from 'react';
 import { Icons } from '../icons';
 import { OrgSwitcher } from '../org-switcher';
 import { Button } from '../ui/button';
-import { handleSignOut } from '@/app/actions/auth-action';
+import { handleSignOut } from '@/services/auth-action';
 export const company = {
   name: 'Acme Inc',
   logo: IconPhotoUp,

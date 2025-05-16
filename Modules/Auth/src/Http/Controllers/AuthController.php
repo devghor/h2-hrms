@@ -21,6 +21,11 @@ final class AuthController extends BaseController
         try {
             // Validate request
             $request->validate([
+                /**
+                 * Email.
+                 * @var email
+                 * @example {"lat": 50.450001, "long": 30.523333}
+                 */
                 'email' => 'required|email',
                 'password' => 'required',
             ]);
@@ -45,12 +50,12 @@ final class AuthController extends BaseController
                 'refresh_token' => $refreshToken,
                 'token_type' => 'Bearer',
                 'user' => [
-                    'id'=> $user->id,
-                    'name'=> $user->name,
-                    'full_name'=> $user->name,
-                    'email'=> $user->email,
-                    'image'=> null,
-                    'roles'=> ['superadmin', 'admin'],
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'full_name' => $user->name,
+                    'email' => $user->email,
+                    'image' => null,
+                    'roles' => ['superadmin', 'admin'],
                 ],
             ]);
         } catch (Exception $e) {

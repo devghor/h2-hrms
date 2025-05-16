@@ -1,5 +1,5 @@
 'use client';
-import { handleSignOut } from '@/app/actions/auth-action';
+import { handleSignOut } from '@/services/auth-action';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

@@ -4073,16 +4073,16 @@
         },
         {
             "name": "nwidart/laravel-modules",
-            "version": "v12.0.1",
+            "version": "v12.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nWidart/laravel-modules.git",
-                "reference": "e56a298ff63e29b040bbf302400b1015230d2401"
+                "reference": "ffad5c797e6a11d0e2d9a1bad422fa456589531e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nWidart/laravel-modules/zipball/e56a298ff63e29b040bbf302400b1015230d2401",
-                "reference": "e56a298ff63e29b040bbf302400b1015230d2401",
+                "url": "https://api.github.com/repos/nWidart/laravel-modules/zipball/ffad5c797e6a11d0e2d9a1bad422fa456589531e",
+                "reference": "ffad5c797e6a11d0e2d9a1bad422fa456589531e",
                 "shasum": ""
             },
             "require": {
@@ -4146,7 +4146,7 @@
             ],
             "support": {
                 "issues": "https://github.com/nWidart/laravel-modules/issues",
-                "source": "https://github.com/nWidart/laravel-modules/tree/v12.0.1"
+                "source": "https://github.com/nWidart/laravel-modules/tree/v12.0.3"
             },
             "funding": [
                 {
@@ -4158,7 +4158,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-03-08T02:07:02+00:00"
+            "time": "2025-04-28T07:57:29+00:00"
         },
         {
             "name": "openspout/openspout",

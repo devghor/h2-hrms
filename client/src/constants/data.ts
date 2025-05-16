@@ -1,4 +1,5 @@
 import { NavItem } from '@/types';
+import { paths } from './paths';
 
 export type Product = {
   photo_url: string;
@@ -54,6 +55,33 @@ export const navItems: NavItem[] = [
         shortcut: ['l', 'l'],
         url: '/',
         icon: 'login'
+      }
+    ]
+  },
+  {
+    title: 'UAM',
+    url: '#', // Placeholder as there is no direct link for the parent
+    icon: 'billing',
+    isActive: true,
+
+    items: [
+      {
+        title: 'Users',
+        url: paths.uam.users,
+        icon: 'userPen',
+        shortcut: ['m', 'm']
+      },
+      {
+        title: 'Roles',
+        url: paths.uam.roles,
+        icon: 'userPen',
+        shortcut: ['m', 'm']
+      },
+      {
+        title: 'Permissions',
+        url: paths.uam.permissions,
+        icon: 'userPen',
+        shortcut: ['m', 'm']
       }
     ]
   },

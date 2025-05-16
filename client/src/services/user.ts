@@ -2,7 +2,7 @@
 
 import axiosInstance from '@/lib/axios';
 
-export async function fetchProduct({
+export async function fetchUser({
   page = 1,
   limit = 10,
   categories,
@@ -14,7 +14,7 @@ export async function fetchProduct({
   search?: string;
 }) {
   const response = await axiosInstance.get(
-    `/products?limit=${limit}&skip=${page}`
+    `/user/users?limit=${limit}&skip=${page}`
   );
   return response.data;
 }
