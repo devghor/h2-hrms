@@ -24,9 +24,14 @@ final class AuthController extends BaseController
                 /**
                  * Email.
                  * @var email
-                 * @example {"lat": 50.450001, "long": 30.523333}
+                 * @example sa@app.com
                  */
                 'email' => 'required|email',
+                /**
+                 * Password.
+                 * @var password
+                 * @example password
+                 */
                 'password' => 'required',
             ]);
 

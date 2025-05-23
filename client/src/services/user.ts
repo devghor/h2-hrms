@@ -1,5 +1,3 @@
-'use server';
-
 import axiosInstance from '@/lib/axios';
 
 export async function fetchUser({

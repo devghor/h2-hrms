@@ -11,40 +11,38 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       authorize: async (credentials) => {
         try {
-          const { data } = await axiosInstance.post('auth/login', credentials);
-          const { user } = data.data;
-          return {
+          const {data} = await axiosInstance.post('auth/login', credentials);
+
+          const { user, access_token, refresh_token} = data.data;
+         const newUser = {
             id: user.id,
             name: user.name,
             fullName: user.full_name,
             emailAddress: user.email,
             imageUrl: user.image,
             roles: user.roles,
-            accessToken: data.data.access_token,
-            refreshToken: data.data.refresh_token
+            accessToken: access_token,
+            refreshToken: refresh_token
           } as User;
+
+          console.log('user', access_token)
+          return user;
         } catch (error) {
           console.log(error);
         }
 
-        return false;
+        return null;
       }
     })
   ],
   callbacks: {
     jwt({ token, user, trigger, session }) {
-      if (user) {
-        token.accessToken = user.accessToken;
-        token.refreshToken = user.refreshToken;
-        token.roles = user.roles;
-      }
 
-      return token;
+      return {...token, ...user};
     },
     session({ session, token }) {
-      session.user.id = token.id;
-      session.user.roles = token.role;
-      return session;
+        session.user = token as any;
+        return session;
     }
   },
   pages: {

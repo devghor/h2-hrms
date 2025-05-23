@@ -1,32 +1,24 @@
 'use client';
-import { searchParamsCache } from '@/lib/searchparams';
-import { columns } from './user-table/columns';
-import { UserTable } from './user-table';
 import { fetchUser } from '@/services/user';
 import { useQuery } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 
-type ProductListingPage = {};
+type UserList = {};
 
-export default function ProductListingPage({}: ProductListingPage) {
-  // Showcasing the use of search params cache in nested RSCs
-  const page = searchParamsCache.get('page');
-  const search = searchParamsCache.get('name');
-  const pageLimit = searchParamsCache.get('perPage');
-  const categories = searchParamsCache.get('category');
-
-  const filters = {
-    page,
-    limit: pageLimit,
-    ...(search && { search }),
-    ...(categories && { categories: categories })
-  };
+export default function UserList({}: UserList) {
 
   const { data } = useQuery({
-    queryKey: 'user-list',
-    queryFn: fetchUser(filters)
+    queryKey: ['user-list'],
+    queryFn: async () => await fetchUser({})
   });
 
+    const { data: session } = useSession();
+
+
+  console.log('ddd', session)
+
   return (
-    <UserTable data={products} totalItems={totalProducts} columns={columns} />
+    <></>
+    // <UserTable data={products} totalItems={} columns={columns} />
   );
 }
