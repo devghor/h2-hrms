@@ -15,7 +15,7 @@ services:
             - .docker/php/supervisord.conf:/etc/supervisord.conf
             - .docker/php/supervisor.conf:/etc/supervisor/conf.d/supervisor.conf
         depends_on:
-            - postgres
+            - mysql
             - redis
         networks:
             - h2-hrms-network
@@ -34,18 +34,17 @@ services:
         networks:
             - h2-hrms-network
 
-    postgres:
-        image: postgres:16-alpine
-        container_name: h2-hrms-postgres
-        restart: always
+    mysql:
+        image: mysql:8.0
         environment:
-            POSTGRES_DB: ${DB_DATABASE}
-            POSTGRES_USER: ${DB_USERNAME}
-            POSTGRES_PASSWORD: ${DB_PASSWORD}
-        ports:
-            - "5432:5432"
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_ROOT_PASSWORD: "root"
         volumes:
-            - pg_data:/var/lib/postgresql/data
+            - mysql_data:/var/lib/mysql
+        ports:
+            - "3307:3306"
         networks:
             - h2-hrms-network
 
@@ -69,7 +68,7 @@ services:
             - h2-hrms-network
 
 volumes:
-    pg_data:
+    mysql_data:
     redis_data:
 
 networks:

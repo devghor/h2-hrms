@@ -22,15 +22,15 @@ final class AuthController extends BaseController
             // Validate request
             $request->validate([
                 /**
-                 * User Email.
-                 * @var string
-                 * @example "sa@app.com"
+                 * Email.
+                 * @var email
+                 * @example sa@app.com
                  */
                 'email' => 'required|email',
                 /**
-                 * User Password.
-                 * @var string
-                 * @example "password"
+                 * Password.
+                 * @var password
+                 * @example password
                  */
                 'password' => 'required',
             ]);

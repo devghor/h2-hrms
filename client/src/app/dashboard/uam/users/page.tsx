@@ -5,6 +5,7 @@ import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import { SearchParams } from 'nuqs';
 import { searchParamsCache } from '@/lib/searchparams';
 import PageHeader from '@/components/layout/page-header';
+import UserList from '@/features/user/users/user-list';
 
 export const metadata = {
   title: 'Dashboard: Products'
@@ -18,6 +19,7 @@ export default async function Page(props: pageProps) {
   return (
     <PageContainer scrollable={false}>
       <PageHeader title='Users' description='User managements' />
+      <UserList/>
     </PageContainer>
   );
 }
