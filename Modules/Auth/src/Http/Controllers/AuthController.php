@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Auth\Http\Controllers;
 
+use App\Exceptions\UnprocessableEntityException;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -18,54 +19,51 @@ final class AuthController extends BaseController
      */
     public function login(Request $request)
     {
-        try {
-            // Validate request
-            $request->validate([
-                /**
-                 * Email.
-                 * @var email
-                 * @example sa@app.com
-                 */
-                'email' => 'required|email',
-                /**
-                 * Password.
-                 * @var password
-                 * @example password
-                 */
-                'password' => 'required',
-            ]);
+        // Validate request
+        $request->validate([
+            /**
+             * Email.
+             * @var email
+             * @example sa@app.com
+             */
+            'email' => 'required|email',
+            /**
+             * Password.
+             * @var password
+             * @example password
+             */
+            'password' => 'required',
+        ]);
 
-            // Check credentials
-            if (! Auth::attempt($request->only('email', 'password'))) {
-                return $this->errorResponse(['error' => 'Credential does not match.'], StatusCodeEnum::UNPROCESSABLE_ENTITY);
-            }
-
-            // Get authenticated user
-            $user = Auth::user();
-
-            // Delete old tokens
-            $user->tokens()->delete();
-
-            // Create new access & refresh tokens
-            $accessToken = $user->createToken('access_token', ['*'], now()->addMinutes(15))->plainTextToken;
-            $refreshToken = $user->createToken('refresh_token', ['refresh'], now()->addDays(7))->plainTextToken;
-
-            return $this->successResponse([
-                'access_token' => $accessToken,
-                'refresh_token' => $refreshToken,
-                'token_type' => 'Bearer',
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'full_name' => $user->name,
-                    'email' => $user->email,
-                    'image' => null,
-                    'roles' => ['superadmin', 'admin'],
-                ],
-            ]);
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), 'Login failed');
+        // Check credentials
+        if (! Auth::attempt($request->only('email', 'password'))) {
+            throw new UnprocessableEntityException('Credential does not match');
         }
+
+        // Get authenticated user
+        $user = Auth::user();
+
+        // Delete old tokens
+        $user->tokens()->delete();
+
+        // Create new access & refresh tokens
+        $accessToken = $user->createToken('access_token', ['*'], now()->addMinutes(15))->plainTextToken;
+        $refreshToken = $user->createToken('refresh_token', ['refresh'], now()->addDays(7))->plainTextToken;
+
+
+        return $this->successResponse([
+            'access_token' => $accessToken,
+            'refresh_token' => $refreshToken,
+            'token_type' => 'Bearer',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'full_name' => $user->name,
+                'email' => $user->email,
+                'image' => null,
+                'roles' => ['superadmin', 'admin'],
+            ],
+        ]);
     }
 
     /**

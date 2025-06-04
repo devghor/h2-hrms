@@ -6,6 +6,7 @@ namespace Modules\User\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Modules\User\Console\GenerateUsers;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -85,7 +86,9 @@ final class UserServiceProvider extends ServiceProvider
      */
     protected function registerCommands(): void
     {
-        // $this->commands([]);
+        $this->commands([
+            GenerateUsers::class
+        ]);
     }
 
     /**
