@@ -15,11 +15,12 @@ services:
             - .docker/php/supervisord.conf:/etc/supervisord.conf
             - .docker/php/supervisor.conf:/etc/supervisor/conf.d/supervisor.conf
         depends_on:
-            - mysql
+            - postgres
             - redis
         networks:
             - h2-hrms-network
 
+    # nginx
     nginx:
         image: nginx:alpine
         container_name: h2-hrms-nginx
@@ -34,17 +35,18 @@ services:
         networks:
             - h2-hrms-network
 
-    mysql:
-        image: mysql:8.0
-        environment:
-            MYSQL_DATABASE: ${DB_DATABASE}
-            MYSQL_USER: ${DB_USERNAME}
-            MYSQL_PASSWORD: ${DB_PASSWORD}
-            MYSQL_ROOT_PASSWORD: "root"
-        volumes:
-            - mysql_data:/var/lib/mysql
+    # postgress
+    postgres:
+        image: "postgres:17"
         ports:
-            - "3307:3306"
+            - "5432:5432"
+        environment:
+            PGPASSWORD: "${DB_PASSWORD}"
+            POSTGRES_DB: "${DB_DATABASE}"
+            POSTGRES_USER: "${DB_USERNAME}"
+            POSTGRES_PASSWORD: "${DB_PASSWORD}"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
         networks:
             - h2-hrms-network
 
@@ -62,14 +64,16 @@ services:
         container_name: h2-hrms-mailpit
         restart: always
         ports:
-            - "8025:8025" # Web UI
-            - "1025:1025" # SMTP
+            - "8025:8025"
+            - "1025:1025"
         networks:
             - h2-hrms-network
 
 volumes:
-    mysql_data:
+    postgres_data:
+        driver: local
     redis_data:
+        driver: local
 
 networks:
     h2-hrms-network:

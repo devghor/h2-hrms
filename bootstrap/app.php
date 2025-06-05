@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Exceptions\UnprocessableEntityException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
-use Modules\Base\Exceptions\UnprocessableEntityException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
