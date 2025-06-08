@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\v1\User;
 
 use App\Http\Controllers\Api\v1\Core\CoreController;
+use App\Http\Resources\v1\User\UserResource;
+use App\Models\User;
 use App\Repositories\User\UserRepository;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\QueryBuilder;

@@ -91,7 +91,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     Log::error('Exception caught:', $logData);
                 }
 
-                return new JsonResponse($responseData, $e->getStatusCode());
+                return new JsonResponse($responseData, $status);
             });
         }
     })->create();
