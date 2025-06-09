@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\v1\User;
 
 use App\Http\Controllers\Api\v1\Core\CoreController;
+use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Resources\v1\User\UserResource;
 use App\Models\User;
-use App\Repositories\User\UserRepository;
+use App\Services\User\UserService;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\QueryBuilder;
 
 final class UserController extends CoreController
 {
-    public function __construct(private UserRepository $userRepository) {}
+    public function __construct(private UserService $userService) {}
 
     /**
      * Display a listing of the resource.
@@ -28,13 +29,13 @@ final class UserController extends CoreController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create users.
      */
-    public function store(Request $request)
+    public function store(CreateUserRequest $request)
     {
-        //
-
-        return response()->json([]);
+        $input = $request->validated();
+        $user = $this->userService->storeUser($input);
+        return new UserResource($user);
     }
 
     /**

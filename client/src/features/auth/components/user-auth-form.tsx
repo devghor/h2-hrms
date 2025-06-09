@@ -43,15 +43,17 @@ export default function UserAuthForm() {
   });
 
   const onSubmit = async (data: UserFormValue) => {
-    try {
-      console.log(data);
-      const result = await handleCredentialsSignin(data);
-      if (result?.message) {
-        toast.error(result.message);
+    startTransition(async () => {
+      try {
+        const result = await handleCredentialsSignin(data);
+        if (result?.message) {
+          toast.error(result.message);
+        }
+      } catch (error) {
+        console.error('An unexpected error occurred:', error);
+        toast.error('An unexpected error occurred. Please try again.');
       }
-    } catch (error) {
-      console.log('An unexpected error occurred. Please try again.', error);
-    }
+    });
   };
 
   return (
