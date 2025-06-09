@@ -17,6 +17,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import { handleCredentialsSignin } from '@/services/auth-action';
+import { ButtonLoading } from '@/components/ui/button/button-loading';
+import { start } from 'repl';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -43,17 +45,16 @@ export default function UserAuthForm() {
   });
 
   const onSubmit = async (data: UserFormValue) => {
-    startTransition(async () => {
-      try {
+    try {
+      startTransition(async () => {
         const result = await handleCredentialsSignin(data);
         if (result?.message) {
           toast.error(result.message);
         }
-      } catch (error) {
-        console.error('An unexpected error occurred:', error);
-        toast.error('An unexpected error occurred. Please try again.');
-      }
-    });
+      });
+    } catch (error) {
+      console.log('An unexpected error occurred. Please try again.', error);
+    }
   };
 
   return (
@@ -81,7 +82,6 @@ export default function UserAuthForm() {
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name='password'
@@ -100,14 +100,17 @@ export default function UserAuthForm() {
               </FormItem>
             )}
           />
-
-          <Button
-            disabled={loading}
-            className='mt-2 ml-auto w-full'
-            type='submit'
-          >
-            Submit
-          </Button>
+          {loading ? (
+            <ButtonLoading className='mt-2 ml-auto w-full' />
+          ) : (
+            <Button
+              disabled={loading}
+              className='mt-2 ml-auto w-full'
+              type='submit'
+            >
+              Submit
+            </Button>
+          )}
         </form>
       </Form>
     </>

@@ -1,12 +1,19 @@
+import { Button } from '@/components/ui/button';
 import { Loader2Icon } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
+interface ButtonLoadingProps {
+  children?: React.ReactNode;
+  className?: string;
+}
 
-export function ButtonLoading() {
+export function ButtonLoading({
+  children = 'Please wait',
+  ...props
+}: ButtonLoadingProps) {
   return (
-    <Button size='sm' disabled>
-      <Loader2Icon className='animate-spin' />
-      Please wait
+    <Button disabled size='sm' {...props}>
+      <Loader2Icon className='mr-2 h-4 w-4 animate-spin' />
+      {children}
     </Button>
   );
 }
