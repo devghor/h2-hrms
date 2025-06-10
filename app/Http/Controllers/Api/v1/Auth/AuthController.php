@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 final class AuthController extends CoreController
 {
     /**
-     * Handle user login and return access & refresh tokens.
+     * Login
      */
     public function login(Request $request)
     {
@@ -66,7 +66,7 @@ final class AuthController extends CoreController
     }
 
     /**
-     * Refresh access token using refresh token.
+     * Refresh token
      */
     public function refreshToken(Request $request)
     {
@@ -101,7 +101,7 @@ final class AuthController extends CoreController
     }
 
     /**
-     * Logout user and revoke all tokens.
+     * Logout
      */
     public function logout(Request $request)
     {
@@ -115,7 +115,7 @@ final class AuthController extends CoreController
     }
 
     /**
-     * Get authenticated user details.
+     * Get user.
      */
     public function user(Request $request)
     {

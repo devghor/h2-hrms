@@ -19,15 +19,26 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { invalidateUsersQuery, useCreateUser } from '@/services/user';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
+import {
+  invalidateUsersQuery,
+  useCreateUser,
+  useUpdateUser
+} from '@/services/user';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { IconPlus } from '@tabler/icons-react';
+import { IconEdit, IconPlus } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { toast } from 'sonner';
+import { set, z } from 'zod';
 
 const formSchema = z
   .object({
+    id: z.number().optional(),
     name: z.string(),
     email: z.string().email(),
     password: z.string(),
@@ -38,54 +49,66 @@ const formSchema = z
     path: ['confirmPassword']
   });
 
-export function CreateUserDialog() {
+export function EditUserDialog({
+  id,
+  name,
+  email
+}: {
+  id?: number;
+  name?: string;
+  email?: string;
+}) {
   const [open, setOpen] = useState(false);
 
-  const { mutate, isPending } = useCreateUser();
+  const { mutate, isPending } = useUpdateUser();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      email: '',
+      id: id || undefined,
+      name: name || '',
+      email: email || '',
       password: '',
       confirmPassword: ''
     }
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    mutate(values, {
-      onSuccess: () => {
-        form.reset();
-        invalidateUsersQuery();
-        setOpen(false);
-      },
-      onError: (error: any) => {
-        if (error?.response?.data?.errors) {
-          const errors = error.response.data.errors;
-          Object.entries(errors).forEach(([field, message]) => {
-            form.setError(field as any, { message: message as string });
-          });
+    const { id, name, email } = values;
+    mutate(
+      { id, name, email },
+      {
+        onSuccess: () => {
+          setOpen(false);
+          invalidateUsersQuery();
+          toast.success('Successfully updated!');
         }
       }
-    });
+    );
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <IconPlus />
-          Add
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant='ghost' size='sm' onClick={() => setOpen(true)}>
+              <IconEdit />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Edit</p>
+          </TooltipContent>
+        </Tooltip>
       </DialogTrigger>
       <DialogContent onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Add user</DialogTitle>
+          <DialogTitle>Edit user</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className='w-full space-y-2'
+            autoComplete='off'
           >
             {/* Name */}
             <FormField
@@ -128,6 +151,7 @@ export function CreateUserDialog() {
                     <Input
                       type='password'
                       placeholder='Enter Password'
+                      autoComplete='off'
                       {...field}
                     />
                   </FormControl>
@@ -147,6 +171,7 @@ export function CreateUserDialog() {
                     <Input
                       type='password'
                       placeholder='Confirm Password'
+                      autoComplete='off'
                       {...field}
                     />
                   </FormControl>

@@ -12,7 +12,7 @@ export async function handleCredentialsSignin({
 }) {
   try {
     await signIn('credentials', { email, password, redirectTo: '/' });
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof AuthError) {
       switch (error?.type) {
         case 'CredentialsSignin':

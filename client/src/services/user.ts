@@ -1,6 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
 import { queryClient } from '@/lib/query-client';
+import { QueryKeys } from '@/constants/query-keys';
 
 // API Functions
 export async function fetchUser({
@@ -30,7 +31,23 @@ export async function createUser(data: any) {
   return response.data;
 }
 
+export async function updateUser(data: any) {
+  const response = await apiClient.put(`/user/users/${data['id']}`, data);
+  return response.data;
+}
+
+export async function deleteUser(data: any) {
+  const response = await apiClient.delete(`/user/users/${data['id']}`, data);
+  return response.data;
+}
+
 // React Query Hooks
+export const invalidateUsersQuery = () => {
+  return queryClient.invalidateQueries({
+    queryKey: QueryKeys.UAM_USERS.GET_ALL
+  });
+};
+
 export const useUsers = ({
   page = 1,
   limit = 10,
@@ -43,22 +60,19 @@ export const useUsers = ({
   search?: string;
 }) => {
   return useQuery({
-    queryKey: ['users', { page, limit, categories, search }],
+    queryKey: QueryKeys.UAM_USERS.GET_ALL,
     queryFn: () => fetchUser({ page, limit, categories, search })
   });
 };
 
 export const useCreateUser = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: createUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    }
-  });
+  return useMutation({ mutationFn: createUser });
 };
 
-export const invalidateUsersQuery = () => {
-  return queryClient.invalidateQueries({ queryKey: ['users'] });
+export const useUpdateUser = () => {
+  return useMutation({ mutationFn: updateUser });
+};
+
+export const useDeleteUser = () => {
+  return useMutation({ mutationFn: deleteUser });
 };
