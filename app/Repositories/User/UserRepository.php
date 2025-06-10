@@ -18,7 +18,6 @@ final class UserRepository extends BaseRepository
     public function getPaginatedUsers(int $perPage)
     {
         return QueryBuilder::for($this->model())
-            ->orderBy('created_at', 'desc')
             ->allowedFilters(['name', 'email'])
             ->paginate($perPage);
     }
