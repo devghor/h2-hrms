@@ -9,6 +9,7 @@ use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\v1\User\UserResource;
 use App\Services\User\UserService;
+use Dedoc\Scramble\Attributes\QueryParameter;
 
 final class UserController extends CoreController
 {
@@ -17,6 +18,7 @@ final class UserController extends CoreController
     /**
      * List users.
      */
+    #[QueryParameter('page'), QueryParameter('per_page')]
     public function index()
     {
         $users = $this->userService->getPaginatedUsers($this->getPerPage());

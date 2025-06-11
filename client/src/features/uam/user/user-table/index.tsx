@@ -5,33 +5,34 @@ import { DataTableToolbar } from '@/components/ui/table/data-table-toolbar';
 import { useDataTable } from '@/hooks/use-data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import { User } from '../type';
 
 interface UserTableParam<TData, TValue> {
-    data: User[];
-    columns: ColumnDef<TData, TValue>[];
-    totalItems: number;
+  data: TData[];
+  columns: ColumnDef<TData, TValue>[];
+  pageCount: number;
+  page: number;
+  perPage: number;
 }
 
 export function UserTable<TData, TValue>({
+  data,
+  columns,
+  pageCount,
+  page,
+  perPage
+}: UserTableParam<TData, TValue>) {
+  const { table } = useDataTable({
     data,
     columns,
-    totalItems
-}: UserTableParam<TData, TValue>) {
-    const [pageSize] = useQueryState('perPage', parseAsInteger.withDefault(10));
+    debounceMs: 500,
+    pageCount,
+    page,
+    perPage
+  });
 
-    const pageCount = Math.ceil(totalItems / pageSize);
-
-    const { table } = useDataTable({
-        data,
-        columns,
-        pageCount: pageCount,
-        debounceMs: 500
-    });
-
-    return (
-        <DataTable table={table}>
-            <DataTableToolbar table={table} />
-        </DataTable>
-    );
+  return (
+    <DataTable table={table}>
+      <DataTableToolbar table={table} />
+    </DataTable>
+  );
 }

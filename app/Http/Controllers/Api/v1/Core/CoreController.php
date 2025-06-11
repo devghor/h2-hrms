@@ -13,6 +13,6 @@ class CoreController extends Controller
 
     protected function getPerPage(): int
     {
-        return min(request()->get('per_page', config('core.pagination.default')), config('core.pagination.max'));
+        return min((int)request()->get('per_page', config('core.pagination.default')), config('core.pagination.max'));
     }
 }

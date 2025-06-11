@@ -6,20 +6,16 @@ import { QueryKeys } from '@/constants/query-keys';
 // API Functions
 export async function fetchUser({
   page = 1,
-  limit = 10,
-  categories,
-  search
+  perPage = 10
 }: {
   page?: number;
-  limit?: number;
+  perPage?: number;
   categories?: string;
   search?: string;
 }) {
   const query = new URLSearchParams({
-    limit: limit.toString(),
-    skip: page.toString(),
-    ...(categories && { categories }),
-    ...(search && { search })
+    page: page.toString(),
+    per_page: perPage.toString()
   });
 
   const response = await apiClient.get(`/user/users?${query.toString()}`);
@@ -49,19 +45,15 @@ export const invalidateUsersQuery = () => {
 };
 
 export const useUsers = ({
-  page = 1,
-  limit = 10,
-  categories = '',
-  search = ''
+  page,
+  perPage
 }: {
-  page?: number;
-  limit?: number;
-  categories?: string;
-  search?: string;
+  page: number;
+  perPage: number;
 }) => {
   return useQuery({
-    queryKey: QueryKeys.UAM_USERS.GET_ALL,
-    queryFn: () => fetchUser({ page, limit, categories, search })
+    queryKey: [...QueryKeys.UAM_USERS.GET_ALL, page, perPage],
+    queryFn: () => fetchUser({ page, perPage })
   });
 };
 
