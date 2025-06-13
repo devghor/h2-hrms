@@ -6,11 +6,12 @@ import { User } from './type';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { DEFAULT_PAGE, PER_PAGE } from '@/config/pagination';
 
 export default function UserList() {
   const searchParams = useSearchParams();
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(1);
+  const [page, setPage] = useState(DEFAULT_PAGE);
+  const [perPage, setPerPage] = useState(PER_PAGE);
 
   const { data, isLoading } = useUsers({
     page,
@@ -18,8 +19,8 @@ export default function UserList() {
   });
 
   useEffect(() => {
-    setPage(parseInt(searchParams.get('page') || '1', 10));
-    setPerPage(parseInt(searchParams.get('perPage') || '1', 10));
+    setPage(parseInt(searchParams.get('page') || `${DEFAULT_PAGE}`, 10));
+    setPerPage(parseInt(searchParams.get('perPage') || `${PER_PAGE}`, 10));
   }, [searchParams]);
 
   if (!data || isLoading) {
