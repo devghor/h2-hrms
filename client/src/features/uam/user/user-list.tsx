@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 export default function UserList() {
   const searchParams = useSearchParams();
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(2);
+  const [perPage, setPerPage] = useState(1);
 
   const { data, isLoading } = useUsers({
     page,
@@ -19,7 +19,7 @@ export default function UserList() {
 
   useEffect(() => {
     setPage(parseInt(searchParams.get('page') || '1', 10));
-    setPerPage(parseInt(searchParams.get('perPage') || '10', 10));
+    setPerPage(parseInt(searchParams.get('perPage') || '1', 10));
   }, [searchParams]);
 
   if (!data || isLoading) {
