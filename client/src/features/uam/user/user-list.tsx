@@ -12,15 +12,21 @@ export default function UserList() {
   const searchParams = useSearchParams();
   const [page, setPage] = useState(DEFAULT_PAGE);
   const [perPage, setPerPage] = useState(PER_PAGE);
+  const [sort, setSort] = useState('');
+  const [name, setName] = useState('');
 
   const { data, isLoading } = useUsers({
     page,
-    perPage
+    perPage,
+    sort,
+    name
   });
 
   useEffect(() => {
     setPage(parseInt(searchParams.get('page') || `${DEFAULT_PAGE}`, 10));
     setPerPage(parseInt(searchParams.get('perPage') || `${PER_PAGE}`, 10));
+    setSort(searchParams.get('sort') || '');
+    setName(searchParams.get('name') || '');
   }, [searchParams]);
 
   if (!data || isLoading) {

@@ -19,6 +19,7 @@ final class UserRepository extends BaseRepository
     {
         return QueryBuilder::for($this->model())
             ->allowedFilters(['name', 'email'])
+            ->allowedSorts(['name'])
             ->paginate($perPage);
     }
 }

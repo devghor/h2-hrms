@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Cross2Icon } from '@radix-ui/react-icons';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface DataTableToolbarProps<TData> extends React.ComponentProps<'div'> {
   table: Table<TData>;
@@ -22,7 +23,24 @@ export function DataTableToolbar<TData>({
   className,
   ...props
 }: DataTableToolbarProps<TData>) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const isFiltered = table.getState().columnFilters.length > 0;
+
+  const updateQueryParams = (params: Record<string, string | null>) => {
+    const updated = new URLSearchParams(searchParams?.toString() ?? '');
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value === null) {
+        updated.delete(key);
+      } else {
+        updated.set(key, value);
+      }
+    });
+
+    router.replace(`${pathname}?${updated.toString()}`);
+  };
 
   const columns = React.useMemo(
     () => table.getAllColumns().filter((column) => column.getCanFilter()),
@@ -31,6 +49,9 @@ export function DataTableToolbar<TData>({
 
   const onReset = React.useCallback(() => {
     table.resetColumnFilters();
+    columns.forEach((c) => {
+      updateQueryParams({ [c.id]: null });
+    });
   }, [table]);
 
   return (

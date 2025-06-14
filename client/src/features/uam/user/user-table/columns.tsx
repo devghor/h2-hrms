@@ -1,5 +1,5 @@
 'use client';
-import { ColumnDef } from '@tanstack/react-table';
+import { Column, ColumnDef } from '@tanstack/react-table';
 import { User } from '../type';
 import { Button } from '@/components/ui/button';
 import { EditUserDialog } from '../edit-user-dialog';
@@ -13,6 +13,8 @@ import { useState } from 'react';
 import { IconTrash } from '@tabler/icons-react';
 import { invalidateUsersQuery, useDeleteUser } from '@/services/user';
 import { toast } from 'sonner';
+import { DataTableColumnHeader } from '@/components/ui/table/data-table-column-header';
+import { Text } from 'lucide-react';
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -23,7 +25,16 @@ export const columns: ColumnDef<User>[] = [
   {
     id: 'name',
     accessorKey: 'name',
-    header: 'Name'
+    enableColumnFilter: true,
+    meta: {
+      label: 'Name',
+      placeholder: 'Search name...',
+      variant: 'text',
+      icon: Text
+    },
+    header: ({ column }: { column: Column<User, unknown> }) => (
+      <DataTableColumnHeader column={column} title='Name' />
+    )
   },
   {
     id: 'email',

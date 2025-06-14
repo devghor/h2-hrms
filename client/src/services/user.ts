@@ -3,20 +3,21 @@ import apiClient from '@/lib/api-client';
 import { queryClient } from '@/lib/query-client';
 import { QueryKeys } from '@/constants/query-keys';
 
-// API Functions
-export async function fetchUser({
-  page = 1,
-  perPage = 10
-}: {
+type GetUserParams = {
   page?: number;
   perPage?: number;
-  categories?: string;
-  search?: string;
-}) {
-  const query = new URLSearchParams({
-    page: page.toString(),
-    per_page: perPage.toString()
-  });
+  sort?: string;
+  name?: string;
+};
+
+// API Functions
+export async function getUsers({ page, perPage, sort, name }: GetUserParams) {
+  const queryParams: Record<string, string> = {};
+  if (page !== undefined) queryParams.page = page.toString();
+  if (perPage !== undefined) queryParams.per_page = perPage.toString();
+  if (sort !== undefined) queryParams.sort = sort;
+  if (name !== undefined) queryParams['filter[name]'] = name;
+  const query = new URLSearchParams(queryParams);
 
   const response = await apiClient.get(`/user/users?${query.toString()}`);
   return response.data;
@@ -44,16 +45,10 @@ export const invalidateUsersQuery = () => {
   });
 };
 
-export const useUsers = ({
-  page,
-  perPage
-}: {
-  page: number;
-  perPage: number;
-}) => {
+export const useUsers = (params: GetUserParams) => {
   return useQuery({
-    queryKey: [...QueryKeys.UAM_USERS.GET_ALL, page, perPage],
-    queryFn: () => fetchUser({ page, perPage })
+    queryKey: [...QueryKeys.UAM_USERS.GET_ALL, params],
+    queryFn: () => getUsers(params)
   });
 };
 

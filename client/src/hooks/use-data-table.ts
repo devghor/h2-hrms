@@ -52,7 +52,7 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
     columns,
     pageCount,
     initialState,
-    debounceMs = 300,
+    debounceMs = 1000,
     throttleMs = 50,
     clearOnDefault = false,
     enableAdvancedFilter = false,
@@ -132,7 +132,7 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
       setSorting(newSorting);
       updateQueryParams({
         sort: newSorting
-          .map((s) => `${s.id}.${s.desc ? 'desc' : 'asc'}`)
+          .map((s) => `${s.desc ? '-' + s.id : s.id}`)
           .join(ARRAY_SEPARATOR)
       });
     },
