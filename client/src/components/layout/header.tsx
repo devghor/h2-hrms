@@ -7,6 +7,9 @@ import { UserNav } from './user-nav';
 import { ThemeSelector } from '../theme-selector';
 import { ModeToggle } from './ThemeToggle/theme-toggle';
 import CtaGithub from './cta-github';
+import { IconBell } from '@tabler/icons-react';
+import { Button } from '../ui/button';
+import { NotificationBtn } from './notification-btn';
 
 export default function Header() {
   return (
@@ -18,13 +21,14 @@ export default function Header() {
       </div>
 
       <div className='flex items-center gap-2 px-4'>
-        <CtaGithub />
+        {/* <CtaGithub /> */}
         <div className='hidden md:flex'>
           <SearchInput />
         </div>
-        <UserNav />
         <ModeToggle />
-        <ThemeSelector />
+        <NotificationBtn count={1} />
+        <UserNav />
+        {/* <ThemeSelector /> */}
       </div>
     </header>
   );

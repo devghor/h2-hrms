@@ -50,6 +50,7 @@ import { handleSignOut } from '@/services/auth-action';
 import { navItems } from '@/config/nav';
 import { createAbilityFromPermissions } from '@/lib/casl/ability';
 import { useAuthSession } from '@/hooks/use-auth-session';
+import { SignOutBtn } from './signout-btn';
 export const company = {
   name: 'Acme Inc',
   logo: IconPhotoUp,
@@ -152,7 +153,7 @@ export default function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenu>
+        {/* <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -222,7 +223,8 @@ export default function AppSidebar() {
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
-        </SidebarMenu>
+        </SidebarMenu> */}
+        <SignOutBtn />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -1,5 +1,4 @@
 'use client';
-import { handleSignOut } from '@/services/auth-action';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,8 +10,10 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { UserAvatarProfile } from '@/components/user-avatar-profile';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { IconLogout } from '@tabler/icons-react';
+import { SignOutBtn } from './signout-btn';
 export function UserNav() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -51,11 +52,7 @@ export function UserNav() {
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <form action={handleSignOut}>
-              <Button variant='default' type='submit'>
-                Sign Out
-              </Button>
-            </form>{' '}
+            <SignOutBtn />
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\v1\Auth;
 
+use App\Enums\StatusCodeEnum;
 use App\Exceptions\UnprocessableEntityException;
 use App\Http\Controllers\Api\v1\Core\CoreController;
 use App\Models\User;
@@ -49,7 +50,6 @@ final class AuthController extends CoreController
         $accessToken = $user->createToken('access_token', ['*'], now()->addMinutes(15))->plainTextToken;
         $refreshToken = $user->createToken('refresh_token', ['refresh'], now()->addDays(7))->plainTextToken;
 
-
         return $this->successResponse([
             'access_token' => $accessToken,
             'refresh_token' => $refreshToken,
@@ -62,18 +62,18 @@ final class AuthController extends CoreController
                 'image' => null,
                 'roles' => ['superadmin', 'admin'],
                 'permissions' => [
-                    'create:users',
-                    'edit:users',
                     'read:dashboard',
-                    'read:product',
+                    // 'read:product',
                     // 'read:account',
                     // 'read:profile',
-                    'access:login',
+                    // 'read:login',
                     'read:uam',
                     'read:users',
+                    'create:users',
+                    'edit:users',
                     // 'read:roles',
-                    'read:permissions',
-                    'read:kanban',
+                    // 'read:permissions',
+                    // 'read:kanban',
                 ]
             ],
         ]);

@@ -63,7 +63,7 @@ export default async function RootLayout({
       >
         <NextTopLoader showSpinner={false} />
         <NuqsAdapter>
-          <SessionProvider refetchInterval={10}>
+          <SessionProvider>
             <ThemeProvider
               attribute='class'
               defaultTheme='system'
