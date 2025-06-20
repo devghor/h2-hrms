@@ -29,7 +29,6 @@ import {
   SidebarRail
 } from '@/components/ui/sidebar';
 import { UserAvatarProfile } from '@/components/user-avatar-profile';
-import { navItems } from '@/constants/data';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import {
   IconBell,
@@ -40,7 +39,7 @@ import {
   IconPhotoUp,
   IconUserCircle
 } from '@tabler/icons-react';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -48,6 +47,9 @@ import { Icons } from '../icons';
 import { OrgSwitcher } from '../org-switcher';
 import { Button } from '../ui/button';
 import { handleSignOut } from '@/services/auth-action';
+import { navItems } from '@/config/nav';
+import { createAbilityFromPermissions } from '@/lib/casl/ability';
+import { useAuthSession } from '@/hooks/use-auth-session';
 export const company = {
   name: 'Acme Inc',
   logo: IconPhotoUp,
@@ -63,8 +65,10 @@ const tenants = [
 export default function AppSidebar() {
   const pathname = usePathname();
   const { isOpen } = useMediaQuery();
-  const { data: session } = useSession();
+  const { session } = useAuthSession();
+  const ability = createAbilityFromPermissions(session?.user.permissions ?? []);
   const router = useRouter();
+
   const handleSwitchTenant = (_tenantId: string) => {
     // Tenant switching functionality would be implemented here
   };
@@ -89,6 +93,9 @@ export default function AppSidebar() {
           <SidebarGroupLabel>Overview</SidebarGroupLabel>
           <SidebarMenu>
             {navItems.map((item) => {
+              if (!ability.can(item.can!, '')) {
+                return null;
+              }
               const Icon = item.icon ? Icons[item.icon] : Icons.logo;
               return item?.items && item?.items?.length > 0 ? (
                 <Collapsible
@@ -201,11 +208,16 @@ export default function AppSidebar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <IconLogout className='mr-2 h-4 w-4' />
-                  <form action={handleSignOut}>
-                    <Button variant='default' type='submit'>
-                      Sign Out
-                    </Button>
-                  </form>{' '}
+
+                  <Button
+                    variant='default'
+                    type='submit'
+                    onClick={() => {
+                      signOut();
+                    }}
+                  >
+                    Sign Out
+                  </Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

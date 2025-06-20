@@ -3,8 +3,11 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth } from './lib/auth';
 import { paths } from './constants/paths';
+import { createAbilityFromPermissions } from './lib/casl/ability';
 
 export default async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
   const session = await auth();
 
   // If user is not logged in and not already on sign-in page, redirect them
@@ -15,6 +18,9 @@ export default async function middleware(req: NextRequest) {
   }
 
   if (session && req.nextUrl.pathname == paths.auth.signIn) {
+    const ability = createAbilityFromPermissions(
+      session?.user.permissions! ?? []
+    );
     const dashboardUrl = new URL(paths.dashboard, req.nextUrl.origin);
     return NextResponse.redirect(dashboardUrl);
   }

@@ -15,6 +15,8 @@ import { invalidateUsersQuery, useDeleteUser } from '@/services/user';
 import { toast } from 'sonner';
 import { DataTableColumnHeader } from '@/components/ui/table/data-table-column-header';
 import { Text } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { createAbilityFromPermissions } from '@/lib/casl/ability';
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -47,6 +49,8 @@ export const columns: ColumnDef<User>[] = [
     cell: function Cell({ row }) {
       const { mutate, isPending } = useDeleteUser();
       const [open, setOpen] = useState(false);
+      const { data: session } = useSession();
+      const ability = createAbilityFromPermissions(session?.user.permissions!);
       const onConfirm = async () => {
         mutate(
           { ...row.original },
@@ -65,7 +69,11 @@ export const columns: ColumnDef<User>[] = [
 
       return (
         <div className='w-full text-center'>
-          <EditUserDialog {...row.original} />
+          {ability.can('edit:users', '') ? (
+            <EditUserDialog {...row.original} />
+          ) : (
+            ''
+          )}
           <AlertModal
             isOpen={open}
             onClose={() => setOpen(false)}

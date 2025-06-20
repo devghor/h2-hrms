@@ -61,6 +61,20 @@ final class AuthController extends CoreController
                 'email' => $user->email,
                 'image' => null,
                 'roles' => ['superadmin', 'admin'],
+                'permissions' => [
+                    'create:users',
+                    'edit:users',
+                    'read:dashboard',
+                    'read:product',
+                    // 'read:account',
+                    // 'read:profile',
+                    'access:login',
+                    'read:uam',
+                    'read:users',
+                    // 'read:roles',
+                    'read:permissions',
+                    'read:kanban',
+                ]
             ],
         ]);
     }
