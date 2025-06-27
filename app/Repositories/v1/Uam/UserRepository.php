@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Repositories\User;
+namespace App\Repositories\v1\Uam;
 
-use App\Models\User;
+use App\Models\Uam\User;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Spatie\QueryBuilder\QueryBuilder;
 

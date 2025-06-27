@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services\User;
+namespace App\Services\v1\Uam;
 
 use Exception;
-use App\Repositories\User\UserRepository;
+use App\Repositories\v1\Uam\UserRepository;
 
 class UserService
 {

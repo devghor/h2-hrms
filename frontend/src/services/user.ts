@@ -19,22 +19,22 @@ export async function getUsers({ page, perPage, sort, name }: GetUserParams) {
   if (name !== undefined) queryParams['filter[name]'] = name;
   const query = new URLSearchParams(queryParams);
 
-  const response = await apiClient.get(`/user/users?${query.toString()}`);
+  const response = await apiClient.get(`/uam/users?${query.toString()}`);
   return response.data;
 }
 
 export async function createUser(data: any) {
-  const response = await apiClient.post(`/user/users`, data);
+  const response = await apiClient.post(`/uam/users`, data);
   return response.data;
 }
 
 export async function updateUser(data: any) {
-  const response = await apiClient.put(`/user/users/${data['id']}`, data);
+  const response = await apiClient.put(`/uam/users/${data['id']}`, data);
   return response.data;
 }
 
 export async function deleteUser(data: any) {
-  const response = await apiClient.delete(`/user/users/${data['id']}`, data);
+  const response = await apiClient.delete(`/uam/users/${data['id']}`, data);
   return response.data;
 }
 

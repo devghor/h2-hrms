@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\v1\Auth\AuthController;
-use App\Http\Controllers\Api\v1\User\UserController;
+use App\Http\Controllers\Api\v1\Uam\RoleController;
+use App\Http\Controllers\Api\v1\Uam\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
     // Auth Module
@@ -19,11 +21,12 @@ Route::prefix('v1')->group(function (): void {
         });
 
     Route::middleware(['auth:sanctum'])->group(function () {
-        // User Module
-        Route::prefix('user')
-            ->name('user.')
+        // UAM Module
+        Route::prefix('uam')
+            ->name('uam.')
             ->group(function (): void {
                 Route::apiResource('users', UserController::class);
+                Route::apiResource('roles', RoleController::class);
             });
     });
 });

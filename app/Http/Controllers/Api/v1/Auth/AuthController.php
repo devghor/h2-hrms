@@ -12,10 +12,35 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @group Auth
+ *
+ * APIs for authentication (login, logout, token refresh, user info)
+ */
 final class AuthController extends CoreController
 {
     /**
      * Login
+     *
+     * Authenticate user and return access/refresh tokens.
+     *
+     * @bodyParam email string required The user's email. Example: sa@app.com
+     * @bodyParam password string required The user's password. Example: password
+     * @response 200 scenario=success {
+     *   "access_token": "...",
+     *   "refresh_token": "...",
+     *   "token_type": "Bearer",
+     *   "user": {
+     *     "id": 1,
+     *     "name": "Super Admin",
+     *     "full_name": "Super Admin",
+     *     "email": "sa@app.com",
+     *     "image": null,
+     *     "roles": ["superadmin", "admin"],
+     *     "permissions": ["read:dashboard", "read:uam", "read:users", "create:users"]
+     *   }
+     * }
+     * @response 422 scenario=invalid_credentials {"message": "Credential does not match"}
      */
     public function login(Request $request)
     {
@@ -81,6 +106,15 @@ final class AuthController extends CoreController
 
     /**
      * Refresh token
+     *
+     * Get a new access token using a valid refresh token.
+     *
+     * @bodyParam refresh_token string required The refresh token.
+     * @response 200 scenario=success {
+     *   "access_token": "...",
+     *   "token_type": "Bearer"
+     * }
+     * @response 422 scenario=not_found {"error": "User is not found"}
      */
     public function refreshToken(Request $request)
     {
@@ -116,6 +150,12 @@ final class AuthController extends CoreController
 
     /**
      * Logout
+     *
+     * Invalidate all tokens for the authenticated user.
+     *
+     * @authenticated
+     * @response 200 scenario=success "Logged out successfully"
+     * @response 422 scenario=error {"error": "Logout failed"}
      */
     public function logout(Request $request)
     {
@@ -129,7 +169,19 @@ final class AuthController extends CoreController
     }
 
     /**
-     * Get user.
+     * Get user
+     *
+     * Get the currently authenticated user's information.
+     *
+     * @authenticated
+     * @response 200 scenario=success {
+     *   "message": "User fetched successfully",
+     *   "data": {
+     *     "id": 1,
+     *     "name": "Super Admin",
+     *     "email": "sa@app.com"
+     *   }
+     * }
      */
     public function user(Request $request)
     {
