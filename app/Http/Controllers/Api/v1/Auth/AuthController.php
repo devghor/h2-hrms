@@ -70,7 +70,7 @@ final class AuthController extends CoreController
                     'read:uam',
                     'read:users',
                     'create:users',
-                    'edit:users',
+                    // 'edit:users',
                     // 'read:roles',
                     // 'read:permissions',
                     // 'read:kanban',

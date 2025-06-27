@@ -13,6 +13,7 @@ import './globals.css';
 import './theme.css';
 import { SessionProvider } from 'next-auth/react';
 import QueryProvider from '@/components/providers/query-provider';
+import { AbilityProvider } from '@/components/providers/ability-provider';
 
 const META_THEME_COLORS = {
   light: '#ffffff',
@@ -71,13 +72,15 @@ export default async function RootLayout({
               disableTransitionOnChange
               enableColorScheme
             >
-              <Providers activeThemeValue={activeThemeValue as string}>
-                <Toaster />
-                <QueryProvider>
-                  <ReactQueryDevtools initialIsOpen={false} />
-                  {children}
-                </QueryProvider>
-              </Providers>
+              <AbilityProvider>
+                <Providers activeThemeValue={activeThemeValue as string}>
+                  <Toaster />
+                  <QueryProvider>
+                    <ReactQueryDevtools initialIsOpen={false} />
+                    {children}
+                  </QueryProvider>
+                </Providers>
+              </AbilityProvider>
             </ThemeProvider>
           </SessionProvider>
         </NuqsAdapter>

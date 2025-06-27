@@ -2,6 +2,7 @@
 
 namespace App\Services\User;
 
+use Exception;
 use App\Repositories\User\UserRepository;
 
 class UserService
@@ -12,7 +13,7 @@ class UserService
     {
         $user = $this->userRepository->find($id);
         if (!$user) {
-            throw new \Exception("User not found", 404);
+            throw new Exception("User not found", 404);
         }
 
         return $user;
@@ -32,7 +33,7 @@ class UserService
     {
         $user = $this->userRepository->find($id);
         if (!$user) {
-            throw new \Exception("User not found", 404);
+            throw new Exception("User not found", 404);
         }
 
         return $this->userRepository->update($data, $id);
@@ -42,7 +43,7 @@ class UserService
     {
         $user = $this->userRepository->find($id);
         if (!$user) {
-            throw new \Exception("User not found", 404);
+            throw new Exception("User not found", 404);
         }
 
         return $this->userRepository->delete($id);
