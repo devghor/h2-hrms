@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Api\v1\Auth;
 use App\Enums\StatusCodeEnum;
 use App\Exceptions\UnprocessableEntityException;
 use App\Http\Controllers\Api\v1\Core\CoreController;
-use App\Models\User;
+use App\Models\Uam\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
