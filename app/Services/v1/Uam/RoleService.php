@@ -2,7 +2,7 @@
 
 namespace App\Services\v1\Uam;
 
-use App\Repositories\Uam\RoleRepository;
+use App\Repositories\v1\Uam\RoleRepository;
 
 class RoleService
 {

@@ -11,20 +11,14 @@ use App\Http\Resources\v1\Uam\UserResource;
 use App\Services\v1\Uam\UserService;
 
 /**
- * @group Auth
- *
- * APIs for managing users (CRUD)
+ * @tags Uam
  */
 final class UserController extends CoreController
 {
     public function __construct(private UserService $userService) {}
 
     /**
-     * List users.
-     *
-     * @queryParam page int The page number for pagination. Example: 1
-     * @queryParam per_page int The number of items per page. Example: 10
-     * @authenticated
+     * Users List
      */
     public function index()
     {
@@ -33,12 +27,7 @@ final class UserController extends CoreController
     }
 
     /**
-     * Create a user.
-     *
-     * @bodyParam name string required The user's name. Example: John Doe
-     * @bodyParam email string required The user's email. Example: john@example.com
-     * @bodyParam password string required The user's password. Example: secret123
-     * @authenticated
+     * Users Create
      */
     public function store(CreateUserRequest $request)
     {
@@ -48,10 +37,7 @@ final class UserController extends CoreController
     }
 
     /**
-     * Read a user.
-     *
-     * @urlParam id int required The ID of the user. Example: 1
-     * @authenticated
+     * Users Read
      */
     public function show($id)
     {
@@ -60,13 +46,7 @@ final class UserController extends CoreController
     }
 
     /**
-     * Update a user.
-     *
-     * @urlParam id int required The ID of the user. Example: 1
-     * @bodyParam name string The user's name. Example: John Doe
-     * @bodyParam email string The user's email. Example: john@example.com
-     * @bodyParam password string The user's password. Example: secret123
-     * @authenticated
+     * Users Update
      */
     public function update(UpdateUserRequest $request, $id)
     {
@@ -76,11 +56,7 @@ final class UserController extends CoreController
     }
 
     /**
-     * Delete a user.
-     *
-     * @urlParam id int required The ID of the user. Example: 1
-     * @response 200 {"message": "User deleted successfully"}
-     * @authenticated
+     * Users Delete
      */
     public function destroy($id)
     {

@@ -8,11 +8,9 @@ use App\Services\v1\Uam\RoleService;
 use Illuminate\Http\Request;
 
 /**
- * @group UAM
- *
- * APIs for managing roles.
+ * @tags Uam
  */
-class RoleController extends CoreController
+final class RoleController extends CoreController
 {
     protected $roleService;
 
@@ -22,10 +20,7 @@ class RoleController extends CoreController
     }
 
     /**
-     * List all roles.
-     *
-     * @apiResourceCollection App\Http\Resources\v1\Uam\RoleResource
-     * @authenticated
+     * Roles List
      */
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
@@ -34,12 +29,7 @@ class RoleController extends CoreController
     }
 
     /**
-     * Create a new role.
-     *
-     * @apiResource App\Http\Resources\v1\Uam\RoleResource
-     * @bodyParam name string required The name of the role. Example: admin
-     * @bodyParam guard_name string required The guard name. Example: web
-     * @authenticated
+     * Roles Create
      */
     public function store(Request $request): RoleResource
     {
@@ -52,11 +42,7 @@ class RoleController extends CoreController
     }
 
     /**
-     * Show a role.
-     *
-     * @apiResource App\Http\Resources\v1\Uam\RoleResource
-     * @urlParam id int required The ID of the role. Example: 1
-     * @authenticated
+     * Roles Read
      */
     public function show(int $id): RoleResource
     {
@@ -65,13 +51,7 @@ class RoleController extends CoreController
     }
 
     /**
-     * Update a role.
-     *
-     * @apiResource App\Http\Resources\v1\Uam\RoleResource
-     * @urlParam id int required The ID of the role. Example: 1
-     * @bodyParam name string The name of the role. Example: editor
-     * @bodyParam guard_name string The guard name. Example: web
-     * @authenticated
+     * Roles Update
      */
     public function update(Request $request, int $id): RoleResource
     {
@@ -84,12 +64,7 @@ class RoleController extends CoreController
     }
 
     /**
-     * Delete a role.
-     *
-     * @urlParam id int required The ID of the role. Example: 1
-     * @response 200 scenario=deleted {"message": "Role deleted successfully"}
-     * @response 404 scenario=not_found {"message": "Role not found"}
-     * @authenticated
+     * Roles Delete
      */
     public function destroy(int $id): \Illuminate\Http\JsonResponse
     {
