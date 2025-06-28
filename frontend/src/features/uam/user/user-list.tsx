@@ -6,35 +6,50 @@ import { User } from './type';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { DEFAULT_PAGE, PER_PAGE } from '@/config/pagination';
+import {
+  DEFAULT_PAGE,
+  DEFAULT_PER_PAGE,
+  PAGE_KEY,
+  PER_PAGE_KEY
+} from '@/config/pagination';
+import {
+  parseAsArrayOf,
+  parseAsIndex,
+  parseAsString,
+  parseAsStringLiteral,
+  useQueryState
+} from 'nuqs';
+import { sortToQueryParam } from '@/lib/utils';
 
 export default function UserList() {
-  const searchParams = useSearchParams();
-  const [page, setPage] = useState(DEFAULT_PAGE);
-  const [perPage, setPerPage] = useState(PER_PAGE);
-  const [sort, setSort] = useState('');
-  const [name, setName] = useState('');
+  const [page, setPage] = useQueryState(
+    PAGE_KEY,
+    parseAsIndex.withDefault(DEFAULT_PAGE)
+  );
+  const [perPage, setPerPage] = useQueryState(
+    PER_PAGE_KEY,
+    parseAsIndex.withDefault(DEFAULT_PER_PAGE)
+  );
+  const [sort, setSort] = useQueryState(
+    'sort',
+    parseAsArrayOf(parseAsString).withDefault([])
+  );
+
+  const [name, setName] = useQueryState('name');
 
   const { data, isLoading } = useUsers({
     page,
     perPage,
-    sort,
-    name
+    name,
+    sort
   });
 
-  useEffect(() => {
-    setPage(parseInt(searchParams.get('page') || `${DEFAULT_PAGE}`, 10));
-    setPerPage(parseInt(searchParams.get('perPage') || `${PER_PAGE}`, 10));
-    setSort(searchParams.get('sort') || '');
-    setName(searchParams.get('name') || '');
-  }, [searchParams]);
-
-  if (!data || isLoading) {
+  if (isLoading) {
     return <DataTableSkeleton columnCount={5} rowCount={8} filterCount={2} />;
   }
 
-  const users: User[] = data.data;
-  const totalPage = data.meta.last_page;
+  const users: User[] = data.data ?? [];
+  const totalPage = data.meta.last_page ?? null;
 
   return (
     <UserTable

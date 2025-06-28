@@ -4,14 +4,13 @@ import { DataTable } from '@/components/ui/table/data-table';
 import { DataTableToolbar } from '@/components/ui/table/data-table-toolbar';
 import { useDataTable } from '@/hooks/use-data-table';
 import { ColumnDef } from '@tanstack/react-table';
-import { parseAsInteger, useQueryState } from 'nuqs';
 
 interface UserTableParam<TData, TValue> {
   data: TData[];
   columns: ColumnDef<TData, TValue>[];
   pageCount: number;
-  page: number;
-  perPage: number;
+  page: string | number;
+  perPage: string | number;
 }
 
 export function UserTable<TData, TValue>({
@@ -25,9 +24,7 @@ export function UserTable<TData, TValue>({
     data,
     columns,
     debounceMs: 500,
-    pageCount,
-    page,
-    perPage
+    pageCount
   });
 
   return (

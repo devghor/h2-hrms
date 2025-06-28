@@ -2,23 +2,25 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
 import { queryClient } from '@/lib/query-client';
 import { QueryKeys } from '@/constants/query-keys';
+import { sortToQueryParam } from '@/utils/sorting-util';
 
 type GetUserParams = {
-  page?: number;
-  perPage?: number;
-  sort?: string;
-  name?: string;
+  page?: any;
+  perPage?: any;
+  sort?: any;
+  name?: any;
 };
 
-// API Functions
+/**
+ * API Functions
+ */
 export async function getUsers({ page, perPage, sort, name }: GetUserParams) {
   const queryParams: Record<string, string> = {};
   if (page !== undefined) queryParams.page = page.toString();
   if (perPage !== undefined) queryParams.per_page = perPage.toString();
-  if (sort !== undefined) queryParams.sort = sort;
-  if (name !== undefined) queryParams['filter[name]'] = name;
+  if (sort !== undefined) queryParams.sort = sortToQueryParam(sort);
+  if (name !== undefined && name) queryParams['filter[name]'] = name;
   const query = new URLSearchParams(queryParams);
-
   const response = await apiClient.get(`/uam/users?${query.toString()}`);
   return response.data;
 }
@@ -38,7 +40,9 @@ export async function deleteUser(data: any) {
   return response.data;
 }
 
-// React Query Hooks
+/**
+ * React Query Hooks
+ */
 export const invalidateUsersQuery = () => {
   return queryClient.invalidateQueries({
     queryKey: QueryKeys.UAM_USERS.GET_ALL
