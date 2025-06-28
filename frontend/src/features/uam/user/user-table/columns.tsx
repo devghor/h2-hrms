@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { DataTableColumnHeader } from '@/components/ui/table/data-table-column-header';
 import { Text } from 'lucide-react';
 import { useCan } from '@/components/providers/ability-provider';
+import { useTranslations } from 'next-intl';
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -46,6 +47,8 @@ export const columns: ColumnDef<User>[] = [
     id: 'actions',
     header: () => <div className='w-full text-center'>Actions</div>,
     cell: function Cell({ row }) {
+      const t = useTranslations();
+
       const { mutate, isPending } = useDeleteUser();
       const [open, setOpen] = useState(false);
       const can = useCan();
@@ -81,7 +84,7 @@ export const columns: ColumnDef<User>[] = [
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Delete</p>
+              <p>{t('Delete')}</p>
             </TooltipContent>
           </Tooltip>
         </div>

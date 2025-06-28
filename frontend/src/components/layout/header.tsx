@@ -10,6 +10,7 @@ import CtaGithub from './cta-github';
 import { IconBell } from '@tabler/icons-react';
 import { Button } from '../ui/button';
 import { NotificationBtn } from './notification-btn';
+import LanguageSwitcher from '../language/language-switcher';
 
 export default function Header() {
   return (
@@ -25,6 +26,7 @@ export default function Header() {
         <div className='hidden md:flex'>
           <SearchInput />
         </div>
+        <LanguageSwitcher />
         <ModeToggle />
         <NotificationBtn count={1} />
         <UserNav />

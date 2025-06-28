@@ -14,6 +14,8 @@ import './theme.css';
 import { SessionProvider } from 'next-auth/react';
 import QueryProvider from '@/components/providers/query-provider';
 import { AbilityProvider } from '@/components/providers/ability-provider';
+import { getLocale } from 'next-intl/server';
+import { NextIntlClientProvider } from 'next-intl';
 
 const META_THEME_COLORS = {
   light: '#ffffff',
@@ -37,9 +39,10 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const activeThemeValue = cookieStore.get('active_theme')?.value;
   const isScaled = activeThemeValue?.endsWith('-scaled');
+  const locale = await getLocale();
 
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -65,23 +68,25 @@ export default async function RootLayout({
         <NextTopLoader showSpinner={false} />
         <NuqsAdapter>
           <SessionProvider>
-            <ThemeProvider
-              attribute='class'
-              defaultTheme='system'
-              enableSystem
-              disableTransitionOnChange
-              enableColorScheme
-            >
-              <AbilityProvider>
-                <Providers activeThemeValue={activeThemeValue as string}>
-                  <Toaster />
-                  <QueryProvider>
-                    <ReactQueryDevtools initialIsOpen={false} />
-                    {children}
-                  </QueryProvider>
-                </Providers>
-              </AbilityProvider>
-            </ThemeProvider>
+            <NextIntlClientProvider>
+              <ThemeProvider
+                attribute='class'
+                defaultTheme='system'
+                enableSystem
+                disableTransitionOnChange
+                enableColorScheme
+              >
+                <AbilityProvider>
+                  <Providers activeThemeValue={activeThemeValue as string}>
+                    <Toaster />
+                    <QueryProvider>
+                      <ReactQueryDevtools initialIsOpen={false} />
+                      {children}
+                    </QueryProvider>
+                  </Providers>
+                </AbilityProvider>
+              </ThemeProvider>
+            </NextIntlClientProvider>
           </SessionProvider>
         </NuqsAdapter>
       </body>
