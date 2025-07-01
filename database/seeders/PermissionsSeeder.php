@@ -19,7 +19,7 @@ class PermissionsSeeder extends Seeder
 
         foreach ($structuredPermissions as $module => $submodules) {
             $submoduleOrder = 1;
-            foreach ($submodules as $submodule => $actions) {
+            foreach ($submodules as $submodule => $keys) {
                 $group = PermissionGroup::updateOrCreate(
                     [
                         'module' => $module,
@@ -32,11 +32,10 @@ class PermissionsSeeder extends Seeder
 
                 $submoduleOrder++;
 
-                foreach ($actions as $action) {
-                    $permissionName = "{$module}.{$submodule}.{$action}";
-                    $allPermissionNames[] = $permissionName;
+                foreach ($keys as $key) {
+                    $allPermissionNames[] = $key;
                     Permission::updateOrCreate(
-                        ['name' => $permissionName],
+                        ['name' => $key],
                         [
                             'permission_group_id' => $group->id,
                         ]
@@ -54,11 +53,16 @@ class PermissionsSeeder extends Seeder
 
     private function getStructuredPermissions(): array
     {
+        // [
+        //    'module' => 'submodule' => ['permission_key', 'permission_key', 'permission_key', 'permission_key']
+        // ]
+        // permission_key = 'module.submodule.action'
+        // all key parts are single word, dot is used as separator
         return [
             'uam' => [
-                'user' => ['menu', 'create', 'read', 'edit', 'delete'],
-                'role' => ['menu', 'create', 'read', 'edit', 'delete'],
-                'permission' => ['menu', 'create', 'read', 'edit', 'delete'],
+                'user' => ['uam.user.menu', 'uam.user.create', 'uam.user.read', 'uam.user.edit', 'uam.user.delete'],
+                'role' => ['uam.role.menu', 'uam.role.create', 'uam.role.read', 'uam.role.edit', 'uam.role.delete'],
+                'permission' => ['uam.permission.menu', 'uam.permission.create', 'uam.permission.read', 'uam.permission.edit', 'uam.permission.delete'],
             ],
         ];
     }
