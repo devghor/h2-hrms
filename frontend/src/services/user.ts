@@ -12,7 +12,7 @@ type GetUserParams = {
 };
 
 /**
- * API Functions
+ * Get users
  */
 export async function getUsers({ page, perPage, sort, name }: GetUserParams) {
   const queryParams: Record<string, string> = {};
@@ -25,24 +25,30 @@ export async function getUsers({ page, perPage, sort, name }: GetUserParams) {
   return response.data;
 }
 
+/**
+ * Create user
+ */
 export async function createUser(data: any) {
   const response = await apiClient.post(`/uam/users`, data);
   return response.data;
 }
 
+/**
+ * Update user
+ */
 export async function updateUser(data: any) {
   const response = await apiClient.put(`/uam/users/${data['id']}`, data);
   return response.data;
 }
 
+/**
+ * Delete user
+ */
 export async function deleteUser(data: any) {
   const response = await apiClient.delete(`/uam/users/${data['id']}`, data);
   return response.data;
 }
 
-/**
- * React Query Hooks
- */
 export const invalidateUsersQuery = () => {
   return queryClient.invalidateQueries({
     queryKey: QueryKeys.UAM_USERS.GET_ALL

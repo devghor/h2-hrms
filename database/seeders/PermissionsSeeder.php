@@ -60,9 +60,9 @@ class PermissionsSeeder extends Seeder
         // all key parts are single word, dot is used as separator
         return [
             'uam' => [
-                'user' => ['uam.user.menu', 'uam.user.create', 'uam.user.read', 'uam.user.edit', 'uam.user.delete'],
-                'role' => ['uam.role.menu', 'uam.role.create', 'uam.role.read', 'uam.role.edit', 'uam.role.delete'],
-                'permission' => ['uam.permission.menu', 'uam.permission.create', 'uam.permission.read', 'uam.permission.edit', 'uam.permission.delete'],
+                'user' => ['uamUser.menu', 'uamUser.create', 'uamUser.read', 'uamUser.edit', 'uamUser.delete'],
+                'role' => ['uamRole.menu', 'uamRole.create', 'uamRole.read', 'uamRole.edit', 'uamRole.delete'],
+                'permission' => ['uamPermission.menu', 'uamPermission.create', 'uamPermission.read', 'uamPermission.edit', 'uamPermission.delete'],
             ],
         ];
     }

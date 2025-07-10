@@ -4,8 +4,6 @@ import { columns } from './user-table/columns';
 import { UserTable } from './user-table';
 import { User } from './type';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import {
   DEFAULT_PAGE,
   DEFAULT_PER_PAGE,
@@ -19,7 +17,6 @@ import {
   parseAsStringLiteral,
   useQueryState
 } from 'nuqs';
-import { sortToQueryParam } from '@/lib/utils';
 
 export default function UserList() {
   const [page, setPage] = useQueryState(
@@ -51,13 +48,5 @@ export default function UserList() {
   const users: User[] = data.data ?? [];
   const totalPage = data.meta.last_page ?? null;
 
-  return (
-    <UserTable
-      data={users}
-      columns={columns}
-      pageCount={totalPage}
-      page={page}
-      perPage={perPage}
-    />
-  );
+  return <UserTable data={users} columns={columns} pageCount={totalPage} />;
 }

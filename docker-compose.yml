@@ -39,7 +39,7 @@ services:
     postgres:
         image: "postgres:17"
         ports:
-            - "5432:5432"
+            - "7000:5432"
         environment:
             PGPASSWORD: "${DB_PASSWORD}"
             POSTGRES_DB: "${DB_DATABASE}"

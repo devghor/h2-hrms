@@ -1,3 +1,8 @@
 {
-  "Delete": "Delete"
+  "Delete": "Delete",
+  "UAM": "UAM",
+  "Users": "Users",
+  "User managements": "User managements",
+  "Roles": "Roles",
+  "Role managements": "Role managements"
 }
