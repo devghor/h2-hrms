@@ -56,13 +56,11 @@ class PermissionsSeeder extends Seeder
         // [
         //    'module' => 'submodule' => ['permission_key', 'permission_key', 'permission_key', 'permission_key']
         // ]
-        // permission_key = 'module.submodule.action'
+        // permission_key = 'action:module.submodule'
         // all key parts are single word, dot is used as separator
         return [
             'uam' => [
-                'user' => ['uamUser.menu', 'uamUser.create', 'uamUser.read', 'uamUser.edit', 'uamUser.delete'],
-                'role' => ['uamRole.menu', 'uamRole.create', 'uamRole.read', 'uamRole.edit', 'uamRole.delete'],
-                'permission' => ['uamPermission.menu', 'uamPermission.create', 'uamPermission.read', 'uamPermission.edit', 'uamPermission.delete'],
+                'user' => ['menu:uam.user', 'create:uam.user', 'edit:uam.user', 'update:uam.user', 'delete:uam.user'],
             ],
         ];
     }
