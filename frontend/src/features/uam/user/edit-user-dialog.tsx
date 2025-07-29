@@ -24,11 +24,8 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip';
-import {
-  invalidateUsersQuery,
-  useCreateUser,
-  useUpdateUser
-} from '@/services/user';
+import { invalidateUsersQuery, useUpdateUser } from '@/queries/uam/user';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IconEdit, IconPlus } from '@tabler/icons-react';
 import { useState } from 'react';

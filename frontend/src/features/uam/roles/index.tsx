@@ -6,7 +6,7 @@ import PageHeader from '@/components/layout/page-header';
 import { useCan } from '@/components/providers/ability-provider';
 import { useTranslations } from 'next-intl';
 import RoleTable from './role-table';
-import { useRoles } from '@/services/role';
+import { useRoles } from '@/services/uam/role';
 import { Role } from './types';
 import { columns } from './role-table/columns';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';

@@ -1,7 +1,4 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
-import { queryClient } from '@/lib/query-client';
-import { QueryKeys } from '@/constants/query-keys';
 import { sortToQueryParam } from '@/utils/sorting-util';
 
 type GetUserParams = {
@@ -48,28 +45,3 @@ export async function deleteUser(data: any) {
   const response = await apiClient.delete(`/uam/users/${data['id']}`, data);
   return response.data;
 }
-
-export const invalidateUsersQuery = () => {
-  return queryClient.invalidateQueries({
-    queryKey: QueryKeys.UAM_USERS.GET_ALL
-  });
-};
-
-export const useUsers = (params: GetUserParams) => {
-  return useQuery({
-    queryKey: [...QueryKeys.UAM_USERS.GET_ALL, params],
-    queryFn: () => getUsers(params)
-  });
-};
-
-export const useCreateUser = () => {
-  return useMutation({ mutationFn: createUser });
-};
-
-export const useUpdateUser = () => {
-  return useMutation({ mutationFn: updateUser });
-};
-
-export const useDeleteUser = () => {
-  return useMutation({ mutationFn: deleteUser });
-};

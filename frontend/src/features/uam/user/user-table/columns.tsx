@@ -11,12 +11,12 @@ import {
 import { AlertModal } from '@/components/modal/alert-modal';
 import { useState } from 'react';
 import { IconTrash } from '@tabler/icons-react';
-import { invalidateUsersQuery, useDeleteUser } from '@/services/user';
 import { toast } from 'sonner';
 import { DataTableColumnHeader } from '@/components/ui/table/data-table-column-header';
 import { Text } from 'lucide-react';
 import { useCan } from '@/components/providers/ability-provider';
 import { useTranslations } from 'next-intl';
+import { invalidateUsersQuery, useDeleteUser } from '@/queries/uam/user';
 
 export const columns: ColumnDef<User>[] = [
   {

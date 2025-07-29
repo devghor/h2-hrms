@@ -1,5 +1,4 @@
 'use client';
-import { useUsers } from '@/services/user';
 import { columns } from './user-table/columns';
 import { UserTable } from './user-table';
 import { User } from './type';
@@ -17,6 +16,7 @@ import {
   parseAsStringLiteral,
   useQueryState
 } from 'nuqs';
+import { useUsers } from '@/queries/uam/user';
 
 export default function UserList() {
   const [page, setPage] = useQueryState(

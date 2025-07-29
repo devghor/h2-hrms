@@ -19,7 +19,7 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { invalidateUsersQuery, useCreateUser } from '@/services/user';
+import { invalidateUsersQuery, useCreateUser } from '@/queries/uam/user';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IconPlus } from '@tabler/icons-react';
 import { useState } from 'react';
