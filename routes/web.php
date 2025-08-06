@@ -1,0 +1,23 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+
+Route::get('/', function () {
+    return Inertia::render('welcome');
+})->name('home');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('dashboard', function () {
+        return Inertia::render('dashboard');
+    })->name('dashboard');
+
+    Route::name('uam.')
+        ->prefix('uam')
+        ->group(function () {
+            Route::resource('users', App\Http\Controllers\Uam\UserController::class);
+        });
+});
+
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
