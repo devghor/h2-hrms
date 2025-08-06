@@ -13,15 +13,17 @@ export function TopProgressBar({ loading }: TopProgressBarProps) {
             setWidth(0);
             intervalRef.current = window.setInterval(() => {
                 setWidth((w) => {
-                    if (w >= 90) {
+                    if (w >= 70) {
                         if (intervalRef.current) {
                             clearInterval(intervalRef.current);
                         }
                         return w;
                     }
-                    return w + 10;
+                    // Professional, subtle progression
+                    const increment = w < 20 ? 2 : w < 50 ? 1.5 : 0.8;
+                    return Math.min(w + increment, 70);
                 });
-            }, 200);
+            }, 180);
         } else {
             setWidth(100);
             const timeout = setTimeout(() => setWidth(0), 300);
@@ -39,10 +41,10 @@ export function TopProgressBar({ loading }: TopProgressBarProps) {
 
     return (
         <div
-            className={`fixed top-0 left-0 z-50 h-1 bg-primary transition-all duration-200 ease-out`}
+            className={`fixed top-0 left-0 z-50 h-0.5 bg-primary transition-all duration-300 ease-out`}
             style={{
                 width: `${width}%`,
-                opacity: width > 0 ? 1 : 0,
+                opacity: width > 0 ? 0.8 : 0,
             }}
         />
     );
