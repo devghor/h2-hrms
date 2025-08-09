@@ -1,3 +1,4 @@
+// DataTable.tsx
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -15,11 +16,21 @@ import {
     Search,
     SlidersHorizontal,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import { useDebounce } from 'use-debounce';
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { TopProgressBar } from '../progress-bar/top-progress-bar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+
+// Axios interceptor to handle 401 globally
+axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error?.response?.status === 401) {
+            window.location.href = '/login'; // Redirect to login
+        }
+        return Promise.reject(error);
+    },
+);
 
 interface DataTableProps {
     columns: any[];
@@ -28,28 +39,22 @@ interface DataTableProps {
     tableId?: string; // optional explicit ID for localStorage keys
 }
 
-export default function DataTable({ columns, dataUrl, extraActions, tableId }: DataTableProps) {
-    // Helper to encode URL safely for localStorage keys
+const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions, tableId }: DataTableProps, ref) {
     const encodeUrlKey = (url: string) => encodeURIComponent(url);
-
-    // Determine unique key suffix: use tableId if provided, else fallback to encoded dataUrl
     const keySuffix = tableId ?? encodeUrlKey(dataUrl);
 
-    // localStorage keys unique per table instance
     const ORDER_KEY = `datatable_order_${keySuffix}`;
     const SEARCH_KEY = `datatable_search_${keySuffix}`;
     const LENGTH_KEY = `datatable_length_${keySuffix}`;
     const START_KEY = `datatable_start_${keySuffix}`;
     const VISIBILITY_KEY = `datatable_visibility_${keySuffix}`;
 
-    // Helpers to safely read/write localStorage (guard SSR)
     const safeGet = (key: string) => {
         try {
             if (typeof window === 'undefined') return null;
             const v = localStorage.getItem(key);
             return v ? JSON.parse(v) : null;
-        } catch (e) {
-            console.warn('localStorage read failed for', key, e);
+        } catch {
             return null;
         }
     };
@@ -58,51 +63,28 @@ export default function DataTable({ columns, dataUrl, extraActions, tableId }: D
         try {
             if (typeof window === 'undefined') return;
             localStorage.setItem(key, JSON.stringify(value));
-        } catch (e) {
-            console.warn('localStorage write failed for', key, e);
-        }
+        } catch {}
     };
 
-    // initial columnSearchInput built from columns
     const defaultColumnSearch = useMemo(
         () =>
             columns.reduce((acc: any, col: any) => {
                 acc[col.accessorKey] = '';
                 return acc;
             }, {}),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [],
+        [columns],
     );
 
-    // Restore search state (columnSearchInput) from localStorage if present
     const [columnSearchInput, setColumnSearchInput] = useState(() => {
         const saved = safeGet(SEARCH_KEY);
         return saved ? { ...defaultColumnSearch, ...saved } : { ...defaultColumnSearch };
     });
 
-    // debounced search (keeps behavior)
-    const [debouncedColumnSearch] = useDebounce(columnSearchInput, 500);
     const [columnSearch, setColumnSearch] = useState({ ...columnSearchInput });
+    const [order, setOrder] = useState(() => safeGet(ORDER_KEY) ?? [{ column: 0, dir: 'asc' }]);
+    const [length, setLength] = useState<number>(() => safeGet(LENGTH_KEY) ?? 10);
+    const [start, setStart] = useState<number>(() => safeGet(START_KEY) ?? 0);
 
-    // order persists
-    const [order, setOrder] = useState(() => {
-        const saved = safeGet(ORDER_KEY);
-        return saved ?? [{ column: 0, dir: 'asc' }];
-    });
-
-    // length (per-page) persists
-    const [length, setLength] = useState<number>(() => {
-        const saved = safeGet(LENGTH_KEY);
-        return saved ?? 10;
-    });
-
-    // start (offset) persists
-    const [start, setStart] = useState<number>(() => {
-        const saved = safeGet(START_KEY);
-        return saved ?? 0;
-    });
-
-    // column visibility persists
     const [columnVisibility, setColumnVisibility] = useState(() => {
         const saved = safeGet(VISIBILITY_KEY);
         if (saved) return saved;
@@ -118,37 +100,11 @@ export default function DataTable({ columns, dataUrl, extraActions, tableId }: D
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<any[]>([]);
 
-    // Whenever columnSearchInput changes, persist immediately
-    useEffect(() => {
-        safeSet(SEARCH_KEY, columnSearchInput);
-    }, [columnSearchInput]);
-
-    // Persist order whenever it changes
-    useEffect(() => {
-        safeSet(ORDER_KEY, order);
-    }, [order]);
-
-    // Persist length whenever it changes
-    useEffect(() => {
-        safeSet(LENGTH_KEY, length);
-    }, [length]);
-
-    // Persist start whenever it changes
-    useEffect(() => {
-        safeSet(START_KEY, start);
-    }, [start]);
-
-    // Persist visibility whenever it changes
-    useEffect(() => {
-        safeSet(VISIBILITY_KEY, columnVisibility);
-    }, [columnVisibility]);
-
-    // Keep columnSearch in sync with debounced input (this triggers fetch)
-    useEffect(() => {
-        setStart(0); // reset to first page when search changes
-        setColumnSearch(debouncedColumnSearch);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debouncedColumnSearch]);
+    useEffect(() => safeSet(SEARCH_KEY, columnSearchInput), [columnSearchInput]);
+    useEffect(() => safeSet(ORDER_KEY, order), [order]);
+    useEffect(() => safeSet(LENGTH_KEY, length), [length]);
+    useEffect(() => safeSet(START_KEY, start), [start]);
+    useEffect(() => safeSet(VISIBILITY_KEY, columnVisibility), [columnVisibility]);
 
     const fetchData = async () => {
         setLoading(true);
@@ -184,6 +140,11 @@ export default function DataTable({ columns, dataUrl, extraActions, tableId }: D
         }
     };
 
+    // Expose fetchData via ref
+    useImperativeHandle(ref, () => ({
+        refetch: () => fetchData(),
+    }));
+
     useEffect(() => {
         fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -196,14 +157,31 @@ export default function DataTable({ columns, dataUrl, extraActions, tableId }: D
         }));
     };
 
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key !== 'Enter') return;
+            const active = document.activeElement as HTMLElement | null;
+            if (!active) return;
+            if (!active.closest || !active.closest('[data-search-input]')) return;
+
+            e.preventDefault();
+            setStart(0);
+            setColumnSearch({ ...columnSearchInput });
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [columnSearchInput]);
+
     const handleSort = (columnIndex: number) => {
         setOrder((prevOrder: any) => {
-            const newOrder =
-                prevOrder[0]?.column === columnIndex
-                    ? [{ column: columnIndex, dir: prevOrder[0].dir === 'asc' ? 'desc' : 'asc' }]
-                    : [{ column: columnIndex, dir: 'asc' }];
-            // saved via effect
-            return newOrder;
+            const isSameCol = prevOrder[0]?.column === columnIndex;
+            return [
+                {
+                    column: columnIndex,
+                    dir: isSameCol && prevOrder[0]?.dir === 'asc' ? 'desc' : 'asc',
+                },
+            ];
         });
     };
 
@@ -220,22 +198,16 @@ export default function DataTable({ columns, dataUrl, extraActions, tableId }: D
             acc[col.accessorKey] = '';
             return acc;
         }, {});
-
-        // Clear states
         setColumnSearchInput(emptySearch);
         setColumnSearch(emptySearch);
         setStart(0);
         setLength(10);
         setOrder([{ column: 0, dir: 'asc' }]);
-
-        // Reset column visibility to defaults
         const defaultVisibility = columns.reduce((acc: any, col: any) => {
             acc[col.accessorKey] = col.visible !== false;
             return acc;
         }, {});
         setColumnVisibility(defaultVisibility);
-
-        // Remove saved keys from localStorage
         try {
             if (typeof window !== 'undefined') {
                 localStorage.removeItem(SEARCH_KEY);
@@ -244,9 +216,7 @@ export default function DataTable({ columns, dataUrl, extraActions, tableId }: D
                 localStorage.removeItem(START_KEY);
                 localStorage.removeItem(VISIBILITY_KEY);
             }
-        } catch (e) {
-            console.warn('Failed to clear localStorage during reset', e);
-        }
+        } catch {}
     };
 
     return (
@@ -254,9 +224,7 @@ export default function DataTable({ columns, dataUrl, extraActions, tableId }: D
             {/* Toolbar */}
             <div className="flex items-center justify-between space-x-4">
                 <div className="flex items-center space-x-2">
-                    <label htmlFor="per-page" className="text-sm font-medium">
-                        Show
-                    </label>
+                    <label className="text-sm font-medium">Show</label>
                     <Select
                         value={String(length)}
                         onValueChange={(value) => {
@@ -328,31 +296,22 @@ export default function DataTable({ columns, dataUrl, extraActions, tableId }: D
                 </TooltipProvider>
             </div>
 
-            {/* Scrollable + Responsive Table Wrapper */}
+            {/* Table */}
             <div className="relative overflow-x-auto rounded-md border">
                 <TopProgressBar loading={loading} />
-
                 <div className="w-full min-w-[900px]">
                     <Table>
                         <TableHeader className="sticky top-0 z-20 bg-white">
-                            {/* Column headers */}
                             <TableRow>
                                 {columns.map(
                                     (col: any, index: number) =>
                                         columnVisibility[col.accessorKey] && (
                                             <TableHeadCell
                                                 key={col.accessorKey}
-                                                className={`sticky top-0 z-20 bg-white ${col.className || ''} ${
-                                                    order[0]?.column === index ? 'font-semibold' : ''
-                                                }`}
+                                                className={`${col.className || ''} ${order[0]?.column === index ? 'font-semibold' : ''}`}
                                             >
                                                 {col.sortable !== false ? (
-                                                    <Button
-                                                        variant="ghost"
-                                                        onClick={() => handleSort(index)}
-                                                        className="flex items-center space-x-1"
-                                                        aria-label={`Sort by ${col.header}`}
-                                                    >
+                                                    <Button variant="ghost" onClick={() => handleSort(index)} className="flex items-center space-x-1">
                                                         <span>{col.header}</span>
                                                         {order[0]?.column === index ? (
                                                             order[0]?.dir === 'asc' ? (
@@ -372,12 +331,12 @@ export default function DataTable({ columns, dataUrl, extraActions, tableId }: D
                                 )}
                             </TableRow>
 
-                            {/* Search inputs row */}
+                            {/* Search Row */}
                             <TableRow className="sticky top-[40px] z-10 border-b border-border bg-muted/40">
                                 {columns.map(
                                     (col: any) =>
                                         columnVisibility[col.accessorKey] && (
-                                            <TableHeadCell key={`${col.accessorKey}-search`} className="p-1">
+                                            <TableHeadCell key={`${col.accessorKey}-search`} className="p-1" data-search-input>
                                                 {col.searchComponent ? (
                                                     col.searchComponent({
                                                         value: columnSearchInput[col.accessorKey] || '',
@@ -402,13 +361,13 @@ export default function DataTable({ columns, dataUrl, extraActions, tableId }: D
                         </TableHeader>
 
                         <TableBody>
-                            {data && data.length > 0 ? (
+                            {data.length > 0 ? (
                                 data.map((row, rowIndex) => (
                                     <TableRow key={row.id || rowIndex}>
                                         {columns.map(
                                             (col: any) =>
                                                 columnVisibility[col.accessorKey] && (
-                                                    <TableCell className={col.className || ''} key={col.accessorKey}>
+                                                    <TableCell key={col.accessorKey} className={col.className || ''}>
                                                         {col.cell ? col.cell({ row }) : row[col.accessorKey]}
                                                     </TableCell>
                                                 ),
@@ -453,4 +412,6 @@ export default function DataTable({ columns, dataUrl, extraActions, tableId }: D
             </div>
         </div>
     );
-}
+});
+
+export default DataTable;

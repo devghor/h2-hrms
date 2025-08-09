@@ -138,4 +138,10 @@
     body {
         @apply bg-background text-foreground;
     }
+
+    /* Cursor pointer not working when hovering on button in Tailwind v4 */
+    button:not([disabled]),
+    [role='button']:not([disabled]) {
+        cursor: pointer;
+    }
 }
