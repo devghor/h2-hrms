@@ -12,6 +12,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
+    /*
+     * User Access Management Module
+     * This module handles user management functionalities such as creating, updating, and deleting users.
+     */
     Route::name('uam.')
         ->prefix('uam')
         ->group(function () {

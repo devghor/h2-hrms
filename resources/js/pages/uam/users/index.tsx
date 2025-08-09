@@ -40,7 +40,7 @@ export default function Index() {
             sortable: true,
             searchable: true,
             searchComponent: ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
-                <Input type="number" className="w-full" value={value} onChange={(e) => onChange(e.target.value)} placeholder="Search ID" />
+                <Input type="number" className="w-50" value={value} onChange={(e) => onChange(e.target.value)} placeholder="Search ID" />
             ),
         },
         {
@@ -49,7 +49,7 @@ export default function Index() {
             sortable: true,
             searchable: true,
             searchComponent: ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
-                <Input type="text" className="w-full" value={value} onChange={(e) => onChange(e.target.value)} placeholder="Search Name" />
+                <Input type="text" className="w-50" value={value} onChange={(e) => onChange(e.target.value)} placeholder="Search Name" />
             ),
         },
         {
