@@ -13,6 +13,7 @@ use Inertia\Response;
 
 class AuthenticatedSessionController extends Controller
 {
+
     /**
      * Show the login page.
      */
@@ -32,6 +33,13 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        $tenant = Auth::user()->tenants()->first();
+
+        if ($tenant) {
+            session([config('tenancy.current_tenant_key') => $tenant->id]);
+            tenancy()->initialize($tenant);
+        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

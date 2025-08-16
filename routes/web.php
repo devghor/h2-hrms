@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\HandleTenancyFromSession;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,6 +19,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
      */
     Route::name('uam.')
         ->prefix('uam')
+        ->middleware([HandleTenancyFromSession::class])
         ->group(function () {
             Route::resource('users', App\Http\Controllers\Uam\UserController::class);
         });

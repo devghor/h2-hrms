@@ -2,7 +2,7 @@
 
 namespace App\DataTables;
 
-use App\Models\User;
+use App\Models\Uam\User;
 use Yajra\DataTables\Services\DataTable;
 
 class UsersDataTable extends DataTable
@@ -18,9 +18,6 @@ class UsersDataTable extends DataTable
             ->eloquent($query)
             ->filterColumn('id', function ($query, $keyword) {
                 $query->where('id', $keyword);
-            })
-            ->addColumn('actions', function ($user) {
-                return '<button class="btn-edit" data-id="' . $user->id . '">Edit</button>';
             })
             ->rawColumns(['actions']);
     }
