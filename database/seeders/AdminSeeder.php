@@ -6,92 +6,66 @@ use App\Enums\Uam\RoleEnum;
 use App\Models\Tenancy\Tenant;
 use App\Models\Uam\Role;
 use App\Models\Uam\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\PermissionRegistrar;
 
 class AdminSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    private array $admins = [
+        [
+            'name' => 'Super Admin',
+            'email' => 'superadmin@app.com',
+            'company_name' => 'Super Admin Tenant',
+            'company_short_name' => 'SAT',
+            'role' => RoleEnum::SuperAdmin,
+        ],
+        [
+            'name' => 'Tenant Admin',
+            'email' => 'tenantadmin@app.com',
+            'company_name' => 'Dummy',
+            'company_short_name' => 'Dummy',
+            'role' => RoleEnum::TenantAdmin,
+        ],
+    ];
+
     public function run(): void
     {
-        $this->createSuperAdmins();
-        $this->createTenantAdmins();
-    }
-
-    /**
-     * Create multiple system-wide Super Admins.
-     */
-    protected function createSuperAdmins(): void
-    {
-
-        $superRole = Role::firstOrCreate(['name' => RoleEnum::SuperAdmin->value, 'guard_name' => 'web', 'tenant_id' => null]);
-        $superAdmins = [
-            ['name' => 'Super Admin', 'email' => 'superadmin@app.com'],
-        ];
-
-        foreach ($superAdmins as $admin) {
-            $user = User::firstOrCreate(
+        foreach ($this->admins as $admin) {
+            // Create or update user
+            $user = User::updateOrCreate(
                 ['email' => $admin['email']],
                 [
                     'name' => $admin['name'],
-                    'password' => Hash::make('aaa'),
+                    'password' => Hash::make('password'),
                 ]
             );
 
-            if (!$user->hasRole('super-admin')) {
-                $user->assignRole($superRole);
-            }
-
-            $this->command->info("✅ Super Admin: {$admin['email']}");
-        }
-    }
-
-    /**
-     * Create Tenant Admins.
-     */
-    protected function createTenantAdmins(): void
-    {
-        $tenantAdmins = [
-            [
-                'name' => 'Dummy Tenant',
-                'email' => 'tenantadmin@app.com',
-                'company_name' => 'Dummy',
-                'company_short_name' => 'Dummy'
-            ],
-        ];
-
-        foreach ($tenantAdmins as $admin) {
-            $user = User::firstOrCreate(
-                ['email' => $admin['email']],
-                [
-                    'name' => $admin['name'],
-                    'password' => Hash::make('aaa'),
-                ]
+            // Create or update tenant
+            $tenant = Tenant::updateOrCreate(
+                ['company_short_name' => $admin['company_short_name']],
+                ['company_name' => $admin['company_name']]
             );
 
-            $tenant = Tenant::create(
-                [
-                    'company_name' => $admin['company_name'],
-                    'company_short_name' => $admin['company_short_name'],
-                ]
-            );
+            // 🔑 Set tenant context
+            app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->id);
 
-            $user->tenants()->sync([$tenant->id]);
-
-            $tenantRole = Role::firstOrCreate([
-                'name' => RoleEnum::TenantAdmin->value,
+            // Create role in tenant
+            $role = Role::firstOrCreate([
+                'name' => $admin['role']->name,
                 'guard_name' => 'web',
-                'tenant_id' => $tenant->id
+                'tenant_id' => $tenant->id,
             ]);
 
-            if (!$user->hasRole(RoleEnum::TenantAdmin->value)) {
-                $user->assignRole($tenantRole);
+            // Assign role
+            if (!$user->hasRole($role->name)) {
+                $user->assignRole($role);
             }
 
-            $this->command->info("✅ Tenant Admin: {$admin['email']}");
+            // Optional: attach tenant relationship
+            if (method_exists($user, 'tenants')) {
+                $user->tenants()->syncWithoutDetaching([$tenant->id]);
+            }
         }
     }
 }

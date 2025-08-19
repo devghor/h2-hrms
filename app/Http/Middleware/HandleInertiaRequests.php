@@ -47,6 +47,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
                 'permissions' => [],
                 'current_tenant_id' => session(config('tenancy.current_tenant_key')),
+                'tenants' => $request->user() ? $request->user()->tenants : [],
             ],
             'ziggy' => fn(): array => [
                 ...(new Ziggy)->toArray(),

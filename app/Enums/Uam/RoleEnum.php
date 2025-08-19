@@ -2,8 +2,8 @@
 
 namespace App\Enums\Uam;
 
-enum RoleEnum: string
+enum RoleEnum: int
 {
-    case SuperAdmin = 'super-admin';
-    case TenantAdmin = 'tenant-admin';
+    case SuperAdmin = 1;
+    case TenantAdmin = 2;
 }
