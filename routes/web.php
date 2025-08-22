@@ -23,6 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->group(function () {
             Route::resource('users', App\Http\Controllers\Uam\User\UserController::class);
             Route::resource('roles', App\Http\Controllers\Uam\Role\RoleController::class);
+            Route::resource('permissions', App\Http\Controllers\Uam\Permission\PermissionController::class);
         });
 });
 

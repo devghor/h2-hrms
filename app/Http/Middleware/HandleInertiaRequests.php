@@ -50,6 +50,7 @@ class HandleInertiaRequests extends Middleware
                     'READ_UAM',
                     'READ_UAM_USERS',
                     'READ_UAM_ROLES',
+                    'READ_UAM_PERMISSIONS'
                 ],
                 'current_tenant_id' => session(config('tenancy.current_tenant_key')),
                 'tenants' => $request->user() ? $request->user()->tenants : [],

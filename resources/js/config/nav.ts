@@ -1,5 +1,5 @@
 import { NavItem } from '@/types';
-import { Home, Shield, Users } from 'lucide-react';
+import { Home, Key, Shield, Users } from 'lucide-react';
 
 export const mainNavItems: NavItem[] = [
     {
@@ -19,6 +19,12 @@ export const mainNavItems: NavItem[] = [
                 href: '/uam/roles',
                 icon: Shield,
                 can: 'READ_UAM_ROLES',
+            },
+            {
+                title: 'Permissions',
+                href: '/uam/permissions',
+                icon: Key,
+                can: 'READ_UAM_PERMISSIONS',
             },
         ],
     },
