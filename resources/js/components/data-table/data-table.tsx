@@ -299,7 +299,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
             {/* Table */}
             <div className="relative overflow-x-auto rounded-md border">
                 <TopProgressBar loading={loading} />
-                <div className="w-full min-w-[900px]">
+                <div className="w-full">
                     <Table>
                         <TableHeader className="sticky top-0 z-20 bg-white">
                             <TableRow>
