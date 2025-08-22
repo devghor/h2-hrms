@@ -21,4 +21,22 @@ export const path = {
             href: `/uam/roles/${id}/edit`,
         }),
     },
+    configuration: {
+        companies: {
+            title: 'Companies',
+            href: '/configuration/companies',
+        },
+        divisions: {
+            title: 'Divisions',
+            href: '/configuration/divisions',
+        },
+        departments: {
+            title: 'Departments',
+            href: '/configuration/departments',
+        },
+        desks: {
+            title: 'Desks',
+            href: '/configuration/desks',
+        },
+    },
 };
