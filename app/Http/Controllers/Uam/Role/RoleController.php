@@ -33,6 +33,33 @@ class RoleController extends Controller
         return redirect()->back()->with('success', 'Role created successfully.');
     }
 
+    public function edit(Role $role)
+    {
+        // Get all permissions, grouped by module if needed
+        $allPermissions = \App\Models\Uam\Permission::all()->map(function ($perm) {
+            $parts = explode('.', $perm->name, 2);
+            $module = $parts[0] ?? 'General';
+            return [
+                'id' => $perm->id,
+                'name' => $perm->name,
+                'module' => ucfirst($module),
+            ];
+        });
+
+        // Get role's permission ids
+        $rolePermissions = $role->permissions()->pluck('id')->toArray();
+
+        return inertia('uam/roles/edit', [
+            'role' => [
+                'id' => $role->id,
+                'name' => $role->name,
+                'description' => $role->description,
+                'permissions' => $rolePermissions,
+            ],
+            'allPermissions' => $allPermissions,
+        ]);
+    }
+
     public function update(Request $request, Role $role)
     {
         $validated = $request->validate([

@@ -1,10 +1,10 @@
 import { NavItem } from '@/types';
 import { Home, Key, Shield, Users } from 'lucide-react';
+import { path } from './paths';
 
 export const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
+        ...path.dashboard,
         icon: Home,
         can: 'READ_DASHBOARD',
     },
@@ -15,14 +15,12 @@ export const mainNavItems: NavItem[] = [
         children: [
             { title: 'Users', href: '/uam/users', icon: Users, can: 'READ_UAM_USERS' },
             {
-                title: 'Roles',
-                href: '/uam/roles',
+                ...path.uam.roles,
                 icon: Shield,
                 can: 'READ_UAM_ROLES',
             },
             {
-                title: 'Permissions',
-                href: '/uam/permissions',
+                ...path.uam.permissions,
                 icon: Key,
                 can: 'READ_UAM_PERMISSIONS',
             },

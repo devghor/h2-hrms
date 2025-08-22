@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { path } from '@/config/paths';
 import { KEY_DATA_TABLE } from '@/constants/data-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -14,8 +15,10 @@ import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Roles',
-        href: '/roles',
+        ...path.dashboard,
+    },
+    {
+        ...path.uam.roles,
     },
 ];
 
@@ -73,7 +76,7 @@ export default function Index() {
             cell: ({ row }: any) => {
                 return (
                     <>
-                        <Button size="sm" onClick={() => handleOpenEdit(row as Role)} variant="outline" className="cursor-pointer">
+                        <Button size="sm" onClick={() => router.get(route('uam.roles.edit', row.id))} variant="outline" className="cursor-pointer">
                             Edit
                         </Button>
                         <DeleteConfirmDialog

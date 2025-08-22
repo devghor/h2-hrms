@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { path } from '@/config/paths';
 import { KEY_DATA_TABLE } from '@/constants/data-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -14,8 +15,10 @@ import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Permissions',
-        href: '/permissions',
+        ...path.dashboard,
+    },
+    {
+        ...path.uam.permissions,
     },
 ];
 
