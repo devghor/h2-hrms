@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Enums\Uam\RoleEnum;
+use App\Enums\Uam\Role\RoleEnum;
 use App\Models\Tenancy\Tenant;
 use App\Models\Uam\Role;
 use App\Models\Uam\User;

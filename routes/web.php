@@ -21,7 +21,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->prefix('uam')
         ->middleware([HandleTenancyFromSession::class])
         ->group(function () {
-            Route::resource('users', App\Http\Controllers\Uam\UserController::class);
+            Route::resource('users', App\Http\Controllers\Uam\User\UserController::class);
+            Route::resource('roles', App\Http\Controllers\Uam\Role\RoleController::class);
         });
 });
 

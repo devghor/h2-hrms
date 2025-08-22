@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Uam;
+namespace App\Http\Controllers\Uam\User;
 
-use App\DataTables\UsersDataTable;
+use App\DataTables\Uam\User\UsersDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Uam\User\StoreUserRequest;
 use App\Http\Requests\Uam\User\UpdateUserRequest;
-use App\Http\Resources\Uam\UserResource;
+use App\Http\Resources\Uam\User\UserResource;
 use App\Models\Tenancy\Tenant;
 use App\Repositories\Uam\User\UserRepository;
 use Illuminate\Http\Request;
@@ -38,7 +38,8 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $user = $this->userRepository->create($request->validated());
+        $input = $request->validated();
+        $user = $this->userRepository->create($input);
 
         return inertia('uam/users/index', [
             'user' => new UserResource($user),

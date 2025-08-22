@@ -1,5 +1,4 @@
 import DataTable from '@/components/data-table/data-table';
-import { DatePicker } from '@/components/date-picker';
 import { DeleteConfirmDialog } from '@/components/dialog/delete-confirmation-dialog';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
@@ -15,23 +14,20 @@ import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Users',
-        href: '/users',
+        title: 'Roles',
+        href: '/roles',
     },
 ];
 
 export default function Index() {
     const { errors } = usePage().props;
     const tableRef = useRef<{ refetch: () => void }>(null);
-    const [openAlert, setOpenAlert] = useState(false);
 
-    interface User {
+    interface Role {
         id: number;
         name: string;
-        email: string;
+        description?: string;
         created_at: string;
-        password?: string;
-        password_confirmation?: string;
     }
 
     const columns = [
@@ -54,19 +50,19 @@ export default function Index() {
             ),
         },
         {
-            accessorKey: 'email',
-            header: 'Email',
+            accessorKey: 'description',
+            header: 'Description',
             sortable: true,
             searchable: true,
+            searchComponent: ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
+                <Input type="text" className="w-50" value={value} onChange={(e) => onChange(e.target.value)} placeholder="Search Description" />
+            ),
         },
         {
             accessorKey: 'created_at',
             header: 'Created At',
             sortable: true,
             searchable: true,
-            searchComponent: ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
-                <DatePicker className="w-50" value={value} onChange={onChange} />
-            ),
         },
         {
             accessorKey: 'actions',
@@ -75,11 +71,9 @@ export default function Index() {
             searchable: false,
             className: 'min-w-[120px] text-center',
             cell: ({ row }: any) => {
-                console.log(row);
-
                 return (
                     <>
-                        <Button size="sm" onClick={() => handleOpenEdit(row as User)} variant="outline" className="cursor-pointer">
+                        <Button size="sm" onClick={() => handleOpenEdit(row as Role)} variant="outline" className="cursor-pointer">
                             Edit
                         </Button>
                         <DeleteConfirmDialog
@@ -96,10 +90,8 @@ export default function Index() {
         },
     ];
 
-    const emptyForm = { name: '', email: '', password: '', password_confirmation: '' };
-
+    const emptyForm = { name: '', description: '' };
     type FormState = typeof emptyForm & { id?: number };
-
     const [form, setForm] = useState<FormState>(emptyForm);
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [open, setOpen] = useState(false);
@@ -112,8 +104,12 @@ export default function Index() {
         setFormErrors({});
     };
 
-    const handleOpenEdit = (user: User) => {
-        setForm({ ...user, password: '', password_confirmation: '' });
+    const handleOpenEdit = (role: Role) => {
+        setForm({
+            id: role.id,
+            name: role.name,
+            description: role.description ?? '',
+        });
         setIsEdit(true);
         setOpen(true);
         setFormErrors({});
@@ -134,15 +130,14 @@ export default function Index() {
         e.preventDefault();
         if (isEdit) {
             router.put(
-                route('uam.users.update', form.id),
+                route('uam.roles.update', form.id),
                 {
                     ...form,
                 },
                 {
                     onSuccess: () => {
-                        toast.success('User updated successfully');
+                        toast.success('Role updated successfully');
                         tableRef.current?.refetch();
-
                         handleClose();
                     },
                     onError: (errors) => {
@@ -152,13 +147,13 @@ export default function Index() {
             );
         } else {
             router.post(
-                route('uam.users.store'),
+                route('uam.roles.store'),
                 {
                     ...form,
                 },
                 {
                     onSuccess: () => {
-                        toast.success('User created successfully');
+                        toast.success('Role created successfully');
                         handleClose();
                     },
                     onError: (errors) => {
@@ -169,70 +164,49 @@ export default function Index() {
         }
     };
 
-    const handleDelete = (userId: number) => {
-        router.delete(route('uam.users.destroy', userId), {
+    const handleDelete = (roleId: number) => {
+        router.delete(route('uam.roles.destroy', roleId), {
             onSuccess: () => {
                 tableRef.current?.refetch();
-                toast('User deleted successfully');
+                toast('Role deleted successfully');
             },
             onError: (errors) => {
-                toast('Error deleting user');
+                toast('Error deleting role');
             },
         });
     };
 
     return (
-        <AppLayout title="Users" breadcrumbs={breadcrumbs}>
-            {/* Data table for users */}
+        <AppLayout title="Roles" breadcrumbs={breadcrumbs}>
+            {/* Data table for roles */}
             <DataTable
                 ref={tableRef}
                 columns={columns}
-                dataUrl={route('uam.users.index', { [KEY_DATA_TABLE]: true })}
+                dataUrl={route('uam.roles.index', { [KEY_DATA_TABLE]: true })}
                 extraActions={
                     <>
                         <Button variant="default" className="cursor-pointer" onClick={handleOpenAdd}>
-                            Add User
+                            Add Role
                         </Button>
                     </>
                 }
             />
 
-            {/* Dialog for adding/editing user */}
+            {/* Dialog for adding/editing role */}
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{isEdit ? 'Edit User' : 'Add User'}</DialogTitle>
+                        <DialogTitle>{isEdit ? 'Edit Role' : 'Add Role'}</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <Label htmlFor="name">Name</Label>
                         <Input type="text" name="name" value={form.name} onChange={handleChange()} placeholder="Name" required />
                         {formErrors.name && <p className="text-red-500">{formErrors.name}</p>}
-                        <Label htmlFor="email">Email</Label>
-                        <Input type="email" name="email" value={form.email} onChange={handleChange()} placeholder="Email" required />
-                        {formErrors.email && <p className="text-red-500">{formErrors.email}</p>}
-                        <Label htmlFor="password">Password</Label>
-                        <Input
-                            type="password"
-                            name="password"
-                            value={form.password}
-                            onChange={handleChange()}
-                            placeholder="Password"
-                            required={!isEdit}
-                            autoComplete="new-password"
-                        />
-                        {formErrors.password && <p className="text-red-500">{formErrors.password}</p>}
-                        <Label htmlFor="password_confirmation">Confirm Password</Label>
-                        <Input
-                            type="password"
-                            name="password_confirmation"
-                            value={form.password_confirmation}
-                            onChange={handleChange()}
-                            placeholder="Confirm Password"
-                            required={!isEdit}
-                            autoComplete="new-password"
-                        />
+                        <Label htmlFor="description">Description</Label>
+                        <Input type="text" name="description" value={form.description} onChange={handleChange()} placeholder="Description" />
+                        {formErrors.description && <p className="text-red-500">{formErrors.description}</p>}
                         <div className="flex justify-end space-x-2">
-                            <Button variant="outline" onClick={handleClose}>
+                            <Button variant="outline" onClick={handleClose} type="button">
                                 Cancel
                             </Button>
                             <Button type="submit">{isEdit ? 'Update' : 'Create'}</Button>

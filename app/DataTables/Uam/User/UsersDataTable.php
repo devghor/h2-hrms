@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTables;
+namespace App\DataTables\Uam\User;
 
 use App\Models\Uam\User;
 use Yajra\DataTables\Services\DataTable;
