@@ -10,6 +10,7 @@ export interface Auth {
     user: User;
     tenants: Tenant[] | null | undefined;
     current_tenant_id: number | null;
+    permissions: string[];
 }
 
 export interface BreadcrumbItem {
@@ -26,7 +27,10 @@ export interface NavItem {
     title: string;
     href: string;
     icon?: LucideIcon | null;
+    href?: string;
+    children?: NavItem[];
     isActive?: boolean;
+    can?: string;
 }
 
 export interface SharedData {

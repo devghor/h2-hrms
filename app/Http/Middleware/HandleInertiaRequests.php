@@ -45,7 +45,12 @@ class HandleInertiaRequests extends Middleware
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user(),
-                'permissions' => [],
+                'permissions' => [
+                    'READ_DASHBOARD',
+                    'READ_UAM',
+                    'READ_UAM_USERS',
+                    'READ_UAM_ROLES',
+                ],
                 'current_tenant_id' => session(config('tenancy.current_tenant_key')),
                 'tenants' => $request->user() ? $request->user()->tenants : [],
             ],
