@@ -8,24 +8,24 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
-import { SharedData, Tenant } from '@/types';
+import { Company, SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { ChevronsUpDown, Plus } from 'lucide-react';
 import * as React from 'react';
 
-export function AppTenant() {
+export function AppCompany() {
     const { isMobile } = useSidebar();
-    const [activeTenant, setActiveTenant] = React.useState<Tenant>();
+    const [activeCompany, setActiveCompany] = React.useState<Company>();
     const { auth } = usePage<SharedData>().props;
 
     React.useEffect(() => {
-        if (auth.tenants && auth.current_tenant_id) {
-            const tenant = auth.tenants.find((t) => t.id === auth.current_tenant_id);
-            setActiveTenant(tenant || auth.tenants[0]);
+        if (auth.companies && auth.current_company_id) {
+            const company = auth.companies.find((c) => c.id === auth.current_company_id);
+            setActiveCompany(company || auth.companies[0]);
         } else {
-            setActiveTenant(auth.tenants ? auth.tenants[0] : undefined);
+            setActiveCompany(auth.companies ? auth.companies[0] : undefined);
         }
-    }, [auth.tenants, auth.current_tenant_id]);
+    }, [auth.companies, auth.current_company_id]);
 
     return (
         <SidebarMenu>
@@ -34,10 +34,10 @@ export function AppTenant() {
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                             <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                                {activeTenant?.id}
+                                {activeCompany?.id}
                             </div>
                             <div className="grid flex-1 text-start text-sm leading-tight">
-                                <span className="truncate font-semibold">{activeTenant?.company_name}</span>
+                                <span className="truncate font-semibold">{activeCompany?.company_name}</span>
                             </div>
                             <ChevronsUpDown className="ms-auto" />
                         </SidebarMenuButton>
@@ -49,10 +49,10 @@ export function AppTenant() {
                         sideOffset={4}
                     >
                         <DropdownMenuLabel className="text-xs text-muted-foreground">Company</DropdownMenuLabel>
-                        {auth.tenants?.map((tenant, index) => (
-                            <DropdownMenuItem key={tenant.id} onClick={() => setActiveTenant(tenant)} className="gap-2 p-2">
-                                <div className="flex size-6 items-center justify-center rounded-sm border">{tenant.id}</div>
-                                {tenant.company_name}
+                        {auth.companies?.map((company, index) => (
+                            <DropdownMenuItem key={company.id} onClick={() => setActiveCompany(company)} className="gap-2 p-2">
+                                <div className="flex size-6 items-center justify-center rounded-sm border">{company.id}</div>
+                                {company.company_name}
                                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
                             </DropdownMenuItem>
                         ))}

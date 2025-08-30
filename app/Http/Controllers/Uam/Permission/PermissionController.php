@@ -17,7 +17,7 @@ class PermissionController extends Controller
 
     public function index(PermissionsDataTable $dataTable)
     {
-        if (request()->query('data-table')) {
+        if (request()->query('permissions-data-table')) {
             return $dataTable->ajax();
         }
         return inertia('uam/permissions/index');

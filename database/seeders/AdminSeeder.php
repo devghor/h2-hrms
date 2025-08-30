@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\Uam\Role\RoleEnum;
-use App\Models\Tenancy\Tenant;
+use App\Models\Configuration\Company\Company;
 use App\Models\Uam\Role;
 use App\Models\Uam\User;
 use Illuminate\Database\Seeder;
@@ -16,16 +16,16 @@ class AdminSeeder extends Seeder
         [
             'name' => 'Super Admin',
             'email' => 'superadmin@app.com',
-            'company_name' => 'Super Admin Tenant',
-            'company_short_name' => 'SAT',
+            'company_name' => 'Super Admin Company',
+            'company_short_name' => 'SAC',
             'role' => RoleEnum::SuperAdmin,
         ],
         [
-            'name' => 'Tenant Admin',
-            'email' => 'tenantadmin@app.com',
-            'company_name' => 'Dummy',
+            'name' => 'Company Admin',
+            'email' => 'companyadmin@app.com',
+            'company_name' => 'Dummy Company',
             'company_short_name' => 'Dummy',
-            'role' => RoleEnum::TenantAdmin,
+            'role' => RoleEnum::CompanyAdmin,
         ],
     ];
 
@@ -41,20 +41,20 @@ class AdminSeeder extends Seeder
                 ]
             );
 
-            // Create or update tenant
-            $tenant = Tenant::updateOrCreate(
+            // Create or update company
+            $company = Company::updateOrCreate(
                 ['company_short_name' => $admin['company_short_name']],
                 ['company_name' => $admin['company_name']]
             );
 
-            // 🔑 Set tenant context
-            app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->id);
+            // 🔑 Set company context
+            app(PermissionRegistrar::class)->setPermissionsTeamId($company->id);
 
-            // Create role in tenant
+            // Create role in company
             $role = Role::firstOrCreate([
                 'name' => $admin['role']->name,
                 'guard_name' => 'web',
-                'tenant_id' => $tenant->id,
+                'company_id' => $company->id,
             ]);
 
             // Assign role
@@ -62,9 +62,9 @@ class AdminSeeder extends Seeder
                 $user->assignRole($role);
             }
 
-            // Optional: attach tenant relationship
-            if (method_exists($user, 'tenants')) {
-                $user->tenants()->syncWithoutDetaching([$tenant->id]);
+            // Optional: attach company relationship
+            if (method_exists($user, 'companies')) {
+                $user->companies()->syncWithoutDetaching([$company->id]);
             }
         }
     }

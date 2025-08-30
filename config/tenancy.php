@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Models\Configuration\Company\Company;
 use Stancl\Tenancy\Database\Models\Domain;
-use App\Models\Tenancy\Tenant;
 
 return [
-    'current_tenant_key' => 'current_tenant_id',
+    'current_company_session_key' => 'current_company_id',
 
-    'tenant_model' => Tenant::class,
+    'tenant_model' => Company::class,
+
     'id_generator' => null,
 
     'domain_model' => Domain::class,

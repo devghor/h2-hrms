@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { path } from '@/config/paths';
-import { KEY_DATA_TABLE } from '@/constants/data-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { router, usePage } from '@inertiajs/react';
@@ -182,7 +181,7 @@ export default function Index() {
             <DataTable
                 ref={tableRef}
                 columns={columns}
-                dataUrl={route('uam.permissions.index', { [KEY_DATA_TABLE]: true })}
+                dataUrl={route('uam.permissions.index', { 'permissions-data-table': true })}
                 extraActions={
                     <>
                         <Button variant="default" className="cursor-pointer" onClick={handleOpenAdd}>

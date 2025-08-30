@@ -34,11 +34,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        $tenant = Auth::user()->tenants()->first();
+        $company = Auth::user()->companies()->first();
 
-        if ($tenant) {
-            session([config('tenancy.current_tenant_key') => $tenant->id]);
-            tenancy()->initialize($tenant);
+        if ($company) {
+            session([config('tenancy.current_company_session_key') => $company->id]);
+            tenancy()->initialize($company);
         }
 
         return redirect()->intended(route('dashboard', absolute: false));

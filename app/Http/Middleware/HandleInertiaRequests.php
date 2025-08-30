@@ -57,8 +57,8 @@ class HandleInertiaRequests extends Middleware
                     'READ_CONFIGURATION_DEPARTMENTS',
                     'READ_CONFIGURATION_DESKS'
                 ],
-                'current_tenant_id' => session(config('tenancy.current_tenant_key')),
-                'tenants' => $request->user() ? $request->user()->tenants : [],
+                'current_company_id' => session(config('tenancy.current_company_session_key')),
+                'companies' => $request->user() ? $request->user()->companies : [],
             ],
             'ziggy' => fn(): array => [
                 ...(new Ziggy)->toArray(),

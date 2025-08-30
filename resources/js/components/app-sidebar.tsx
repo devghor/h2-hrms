@@ -6,7 +6,7 @@ import { mainNavItems } from '@/config/nav';
 import { SharedData, type NavItem } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { useMemo } from 'react';
-import { AppTenant } from './app-tenant';
+import { AppCompany } from './app-company';
 
 const footerNavItems: NavItem[] = [];
 
@@ -55,7 +55,7 @@ export function AppSidebar() {
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
-                <AppTenant />
+                <AppCompany />
             </SidebarHeader>
 
             <SidebarContent>

@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Models\Tenancy;
+namespace App\Models\Configuration\Company;
 
 use App\Models\Uam\User;
-use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
+use Stancl\Tenancy\Database\Models\Tenant;
 
-class Tenant extends BaseTenant
+class Company extends Tenant
 {
+    protected $table = 'companies';
+
     public function users()
     {
         return $this->belongsToMany(User::class);

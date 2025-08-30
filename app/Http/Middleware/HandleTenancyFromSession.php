@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Tenancy\Tenant;
+use App\Models\Configuration\Company\Company;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,9 +16,9 @@ class HandleTenancyFromSession
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $tenantId = session(config('tenancy.current_tenant_key'));
-        if ($tenantId && $tenant = Tenant::find($tenantId)) {
-            tenancy()->initialize($tenant);
+        $companyId = session(config('tenancy.current_company_session_key'));
+        if ($companyId && $company = Company::find($companyId)) {
+            tenancy()->initialize($company);
         }
 
         return $next($request);

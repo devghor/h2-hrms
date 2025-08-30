@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Uam\User\StoreUserRequest;
 use App\Http\Requests\Uam\User\UpdateUserRequest;
 use App\Http\Resources\Uam\User\UserResource;
-use App\Models\Tenancy\Tenant;
 use App\Repositories\Uam\User\UserRepository;
 use Illuminate\Http\Request;
 

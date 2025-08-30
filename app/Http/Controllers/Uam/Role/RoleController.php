@@ -27,7 +27,7 @@ class RoleController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $validated['tenant_id'] = tenant()?->id;
+        $validated['company_id'] = tenant()?->id;
 
         $role = $this->roleRepository->create($validated);
         return redirect()->back()->with('success', 'Role created successfully.');

@@ -1,15 +1,15 @@
 import { LucideIcon } from 'lucide-react';
 import type { Config } from 'ziggy-js';
 
-export interface Tenant {
+export interface Company {
     id: number;
     company_name: string;
 }
 
 export interface Auth {
     user: User;
-    tenants: Tenant[] | null | undefined;
-    current_tenant_id: number | null;
+    companies: Company[] | null | undefined;
+    current_company_id: number | null;
     permissions: string[];
 }
 
