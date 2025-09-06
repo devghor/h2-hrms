@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Configuration\Company;
 
+use App\DataTables\Configuration\Company\CompaniesDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Company\StoreCompanyRequest;
 use App\Repositories\Configuration\Company\CompanyRepository;
@@ -14,8 +15,13 @@ class CompanyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(CompaniesDataTable $dataTable)
     {
+
+        if (request()->query('companies-table')) {
+            return $dataTable->ajax();
+        }
+
         return inertia('configuration/companies/index');
     }
 

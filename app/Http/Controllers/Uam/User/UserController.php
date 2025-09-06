@@ -18,7 +18,7 @@ class UserController extends Controller
     /**
      * Display a listing of the resource for the Inertia view.
      */
-    public function index(UsersDataTable $dataTable)
+    public function index(UsersDataTable $dataTable, Request $request)
     {
         if (request()->query('data-table')) {
             return $dataTable->ajax();
