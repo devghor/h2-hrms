@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Uam;
+namespace App\Http\Resources\Uam\Permission;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
