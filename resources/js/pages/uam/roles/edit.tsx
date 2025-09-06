@@ -4,7 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { path } from '@/config/paths';
+import { breadcrumbItems } from '@/config/breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { router } from '@inertiajs/react';
@@ -33,14 +33,11 @@ interface PermissionGroup {
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
+    breadcrumbItems.dashboard,
+    breadcrumbItems.uamRoles,
     {
-        ...path.dashboard,
-    },
-    {
-        ...path.uam.roles,
-    },
-    {
-        ...path.uam.roleEdit('#'),
+        title: 'Edit Role',
+        href: '',
     },
 ];
 

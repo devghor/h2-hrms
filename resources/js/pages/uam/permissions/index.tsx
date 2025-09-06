@@ -4,22 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { path } from '@/config/paths';
+import { breadcrumbItems } from '@/config/breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { BreadcrumbItem } from '@/types';
 import { router, usePage } from '@inertiajs/react';
 import { DialogTitle } from '@radix-ui/react-dialog';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        ...path.dashboard,
-    },
-    {
-        ...path.uam.permissions,
-    },
-];
+const breadcrumbs: BreadcrumbItem[] = [breadcrumbItems.dashboard, breadcrumbItems.uamPermissions];
 
 export default function Index() {
     const { errors } = usePage().props;

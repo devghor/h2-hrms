@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Configuration\Company;
 use App\DataTables\Configuration\Company\CompaniesDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Company\StoreCompanyRequest;
+use App\Http\Requests\Configuration\Company\UpdateCompanyRequest;
 use App\Repositories\Configuration\Company\CompanyRepository;
 use Illuminate\Http\Request;
 
@@ -18,7 +19,7 @@ class CompanyController extends Controller
     public function index(CompaniesDataTable $dataTable)
     {
 
-        if (request()->query('companies-table')) {
+        if (request()->query('data-table')) {
             return $dataTable->ajax();
         }
 
@@ -60,9 +61,13 @@ class CompanyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCompanyRequest $request, string $id)
     {
-        //
+        $input  = $request->validated();
+        $this->companyRepository->update($input, $id);
+        return redirect()->route('configuration.companies.index')->with([
+            'success' => __('Company updated successfully.'),
+        ]);
     }
 
     /**
@@ -70,6 +75,9 @@ class CompanyController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $this->companyRepository->delete($id);
+        return redirect()->route('configuration.companies.index')->with([
+            'success' => __('Company deleted successfully.'),
+        ]);
     }
 }
