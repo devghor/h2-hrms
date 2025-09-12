@@ -33,6 +33,7 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
         ->prefix('configuration')
         ->group(function () {
             Route::resource('companies', App\Http\Controllers\Configuration\Company\CompanyController::class);
+            Route::resource('divisions', App\Http\Controllers\Configuration\Division\DivisionController::class);
         });
 });
 

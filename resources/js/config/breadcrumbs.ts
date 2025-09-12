@@ -4,4 +4,5 @@ export const breadcrumbItems = {
     uamRoles: { title: 'Roles', href: route('uam.roles.index') },
     uamPermissions: { title: 'Permissions', href: route('uam.permissions.index') },
     configurationCompanies: { title: 'Companies', href: route('configuration.companies.index') },
+    configurationDivisions: { title: 'Divisions', href: route('configuration.divisions.index') },
 };
