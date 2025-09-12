@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Configuration\Company;
 
-use App\DataTables\Configuration\Company\CompaniesDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Company\StoreCompanyRequest;
 use App\Http\Requests\Configuration\Company\UpdateCompanyRequest;
+use App\Models\Configuration\Company\Company;
 use App\Repositories\Configuration\Company\CompanyRepository;
-use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class CompanyController extends Controller
 {
@@ -16,11 +16,18 @@ class CompanyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(CompaniesDataTable $dataTable)
+    public function index()
     {
-
         if (request()->query('data-table')) {
-            return $dataTable->ajax();
+            return DataTables::eloquent(Company::query())
+                ->editColumn('created_at', function ($company) {
+                    return $company->created_at->format('Y-m-d H:i:s');
+                })
+                ->editColumn('updated_at', function ($company) {
+                    return $company->updated_at->format('Y-m-d H:i:s');
+                })
+                ->rawColumns(['action'])
+                ->make(true);
         }
 
         return inertia('configuration/companies/index');
