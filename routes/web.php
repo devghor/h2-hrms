@@ -32,10 +32,10 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
     Route::name('configuration.')
         ->prefix('configuration')
         ->group(function () {
+            Route::resource('desks', App\Http\Controllers\Configuration\Desk\DeskController::class);
             Route::resource('companies', App\Http\Controllers\Configuration\Company\CompanyController::class);
             Route::resource('divisions', App\Http\Controllers\Configuration\Division\DivisionController::class);
             Route::resource('departments', App\Http\Controllers\Configuration\Department\DepartmentController::class);
-            Route::resource('desks', App\Http\Controllers\Configuration\Department\DeskController::class);
         });
 });
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Configuration\Department;
+namespace App\Http\Requests\Configuration\Desk;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateDeskRequest extends FormRequest
+class StoreDeskRequest extends FormRequest
 {
     public function authorize(): bool
     {

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Configuration\Department;
+namespace App\Http\Controllers\Configuration\Desk;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Configuration\Department\StoreDeskRequest;
-use App\Http\Requests\Configuration\Department\UpdateDeskRequest;
-use App\Models\Configuration\Department\Desk;
-use App\Repositories\Configuration\Department\DeskRepository;
+use App\Http\Requests\Configuration\Desk\StoreDeskRequest;
+use App\Http\Requests\Configuration\Desk\UpdateDeskRequest;
+use App\Models\Configuration\Desk\Desk;
+use App\Repositories\Configuration\Desk\DeskRepository;
 use Yajra\DataTables\Facades\DataTables;
 
 class DeskController extends Controller
@@ -26,7 +26,7 @@ class DeskController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return inertia('configuration/departments/desks/index');
+        return inertia('configuration/desks/index');
     }
 
     public function create() {}

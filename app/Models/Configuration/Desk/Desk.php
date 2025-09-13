@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Configuration\Department;
+namespace App\Models\Configuration\Desk;
 
 use Illuminate\Database\Eloquent\Model;
 

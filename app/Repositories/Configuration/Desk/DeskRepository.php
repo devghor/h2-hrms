@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repositories\Configuration\Department;
+namespace App\Repositories\Configuration\Desk;
 
-use App\Models\Configuration\Department\Desk;
+use App\Models\Configuration\Desk\Desk;
 use App\Repositories\Core\CoreRepository;
 
 class DeskRepository extends CoreRepository
