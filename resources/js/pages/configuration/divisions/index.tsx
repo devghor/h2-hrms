@@ -110,13 +110,8 @@ export default function Index() {
     };
 
     return (
-        <AppLayout title="Divisions" breadcrumbs={breadcrumbs}>
-            <DataTable
-                ref={tableRef}
-                columns={columns}
-                dataUrl={route('configuration.divisions.index', { 'data-table': true })}
-                extraActions={<Button onClick={handleOpenAdd}>Add Division</Button>}
-            />
+        <AppLayout title="Divisions" breadcrumbs={breadcrumbs} actions={<Button onClick={handleOpenAdd}>Add Division</Button>}>
+            <DataTable ref={tableRef} columns={columns} dataUrl={route('configuration.divisions.index', { 'data-table': true })} />
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>

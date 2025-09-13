@@ -118,13 +118,8 @@ export default function Index() {
     };
 
     return (
-        <AppLayout title="Companies" breadcrumbs={breadcrumbs}>
-            <DataTable
-                ref={tableRef}
-                columns={columns}
-                dataUrl={route('configuration.companies.index', { 'data-table': true })}
-                extraActions={<Button onClick={handleOpenAdd}>Add Company</Button>}
-            />
+        <AppLayout title="Companies" breadcrumbs={breadcrumbs} actions={<Button onClick={handleOpenAdd}>Add Company</Button>}>
+            <DataTable ref={tableRef} columns={columns} dataUrl={route('configuration.companies.index', { 'data-table': true })} />
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>

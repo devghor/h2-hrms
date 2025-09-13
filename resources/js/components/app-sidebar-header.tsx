@@ -1,13 +1,48 @@
-import { Breadcrumbs } from '@/components/breadcrumbs';
+import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { type BreadcrumbItem as BreadcrumbItemType } from '@/types';
+import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
+import { Search } from './search';
 
-export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: BreadcrumbItemType[] }) {
+type HeaderProps = React.HTMLAttributes<HTMLElement> & {
+    fixed?: boolean;
+    ref?: React.Ref<HTMLElement>;
+};
+
+export function AppSidebarHeader({ className, fixed, children, ...props }: HeaderProps) {
+    const [offset, setOffset] = useState(0);
+
+    useEffect(() => {
+        const onScroll = () => {
+            setOffset(document.body.scrollTop || document.documentElement.scrollTop);
+        };
+
+        // Add scroll listener to the body
+        document.addEventListener('scroll', onScroll, { passive: true });
+
+        // Clean up the event listener on unmount
+        return () => document.removeEventListener('scroll', onScroll);
+    }, []);
     return (
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-sidebar-border/50 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4">
-            <div className="flex items-center gap-2">
-                <SidebarTrigger className="-ml-1" />
-                <Breadcrumbs breadcrumbs={breadcrumbs} />
+        <header
+            className={cn(
+                'z-50 h-16',
+                fixed && 'header-fixed peer/header sticky top-0 w-[inherit]',
+                offset > 10 && fixed ? 'shadow' : 'shadow-none',
+                className,
+            )}
+            {...props}
+        >
+            <div
+                className={cn(
+                    'relative flex h-full items-center gap-3 p-4 sm:gap-4',
+                    offset > 10 && fixed && 'after:absolute after:inset-0 after:-z-10 after:bg-background/20 after:backdrop-blur-lg',
+                )}
+            >
+                <SidebarTrigger variant="outline" className="max-md:scale-125" />
+                <Separator className="h-6" orientation="vertical" />
+                <Search />
+                {children}
             </div>
         </header>
     );

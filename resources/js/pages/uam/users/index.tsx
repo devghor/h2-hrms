@@ -178,20 +178,9 @@ export default function Index() {
     };
 
     return (
-        <AppLayout title="Users" breadcrumbs={breadcrumbs}>
+        <AppLayout title="Users" breadcrumbs={breadcrumbs} actions={<Button onClick={handleOpenAdd}>Add User</Button>}>
             {/* Data table for users */}
-            <DataTable
-                ref={tableRef}
-                columns={columns}
-                dataUrl={route('uam.users.index', { [KEY_DATA_TABLE]: true })}
-                extraActions={
-                    <>
-                        <Button variant="default" className="cursor-pointer" onClick={handleOpenAdd}>
-                            Add User
-                        </Button>
-                    </>
-                }
-            />
+            <DataTable ref={tableRef} columns={columns} dataUrl={route('uam.users.index', { [KEY_DATA_TABLE]: true })} />
 
             {/* Dialog for adding/editing user */}
             <Dialog open={open} onOpenChange={setOpen}>

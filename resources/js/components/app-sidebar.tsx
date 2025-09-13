@@ -1,6 +1,5 @@
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
-import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar';
 import { mainNavItems } from '@/config/nav';
 import { SharedData, type NavItem } from '@/types';
@@ -64,7 +63,6 @@ export function AppSidebar() {
 
             <SidebarFooter>
                 <NavFooter items={filteredFooterNavItems} className="mt-auto" />
-                <NavUser />
             </SidebarFooter>
         </Sidebar>
     );

@@ -113,12 +113,6 @@ export function DatePicker({
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-                {/*
-          Calendar expected props:
-          - mode="single"
-          - selected={Date | undefined}
-          - onSelect={(date) => ...}
-        */}
                 <Calendar mode="single" selected={date} onSelect={(d: Date | undefined | null) => handleDateSelect(d)} disabled={disabled} />
             </PopoverContent>
         </Popover>

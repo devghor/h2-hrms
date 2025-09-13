@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { breadcrumbItems } from '@/config/breadcrumbs';
-import { KEY_DATA_TABLE } from '@/constants/data-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { router, usePage } from '@inertiajs/react';
@@ -173,20 +172,9 @@ export default function Index() {
     };
 
     return (
-        <AppLayout title="Roles" breadcrumbs={breadcrumbs}>
+        <AppLayout title="Roles" breadcrumbs={breadcrumbs} actions={<Button onClick={handleOpenAdd}>Add Role</Button>}>
             {/* Data table for roles */}
-            <DataTable
-                ref={tableRef}
-                columns={columns}
-                dataUrl={route('uam.roles.index', { [KEY_DATA_TABLE]: true })}
-                extraActions={
-                    <>
-                        <Button variant="default" className="cursor-pointer" onClick={handleOpenAdd}>
-                            Add Role
-                        </Button>
-                    </>
-                }
-            />
+            <DataTable ref={tableRef} columns={columns} dataUrl={route('uam.roles.index', { 'data-table': true })} />
 
             {/* Dialog for adding/editing role */}
             <Dialog open={open} onOpenChange={setOpen}>

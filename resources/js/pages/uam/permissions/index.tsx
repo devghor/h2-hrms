@@ -169,20 +169,9 @@ export default function Index() {
     };
 
     return (
-        <AppLayout title="Permissions" breadcrumbs={breadcrumbs}>
+        <AppLayout title="Permissions" breadcrumbs={breadcrumbs} actions={<Button onClick={handleOpenAdd}>Add Permission</Button>}>
             {/* Data table for permissions */}
-            <DataTable
-                ref={tableRef}
-                columns={columns}
-                dataUrl={route('uam.permissions.index', { 'permissions-data-table': true })}
-                extraActions={
-                    <>
-                        <Button variant="default" className="cursor-pointer" onClick={handleOpenAdd}>
-                            Add Permission
-                        </Button>
-                    </>
-                }
-            />
+            <DataTable ref={tableRef} columns={columns} dataUrl={route('uam.permissions.index', { 'permissions-data-table': true })} />
 
             {/* Dialog for adding/editing permission */}
             <Dialog open={open} onOpenChange={setOpen}>
