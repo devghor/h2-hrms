@@ -4,6 +4,8 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { AppSidebarHeader } from '@/components/app-sidebar-header';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { NavUser } from '@/components/nav-user';
+import { Notification } from '@/components/notification';
+import { SearchProvider } from '@/context/search-provider';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
@@ -19,11 +21,14 @@ export default function AppSidebarLayout({
             <Head title={title} />
             <AppSidebar />
             <AppContent title={title} variant="sidebar" className="overflow-x-hidden">
-                <AppSidebarHeader fixed>
-                    <div className="ms-auto flex items-center space-x-4">
-                        <NavUser />
-                    </div>
-                </AppSidebarHeader>
+                <SearchProvider>
+                    <AppSidebarHeader fixed>
+                        <div className="ms-auto flex items-center space-x-4">
+                            <Notification />
+                            <NavUser />
+                        </div>
+                    </AppSidebarHeader>
+                </SearchProvider>
                 <div className="px-4 py-4">
                     <Breadcrumbs breadcrumbs={breadcrumbs} />
                     <div className="flex items-center justify-between">
