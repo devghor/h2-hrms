@@ -1,13 +1,16 @@
-Generate a full CRUD for Division (similar to the existing Company CRUD).
-#file:Company
-Entity name: Division
+Generate a full CRUD for Desk (similar to the existing Division CRUD).
+#file:Division
+Entity name: Desk
+
 Fields:
-
 name (string, required)
-
+division_id (integer)
 description (string, nullable)
 
-File structure and naming should match the Company CRUD but inside a Division folder instead of Company:
+Add Migration
+database/migrations
+
+File structure and naming should match the Division CRUD but inside a Department folder instead of Division:
 
 Controller
 
@@ -40,5 +43,7 @@ Frontend (React + Inertia)
 Update resources/js/config/nav.ts → Add navigation entry for Divisions under Configuration.
 
 Create resources/js/pages/configuration/divisions/index.tsx (list, create, update, delete UI).
+
+resources/js/config/breadcrumbs.ts
 
 Follow Laravel conventions and reuse the same structure, validation style, and Inertia patterns used in the Company CRUD.

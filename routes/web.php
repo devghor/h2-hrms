@@ -34,6 +34,8 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
         ->group(function () {
             Route::resource('companies', App\Http\Controllers\Configuration\Company\CompanyController::class);
             Route::resource('divisions', App\Http\Controllers\Configuration\Division\DivisionController::class);
+            Route::resource('departments', App\Http\Controllers\Configuration\Department\DepartmentController::class);
+            Route::resource('desks', App\Http\Controllers\Configuration\Department\DeskController::class);
         });
 });
 
