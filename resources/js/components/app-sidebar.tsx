@@ -82,6 +82,7 @@ function SidebarCollapsibleItem({ item }: { item: any }) {
     );
 }
 
+// === Logo ===
 const Logo = ({ src, alt }: { src?: string | null; alt?: string | null }) => {
     if (src) {
         return <img src={src} alt={alt || ''} className="h-6 w-6 rounded-full object-cover" />;
@@ -139,22 +140,46 @@ function CompanySwitcher({ companies, currentCompany }: { companies: Company[] |
     );
 }
 
+// === Helper: Filter sidebar items by permission ===
+function filterSidebarItemsByPermission(items: any[], permissions: string[]): any {
+    return items
+        .map((item) => {
+            if (item.can && !permissions.includes(item.can)) return null;
+
+            if (item.items) {
+                const filteredChildren = filterSidebarItemsByPermission(item.items, permissions);
+                if (filteredChildren.length === 0) return null;
+                return { ...item, items: filteredChildren };
+            }
+
+            return item;
+        })
+        .filter(Boolean);
+}
+
 // === Main Sidebar ===
 export function AppSidebar() {
     const { url, props } = usePage<SharedData>();
     const companies = props.auth.companies || [];
     const currentCompany = props.auth.current_company;
+    const permissions = props.auth.permissions || [];
+
+    // Filter nav groups and items
+    const filteredNavGroups = sidebarData.navGroups
+        .map((group) => ({
+            ...group,
+            items: filterSidebarItemsByPermission(group.items, permissions),
+        }))
+        .filter((group) => group.items.length > 0); // remove empty groups
 
     return (
         <Sidebar collapsible="icon">
-            {/* === Header with Company Switcher === */}
             <SidebarHeader>
                 <CompanySwitcher companies={companies} currentCompany={currentCompany} />
             </SidebarHeader>
 
-            {/* === Main Navigation === */}
             <SidebarContent>
-                {sidebarData.navGroups.map((group) => (
+                {filteredNavGroups.map((group) => (
                     <SidebarGroup key={group.title}>
                         <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">{group.title}</SidebarGroupLabel>
                         <SidebarGroupContent>

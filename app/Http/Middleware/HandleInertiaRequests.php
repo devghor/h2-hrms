@@ -49,14 +49,14 @@ class HandleInertiaRequests extends Middleware
                 'permissions' => [
                     'READ_DASHBOARD',
                     'READ_UAM',
-                    'READ_UAM_USERS',
-                    'READ_UAM_ROLES',
-                    'READ_UAM_PERMISSIONS',
+                    'READ_UAM_USER',
+                    'READ_UAM_ROLE',
+                    'READ_UAM_PERMISSION',
                     'READ_CONFIGURATION',
-                    'READ_CONFIGURATION_COMPANIES',
-                    'READ_CONFIGURATION_DIVISIONS',
-                    'READ_CONFIGURATION_DEPARTMENTS',
-                    'READ_CONFIGURATION_DESKS'
+                    'READ_CONFIGURATION_COMPANY',
+                    'READ_CONFIGURATION_DIVISION',
+                    'READ_CONFIGURATION_DEPARTMENT',
+                    'READ_CONFIGURATION_DESK'
                 ],
                 'current_company' => Company::find(session(config('tenancy.current_company_session_key'))),
                 'companies' => $request->user() ? $request->user()->companies : [],
