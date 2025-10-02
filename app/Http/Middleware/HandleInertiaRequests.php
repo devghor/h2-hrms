@@ -47,6 +47,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
                 'permissions' => [
+                    'READ_GENERAL',
                     'READ_DASHBOARD',
                     'READ_UAM',
                     'READ_UAM_USER',
