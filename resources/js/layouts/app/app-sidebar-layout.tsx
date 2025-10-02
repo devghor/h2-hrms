@@ -14,8 +14,9 @@ export default function AppSidebarLayout({
     children,
     breadcrumbs = [],
     title,
+    description,
     actions,
-}: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[]; title: string; actions?: React.ReactNode }>) {
+}: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[]; title: string; description?: string; actions?: React.ReactNode }>) {
     return (
         <AppShell variant="sidebar">
             <Head title={title} />
@@ -29,10 +30,13 @@ export default function AppSidebarLayout({
                         </div>
                     </AppSidebarHeader>
                 </SearchProvider>
-                <div className="px-4 py-4">
-                    <Breadcrumbs breadcrumbs={breadcrumbs} />
-                    <div className="flex items-center justify-between">
-                        {title && <h1 className="text-2xl font-semibold">{title}</h1>}
+                <div className="p-4">
+                    <div className="mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4">
+                        <div>
+                            <Breadcrumbs breadcrumbs={breadcrumbs} />
+                            <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
+                            <p className="text-muted-foreground">{description}</p>
+                        </div>
                         <div>{actions}</div>
                     </div>
                     <div className="mt-4">{children}</div>
