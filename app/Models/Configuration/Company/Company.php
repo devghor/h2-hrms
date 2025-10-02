@@ -21,8 +21,8 @@ class Company extends Tenant
     {
         return [
             'id',
-            'company_name',
-            'company_short_name'
+            'name',
+            'short_name'
         ];
     }
 

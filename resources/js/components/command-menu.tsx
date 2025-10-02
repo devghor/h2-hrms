@@ -1,5 +1,5 @@
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { sidebarData } from '@/config/sidebar-data';
+import { sidebarData } from '@/config/sidebar';
 import { useSearch } from '@/context/search-provider';
 import { router } from '@inertiajs/react';
 import { ArrowRight, ChevronRight } from 'lucide-react';

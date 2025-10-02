@@ -1,69 +1,188 @@
-import { NavFooter } from '@/components/nav-footer';
-import { NavMain } from '@/components/nav-main';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar';
-import { mainNavItems } from '@/config/nav';
-import { SharedData, type NavItem } from '@/types';
-import { usePage } from '@inertiajs/react';
-import { useMemo } from 'react';
-import { AppCompany } from './app-company';
+'use client';
 
-const footerNavItems: NavItem[] = [];
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    useSidebar,
+} from '@/components/ui/sidebar';
+import { sidebarData } from '@/config/sidebar';
+import { Company, SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+import { Building2, ChevronDown, ChevronsUpDown, Plus } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 
-// Helper function to filter nav items based on permissions
-function filterNavItemsByPermissions(items: NavItem[], permissions: string[]): NavItem[] {
-    return items
-        .filter((item) => {
-            // If item has no 'can' property, include it
-            if (!item.can) return true;
-            // Check if user has the required permission
-            return permissions.includes(item.can);
-        })
-        .map((item) => {
-            // If item has children, recursively filter them
-            if (item.children) {
-                const filteredChildren = filterNavItemsByPermissions(item.children, permissions);
-                // Only include parent if it has accessible children or if parent itself is accessible
-                return {
-                    ...item,
-                    children: filteredChildren,
-                };
-            }
-            return item;
-        })
-        .filter((item) => {
-            // Remove parent items that have children but no accessible children
-            if (item.children) {
-                return item.children.length > 0;
-            }
-            return true;
-        });
-}
+// === Collapsible Nav Items ===
+function SidebarCollapsibleItem({ item }: { item: any }) {
+    const { state } = useSidebar(); // "expanded" | "collapsed" | "offcanvas"
+    const { url } = usePage();
+    const [open, setOpen] = useState(false);
 
-export function AppSidebar() {
-    const { auth } = usePage<SharedData>().props;
+    const isChildActive = useMemo(() => item.items.some((sub: any) => url.startsWith(sub.url)), [url, item.items]);
 
-    // Filter navigation items based on user permissions
-    const filteredMainNavItems = useMemo(() => {
-        return filterNavItemsByPermissions(mainNavItems, auth.permissions);
-    }, [auth.permissions]);
+    useEffect(() => {
+        if (isChildActive) setOpen(true);
+    }, [isChildActive]);
 
-    const filteredFooterNavItems = useMemo(() => {
-        return filterNavItemsByPermissions(footerNavItems, auth.permissions);
-    }, [auth.permissions]);
+    useEffect(() => {
+        if (state === 'collapsed') setOpen(false);
+    }, [state]);
 
     return (
-        <Sidebar collapsible="icon" variant="inset">
+        <SidebarMenuItem>
+            <Collapsible open={open} onOpenChange={setOpen}>
+                <CollapsibleTrigger asChild>
+                    <SidebarMenuButton>
+                        {item.icon && <item.icon className="mr-2 h-4 w-4" />}
+                        <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+                        <ChevronDown
+                            className={`ml-auto h-4 w-4 shrink-0 transition-transform ${open ? 'rotate-180' : ''} group-data-[collapsible=icon]:hidden`}
+                        />
+                    </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                    <SidebarMenu className="pl-4">
+                        {item.items.map((sub: any) => {
+                            const active = url.startsWith(sub.url);
+                            return (
+                                <SidebarMenuItem key={sub.title}>
+                                    <SidebarMenuButton asChild isActive={active}>
+                                        <Link href={sub.url}>
+                                            {sub.icon && <sub.icon className="mr-2 h-4 w-4" />}
+                                            <span className="group-data-[collapsible=icon]:hidden">{sub.title}</span>
+                                            {sub.badge && (
+                                                <span className="ml-auto rounded-full bg-primary px-2 text-xs text-white group-data-[collapsible=icon]:hidden">
+                                                    {sub.badge}
+                                                </span>
+                                            )}
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            );
+                        })}
+                    </SidebarMenu>
+                </CollapsibleContent>
+            </Collapsible>
+        </SidebarMenuItem>
+    );
+}
+
+const Logo = ({ src, alt }: { src?: string | null; alt?: string | null }) => {
+    if (src) {
+        return <img src={src} alt={alt || ''} className="h-6 w-6 rounded-full object-cover" />;
+    }
+    return (
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200">
+            <Building2 className="h-4 w-4 text-gray-600" />
+        </div>
+    );
+};
+
+// === Company Switcher ===
+function CompanySwitcher({ companies, currentCompany }: { companies: Company[] | []; currentCompany: Company | null }) {
+    const { isMobile } = useSidebar();
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                    size="lg"
+                    className="cursor-pointer data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                        <Logo src={currentCompany?.logo} alt={currentCompany?.short_name || 'Company Logo'} />
+                    </div>
+                    <div className="grid flex-1 text-start text-sm leading-tight">
+                        <span className="truncate font-semibold">{currentCompany?.name}</span>
+                    </div>
+                    <ChevronsUpDown className="ms-auto" />
+                </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                align="start"
+                side={isMobile ? 'bottom' : 'right'}
+            >
+                <DropdownMenuLabel>Company</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {companies.map((company) => (
+                    <DropdownMenuItem key={company.id} asChild className="cursor-pointer gap-2 p-2">
+                        <Link href={`/switch-company/${company.id}`}>{company.name}</Link>
+                    </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer gap-2 p-2">
+                    <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                        <Plus className="size-4" />
+                    </div>
+                    <a className="font-medium text-muted-foreground" href={route('configuration.companies.index')}>
+                        Add Company
+                    </a>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
+
+// === Main Sidebar ===
+export function AppSidebar() {
+    const { url, props } = usePage<SharedData>();
+    const companies = props.auth.companies || [];
+    const currentCompany = props.auth.current_company;
+
+    return (
+        <Sidebar collapsible="icon">
+            {/* === Header with Company Switcher === */}
             <SidebarHeader>
-                <AppCompany />
+                <CompanySwitcher companies={companies} currentCompany={currentCompany} />
             </SidebarHeader>
 
+            {/* === Main Navigation === */}
             <SidebarContent>
-                <NavMain items={filteredMainNavItems} />
+                {sidebarData.navGroups.map((group) => (
+                    <SidebarGroup key={group.title}>
+                        <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">{group.title}</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {group.items.map((item) =>
+                                    'items' in item ? (
+                                        <SidebarCollapsibleItem key={item.title} item={item} />
+                                    ) : (
+                                        <SidebarMenuItem key={item.title}>
+                                            <SidebarMenuButton asChild isActive={url.startsWith(item.url)}>
+                                                <Link href={item.url}>
+                                                    {item.icon && <item.icon className="mr-2 h-4 w-4" />}
+                                                    <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+                                                    {item.badge && (
+                                                        <span className="ml-auto rounded-full bg-primary px-2 text-xs text-white group-data-[collapsible=icon]:hidden">
+                                                            {item.badge}
+                                                        </span>
+                                                    )}
+                                                </Link>
+                                            </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    ),
+                                )}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                ))}
             </SidebarContent>
-
-            <SidebarFooter>
-                <NavFooter items={filteredFooterNavItems} className="mt-auto" />
-            </SidebarFooter>
         </Sidebar>
     );
 }

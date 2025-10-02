@@ -3,13 +3,15 @@ import type { Config } from 'ziggy-js';
 
 export interface Company {
     id: number;
-    company_name: string;
+    name: string;
+    short_name?: string;
+    logo?: string;
 }
 
 export interface Auth {
     user: User;
     companies: Company[] | null | undefined;
-    current_company_id: number | null;
+    current_company: Company | null;
     permissions: string[];
 }
 

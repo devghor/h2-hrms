@@ -16,15 +16,15 @@ class AdminSeeder extends Seeder
         [
             'name' => 'Super Admin',
             'email' => 'superadmin@app.com',
-            'company_name' => 'Super Admin Company',
-            'company_short_name' => 'SAC',
+            'name' => 'Super Admin Company',
+            'short_name' => 'SAC',
             'role' => RoleEnum::SuperAdmin,
         ],
         [
             'name' => 'Company Admin',
             'email' => 'companyadmin@app.com',
-            'company_name' => 'Dummy Company',
-            'company_short_name' => 'Dummy',
+            'name' => 'Dummy Company',
+            'short_name' => 'Dummy',
             'role' => RoleEnum::CompanyAdmin,
         ],
     ];
@@ -43,8 +43,8 @@ class AdminSeeder extends Seeder
 
             // Create or update company
             $company = Company::updateOrCreate(
-                ['company_short_name' => $admin['company_short_name']],
-                ['company_name' => $admin['company_name']]
+                ['short_name' => $admin['short_name']],
+                ['name' => $admin['name']]
             );
 
             // 🔑 Set company context

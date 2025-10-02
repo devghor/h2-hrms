@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Configuration\Company\Company;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -57,7 +58,7 @@ class HandleInertiaRequests extends Middleware
                     'READ_CONFIGURATION_DEPARTMENTS',
                     'READ_CONFIGURATION_DESKS'
                 ],
-                'current_company_id' => session(config('tenancy.current_company_session_key')),
+                'current_company' => Company::find(session(config('tenancy.current_company_session_key'))),
                 'companies' => $request->user() ? $request->user()->companies : [],
             ],
             'ziggy' => fn(): array => [
