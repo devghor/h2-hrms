@@ -1,4 +1,4 @@
-import { Briefcase, Building, IdCard, Key, Landmark, LayoutDashboard, Lock, MonitorCog, Settings, Users } from 'lucide-react';
+import { Briefcase, Building, IdCard, Key, Landmark, LayoutDashboard, Lock, MonitorCog, Users } from 'lucide-react';
 
 type BaseNavItem = {
     title: string;
@@ -33,6 +33,7 @@ export const sidebarData: SidebarData = {
     navGroups: [
         {
             title: 'General',
+            can: 'READ_GENERAL',
             items: [
                 {
                     title: 'Dashboard',
@@ -44,6 +45,7 @@ export const sidebarData: SidebarData = {
         },
         {
             title: 'Uam',
+            can: 'READ_UAM',
             items: [
                 {
                     title: 'Users',
@@ -67,43 +69,37 @@ export const sidebarData: SidebarData = {
         },
         {
             title: 'Configuration',
+            can: 'READ_CONFIGURATION',
             items: [
                 {
-                    title: 'Settings',
-                    icon: Settings,
-                    can: 'READ_CONFIGURATION_SETTING',
-                    items: [
-                        {
-                            title: 'Companies',
-                            url: '/configuration/companies',
-                            icon: Landmark,
-                            can: 'READ_CONFIGURATION_COMPANY',
-                        },
-                        {
-                            title: 'Divisions',
-                            url: '/configuration/divisions',
-                            icon: Building,
-                            can: 'READ_CONFIGURATION_DIVISION',
-                        },
-                        {
-                            title: 'Departments',
-                            url: '/configuration/departments',
-                            icon: Briefcase,
-                            can: 'READ_CONFIGURATION_DEPARTMENT',
-                        },
-                        {
-                            title: 'Designations',
-                            url: '/configuration/designations',
-                            icon: IdCard,
-                            can: 'READ_CONFIGURATION_DESIGNATION',
-                        },
-                        {
-                            title: 'Desks',
-                            url: '/configuration/desks',
-                            icon: MonitorCog,
-                            can: 'READ_CONFIGURATION_DESK',
-                        },
-                    ],
+                    title: 'Companies',
+                    url: '/configuration/companies',
+                    icon: Landmark,
+                    can: 'READ_CONFIGURATION_COMPANY',
+                },
+                {
+                    title: 'Divisions',
+                    url: '/configuration/divisions',
+                    icon: Building,
+                    can: 'READ_CONFIGURATION_DIVISION',
+                },
+                {
+                    title: 'Departments',
+                    url: '/configuration/departments',
+                    icon: Briefcase,
+                    can: 'READ_CONFIGURATION_DEPARTMENT',
+                },
+                {
+                    title: 'Designations',
+                    url: '/configuration/designations',
+                    icon: IdCard,
+                    can: 'READ_CONFIGURATION_DESIGNATION',
+                },
+                {
+                    title: 'Desks',
+                    url: '/configuration/desks',
+                    icon: MonitorCog,
+                    can: 'READ_CONFIGURATION_DESK',
                 },
             ],
         },
