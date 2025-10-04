@@ -30,7 +30,7 @@ export default function AppSidebarLayout({
                         </div>
                     </AppSidebarHeader>
                 </SearchProvider>
-                <div className="p-4">
+                <div className="container py-4">
                     <div className="mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4">
                         <div>
                             <Breadcrumbs breadcrumbs={breadcrumbs} />

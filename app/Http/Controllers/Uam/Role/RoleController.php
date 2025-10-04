@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Uam\Role;
 
 use App\DataTables\Uam\Role\RolesDataTable;
 use App\Http\Controllers\Controller;
+use App\Models\Uam\Permission;
 use App\Models\Uam\Role;
 use App\Repositories\Uam\Role\RoleRepository;
 use Illuminate\Http\Request;
@@ -36,13 +37,13 @@ class RoleController extends Controller
     public function edit(Role $role)
     {
         // Get all permissions, grouped by module if needed
-        $allPermissions = \App\Models\Uam\Permission::all()->map(function ($perm) {
-            $parts = explode('.', $perm->name, 2);
-            $module = $parts[0] ?? 'General';
+        $allPermissions = Permission::all()->map(function ($perm) {
             return [
                 'id' => $perm->id,
+                'module' => $perm->module,
+                'group' => $perm->group,
                 'name' => $perm->name,
-                'module' => ucfirst($module),
+                'display_name' => $perm->display_name,
             ];
         });
 
@@ -62,11 +63,12 @@ class RoleController extends Controller
 
     public function update(Request $request, Role $role)
     {
-        $validated = $request->validate([
+        $input = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
             'description' => 'nullable|string',
+            'permissions' => 'nullable|array',
         ]);
-        $this->roleRepository->update($validated, $role->id);
+        $this->roleRepository->update($input, $role->id);
         return redirect()->back()->with('success', 'Role updated successfully.');
     }
 

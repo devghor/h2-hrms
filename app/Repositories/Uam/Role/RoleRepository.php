@@ -16,4 +16,27 @@ class RoleRepository  extends CoreRepository
     {
         return Role::class;
     }
+
+    /**
+     * Update a entity in repository by id
+     *
+     * @param array $attributes
+     * @param       $id
+     *
+     * @return mixed
+     * @throws ValidatorException
+     *
+     */
+    public function update(array $attributes, $id)
+    {
+        $role = parent::update($attributes, $id);
+
+        if (isset($attributes['permissions']) && is_array($attributes['permissions'])) {
+            $role->syncPermissions($attributes['permissions']);
+        } else {
+            $role->syncPermissions([]);
+        }
+
+        return $role;
+    }
 }

@@ -1,15 +1,22 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { breadcrumbItems } from '@/config/breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { router } from '@inertiajs/react';
+import * as Tooltip from '@radix-ui/react-tooltip';
 import { useState } from 'react';
 import { toast } from 'sonner';
+
+interface RawPermission {
+    id: number;
+    display_name: string; // "Read", "Create", etc.
+    group: string; // "General > Dashboard"
+    module: string; // "General"
+}
 
 interface Permission {
     id: number;
@@ -17,6 +24,7 @@ interface Permission {
     module: string;
     feature: string;
     action: string;
+    display_name?: string;
 }
 
 interface Role {
@@ -32,30 +40,37 @@ interface PermissionGroup {
     };
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    breadcrumbItems.dashboard,
-    breadcrumbItems.uamRoles,
-    {
-        title: 'Edit Role',
-        href: '',
-    },
-];
+const breadcrumbs: BreadcrumbItem[] = [breadcrumbItems.dashboard, breadcrumbItems.uamRoles, { title: 'Edit Role', href: '' }];
 
-export default function EditRole({ role, allPermissions }: { role: Role; allPermissions: Permission[] }) {
+function transformPermissions(rawPermissions: RawPermission[]): Permission[] {
+    return rawPermissions.map((perm) => {
+        const [module, feature] = perm.group.split(' > ');
+        return {
+            id: perm.id,
+            name: `${perm.display_name}${module}${feature}`,
+            module,
+            feature,
+            action: perm.display_name,
+            display_name: perm.display_name,
+        };
+    });
+}
+
+export default function EditRole({ role, allPermissions: rawPermissions }: { role: Role; allPermissions: RawPermission[] }) {
+    const allPermissions: Permission[] = transformPermissions(rawPermissions);
+
     const [form, setForm] = useState({
         name: role.name || '',
         description: role.description || '',
         permissions: role.permissions || [],
     });
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+    const [searchTerm, setSearchTerm] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
-        // Clear error when user starts typing
-        if (formErrors[name]) {
-            setFormErrors((prev) => ({ ...prev, [name]: '' }));
-        }
+        if (formErrors[name]) setFormErrors((prev) => ({ ...prev, [name]: '' }));
     };
 
     const handlePermissionChange = (permissionId: number) => {
@@ -67,223 +82,241 @@ export default function EditRole({ role, allPermissions }: { role: Role; allPerm
         });
     };
 
-    const handleSelectAllFeature = (featurePermissions: Permission[]) => {
-        const featureIds = featurePermissions.map((p) => p.id);
-        const allSelected = featureIds.every((id) => form.permissions.includes(id));
-
-        setForm((prev) => {
-            const permissions = allSelected
-                ? prev.permissions.filter((id) => !featureIds.includes(id))
-                : [...new Set([...prev.permissions, ...featureIds])];
-            return { ...prev, permissions };
-        });
+    const handleSelectAllFeature = (featurePermissions: any[]) => {
+        const ids = featurePermissions.map((p) => p.id);
+        const allSelected = ids.every((id) => form.permissions.includes(id));
+        setForm((prev) => ({
+            ...prev,
+            permissions: allSelected ? prev.permissions.filter((id) => !ids.includes(id)) : [...new Set([...prev.permissions, ...ids])],
+        }));
     };
 
-    const handleSelectAllModule = (modulePermissions: Permission[]) => {
-        const moduleIds = modulePermissions.map((p) => p.id);
-        const allSelected = moduleIds.every((id) => form.permissions.includes(id));
+    const handleSelectAllModule = (modulePermissions: any[]) => {
+        const ids = modulePermissions.map((p) => p.id);
+        const allSelected = ids.every((id) => form.permissions.includes(id));
+        setForm((prev) => ({
+            ...prev,
+            permissions: allSelected ? prev.permissions.filter((id) => !ids.includes(id)) : [...new Set([...prev.permissions, ...ids])],
+        }));
+    };
 
-        setForm((prev) => {
-            const permissions = allSelected
-                ? prev.permissions.filter((id) => !moduleIds.includes(id))
-                : [...new Set([...prev.permissions, ...moduleIds])];
-            return { ...prev, permissions };
-        });
+    const handleSelectAllPermissions = () => {
+        const allIds = allPermissions.map((p) => p.id);
+        const allSelected = allIds.every((id) => form.permissions.includes(id));
+        setForm((prev) => ({
+            ...prev,
+            permissions: allSelected ? [] : allIds,
+        }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         router.put(route('uam.roles.update', role.id), form, {
-            onSuccess: () => {
-                toast.success('Role updated successfully');
-            },
-            onError: (errors) => {
-                setFormErrors(errors);
-            },
+            onSuccess: () => toast.success('Role updated successfully'),
+            onError: (errors) => setFormErrors(errors),
         });
     };
 
-    // Group permissions by module and feature
     const permissionsByModuleAndFeature = allPermissions.reduce<PermissionGroup>((acc, perm) => {
-        if (!acc[perm.module]) {
-            acc[perm.module] = {};
-        }
-        if (!acc[perm.module][perm.feature]) {
-            acc[perm.module][perm.feature] = [];
-        }
+        if (!acc[perm.module]) acc[perm.module] = {};
+        if (!acc[perm.module][perm.feature]) acc[perm.module][perm.feature] = [];
         acc[perm.module][perm.feature].push(perm);
         return acc;
     }, {});
 
-    const isFeatureFullySelected = (featurePermissions: Permission[]) => {
-        return featurePermissions.every((perm) => form.permissions.includes(perm.id));
-    };
+    // Filter based on search term
+    const filteredPermissionsByModuleAndFeature = Object.fromEntries(
+        Object.entries(permissionsByModuleAndFeature)
+            .map(([module, features]) => [
+                module,
+                Object.fromEntries(
+                    Object.entries(features)
+                        .map(([feature, perms]) => [
+                            feature,
+                            perms.filter(
+                                (p) =>
+                                    p.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    p.feature.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    p.module.toLowerCase().includes(searchTerm.toLowerCase()),
+                            ),
+                        ])
+                        .filter(([_, perms]) => perms.length > 0),
+                ),
+            ])
+            .filter(([_, features]) => Object.keys(features).length > 0),
+    );
 
-    const isModuleFullySelected = (modulePermissions: Permission[]) => {
-        return modulePermissions.every((perm) => form.permissions.includes(perm.id));
-    };
+    const isFeatureFullySelected = (featurePermissions: any[]) => featurePermissions.every((perm) => form.permissions.includes(perm.id));
+    const isFeaturePartiallySelected = (featurePermissions: any[]) =>
+        featurePermissions.some((perm) => form.permissions.includes(perm.id)) && !isFeatureFullySelected(featurePermissions);
+    const isModuleFullySelected = (modulePermissions: any[]) => modulePermissions.every((perm) => form.permissions.includes(perm.id));
 
-    const isFeaturePartiallySelected = (featurePermissions: Permission[]) => {
-        return featurePermissions.some((perm) => form.permissions.includes(perm.id)) && !isFeatureFullySelected(featurePermissions);
+    const crudActions = ['Create', 'Read', 'Update', 'Delete'];
+
+    const countCrudPermissions = (permissions: any[], selectedIds: any[]) => {
+        const counts: Record<string, boolean> = { Create: false, Read: false, Update: false, Delete: false };
+        permissions.forEach((perm) => {
+            if (crudActions.includes(perm.action)) {
+                counts[perm.action] = selectedIds.includes(perm.id);
+            }
+        });
+        return counts;
     };
 
     return (
         <AppLayout title="Edit Role" breadcrumbs={breadcrumbs}>
-            <div className="py-auto container mx-auto">
-                <Card>
+            <form onSubmit={handleSubmit} className="space-y-10">
+                {/* Top Sticky Buttons */}
+                <div className="sticky top-0 z-20 flex flex-wrap justify-end gap-4 border-b bg-white py-4 shadow-sm">
+                    <Button type="button" variant="outline" onClick={() => router.visit(route('uam.roles.index'))}>
+                        Cancel
+                    </Button>
+
+                    <Button type="button" variant="secondary" onClick={handleSelectAllPermissions}>
+                        {allPermissions.every((p) => form.permissions.includes(p.id)) ? 'Deselect All' : 'Select All'}
+                    </Button>
+
+                    <Button type="submit" className="min-w-[140px]">
+                        Update Role
+                    </Button>
+                </div>
+
+                {/* Role Info */}
+                <Card className="rounded-lg border shadow-md">
                     <CardHeader>
-                        <CardTitle className="text-2xl">Edit Role</CardTitle>
-                        <CardDescription>Modify role details and assign permissions to control access levels.</CardDescription>
+                        <CardTitle className="text-xl font-semibold">Role Information</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-8">
-                            {/* Basic Information Section */}
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="name" className="text-sm font-medium">
-                                            Role Name <span className="text-red-500">*</span>
-                                        </Label>
-                                        <Input
-                                            id="name"
-                                            name="name"
-                                            value={form.name}
-                                            onChange={handleChange}
-                                            required
-                                            className="w-full"
-                                            placeholder="Enter role name"
-                                        />
-                                        {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="description" className="text-sm font-medium">
-                                            Description
-                                        </Label>
-                                        <Input
-                                            id="description"
-                                            name="description"
-                                            value={form.description}
-                                            onChange={handleChange}
-                                            className="w-full"
-                                            placeholder="Enter role description"
-                                        />
-                                        {formErrors.description && <p className="text-sm text-red-500">{formErrors.description}</p>}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <Separator />
-
-                            {/* Permissions Section */}
-                            <div className="space-y-6">
-                                <div>
-                                    <Label className="text-lg font-semibold">Permissions</Label>
-                                    <p className="mt-1 text-sm text-muted-foreground">Select the permissions this role should have access to.</p>
-                                </div>
-
-                                <div className="space-y-8">
-                                    {Object.entries(permissionsByModuleAndFeature).map(([module, features]) => {
-                                        const allModulePermissions = Object.values(features).flat();
-                                        const moduleFullySelected = isModuleFullySelected(allModulePermissions);
-
-                                        return (
-                                            <div key={module} className="space-y-4">
-                                                {/* Module Header */}
-                                                <div className="flex items-center gap-3 rounded-lg border bg-muted/30 p-4">
-                                                    <Checkbox
-                                                        checked={moduleFullySelected}
-                                                        onCheckedChange={() => handleSelectAllModule(allModulePermissions)}
-                                                        className="data-[state=checked]:bg-primary"
-                                                    />
-                                                    <div className="flex-1">
-                                                        <h3 className="text-lg font-semibold text-primary">{module.toUpperCase()}</h3>
-                                                        <p className="text-sm text-muted-foreground">
-                                                            {moduleFullySelected
-                                                                ? 'All permissions selected'
-                                                                : `${form.permissions.filter((id) => allModulePermissions.map((p) => p.id).includes(id)).length} of ${allModulePermissions.length} selected`}
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                                {/* Features */}
-                                                <div className="ml-8 space-y-6">
-                                                    {Object.entries(features).map(([feature, permissions]) => {
-                                                        const featureFullySelected = isFeatureFullySelected(permissions);
-                                                        const featurePartiallySelected = isFeaturePartiallySelected(permissions);
-
-                                                        return (
-                                                            <div key={feature} className="space-y-3">
-                                                                {/* Feature Header */}
-                                                                <div className="flex items-center gap-3 rounded-md border bg-background p-3">
-                                                                    <Checkbox
-                                                                        checked={featureFullySelected}
-                                                                        ref={(el) => {
-                                                                            if (el) {
-                                                                                el.indeterminate = featurePartiallySelected;
-                                                                            }
-                                                                        }}
-                                                                        onCheckedChange={() => handleSelectAllFeature(permissions)}
-                                                                    />
-                                                                    <div className="flex-1">
-                                                                        <h4 className="font-medium text-foreground">{feature}</h4>
-                                                                        <p className="text-xs text-muted-foreground">
-                                                                            {permissions.length} permission{permissions.length !== 1 ? 's' : ''}
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-
-                                                                {/* Individual Permissions */}
-                                                                <div className="ml-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                                                    {permissions.map((perm) => (
-                                                                        <label
-                                                                            key={perm.id}
-                                                                            className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted/50"
-                                                                        >
-                                                                            <Checkbox
-                                                                                checked={form.permissions.includes(perm.id)}
-                                                                                onCheckedChange={() => handlePermissionChange(perm.id)}
-                                                                            />
-                                                                            <div className="min-w-0 flex-1">
-                                                                                <span className="block truncate text-sm font-medium text-foreground">
-                                                                                    {perm.action || perm.name}
-                                                                                </span>
-                                                                                {perm.action && (
-                                                                                    <span className="block truncate text-xs text-muted-foreground">
-                                                                                        {perm.name}
-                                                                                    </span>
-                                                                                )}
-                                                                            </div>
-                                                                        </label>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-
-                                {formErrors.permissions && <p className="text-sm text-red-500">{formErrors.permissions}</p>}
-                            </div>
-
-                            {/* Actions */}
-                            <Separator />
-
-                            <div className="flex justify-end gap-4">
-                                <Button type="button" variant="outline" onClick={() => router.visit(route('uam.roles.index'))}>
-                                    Cancel
-                                </Button>
-                                <Button type="submit" className="min-w-[120px]">
-                                    Update Role
-                                </Button>
-                            </div>
-                        </form>
+                    <CardContent className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="name">
+                                Role Name <span className="text-red-500">*</span>
+                            </Label>
+                            <Input id="name" name="name" value={form.name} onChange={handleChange} required placeholder="Enter role name" />
+                            {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="description">Description</Label>
+                            <Input
+                                id="description"
+                                name="description"
+                                value={form.description}
+                                onChange={handleChange}
+                                placeholder="Enter role description"
+                            />
+                            {formErrors.description && <p className="text-sm text-red-500">{formErrors.description}</p>}
+                        </div>
                     </CardContent>
                 </Card>
-            </div>
+
+                {/* Search Input */}
+                <div className="space-y-6">
+                    <Label className="text-lg font-semibold">Permissions</Label>
+                    <p className="text-sm text-muted-foreground">Select the permissions this role should have access to.</p>
+
+                    <div className="mb-4 flex justify-center">
+                        <Input
+                            placeholder="Search permissions..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full md:w-1/3"
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {Object.entries(filteredPermissionsByModuleAndFeature).map(([module, features]: any) => {
+                            const allModulePermissions = Object.values(features).flat();
+                            const moduleFullySelected = isModuleFullySelected(allModulePermissions);
+
+                            return (
+                                <Card key={module} className="rounded-lg border-l-4 border-primary shadow-md transition-all hover:shadow-lg">
+                                    <CardHeader className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <Checkbox
+                                                checked={moduleFullySelected}
+                                                onCheckedChange={() => handleSelectAllModule(allModulePermissions)}
+                                                className="data-[state=checked]:bg-primary"
+                                            />
+                                            <CardTitle className="text-lg font-bold">{module}</CardTitle>
+                                        </div>
+                                        <span className="text-sm text-muted-foreground">
+                                            {form.permissions.filter((id) => allModulePermissions.map((p: any) => p.id).includes(id)).length} /{' '}
+                                            {allModulePermissions.length} perms
+                                        </span>
+                                    </CardHeader>
+
+                                    <CardContent className="space-y-3">
+                                        {Object.entries(features).map(([feature, permissions]: any) => {
+                                            const featureFullySelected = isFeatureFullySelected(permissions);
+                                            const featurePartiallySelected = isFeaturePartiallySelected(permissions);
+                                            const crudCounts = countCrudPermissions(permissions, form.permissions);
+
+                                            return (
+                                                <details
+                                                    key={feature}
+                                                    className="group rounded-md border border-gray-200 transition hover:border-primary"
+                                                >
+                                                    <summary className="flex cursor-pointer items-center justify-between p-3">
+                                                        <div className="flex items-center gap-3">
+                                                            <Checkbox
+                                                                checked={featureFullySelected}
+                                                                ref={(el: any) => {
+                                                                    if (el) el.indeterminate = featurePartiallySelected;
+                                                                }}
+                                                                onCheckedChange={() => handleSelectAllFeature(permissions)}
+                                                            />
+                                                            <span className="font-medium">{feature}</span>
+                                                        </div>
+
+                                                        {/* CRUD Count */}
+                                                        <span className="text-sm text-muted-foreground">
+                                                            {crudActions.map((a) => (
+                                                                <span key={a} className="mx-1">
+                                                                    {a[0]}: {crudCounts[a] ? '✓' : '✗'}
+                                                                </span>
+                                                            ))}
+                                                        </span>
+                                                    </summary>
+
+                                                    <div className="mt-2 flex flex-wrap gap-2 p-3">
+                                                        {permissions.map((perm: any) => (
+                                                            <Tooltip.Provider key={perm.id}>
+                                                                <Tooltip.Root>
+                                                                    <Tooltip.Trigger asChild>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handlePermissionChange(perm.id)}
+                                                                            className={`rounded-full px-2 py-1 text-xs font-semibold transition ${
+                                                                                form.permissions.includes(perm.id)
+                                                                                    ? 'bg-primary text-white shadow'
+                                                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                                            }`}
+                                                                        >
+                                                                            {perm.action.slice(0, 1).toUpperCase()}
+                                                                        </button>
+                                                                    </Tooltip.Trigger>
+                                                                    <Tooltip.Portal>
+                                                                        <Tooltip.Content
+                                                                            side="top"
+                                                                            className="rounded-md bg-black px-2 py-1 text-xs text-white shadow-lg"
+                                                                        >
+                                                                            {perm.action}
+                                                                            <Tooltip.Arrow className="fill-black" />
+                                                                        </Tooltip.Content>
+                                                                    </Tooltip.Portal>
+                                                                </Tooltip.Root>
+                                                            </Tooltip.Provider>
+                                                        ))}
+                                                    </div>
+                                                </details>
+                                            );
+                                        })}
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
+                    </div>
+                </div>
+            </form>
         </AppLayout>
     );
 }

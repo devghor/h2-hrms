@@ -6,7 +6,7 @@ use App\DataTables\Uam\Permission\PermissionsDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Uam\Permission\StorePermissionRequest;
 use App\Http\Requests\Uam\Permission\UpdatePermissionRequest;
-use App\Http\Resources\Uam\PermissionResource;
+use App\Http\Resources\Uam\Permission\PermissionResource;
 use App\Models\Uam\Permission;
 use App\Repositories\Uam\Permission\PermissionRepository;
 use Illuminate\Http\Request;
