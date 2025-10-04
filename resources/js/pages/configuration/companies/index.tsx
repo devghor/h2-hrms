@@ -124,9 +124,7 @@ export default function Index() {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>{isEdit ? 'Edit Company' : 'Add Company'}</DialogTitle>
-                        <DialogDescription>
-                            This action cannot be undone. Are you sure you want to permanently delete this file from our servers?
-                        </DialogDescription>
+                        <DialogDescription>Update the user here. Click save when you're done?</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="mt-2 space-y-4">
                         <div>
