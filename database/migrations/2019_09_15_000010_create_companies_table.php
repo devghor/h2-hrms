@@ -19,8 +19,8 @@ class CreateCompaniesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name')->unique();
             $table->string('short_name')->nullable();
-            $table->timestamps();
             $table->json('data')->nullable();
+            $table->timestamps();
         });
     }
 

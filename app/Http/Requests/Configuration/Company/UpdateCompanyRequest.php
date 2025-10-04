@@ -22,8 +22,8 @@ class UpdateCompanyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'company_name' => 'required|string|max:255',
-            'company_short_name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'short_name' => 'required|string|max:255',
         ];
     }
 }

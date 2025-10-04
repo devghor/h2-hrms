@@ -8,7 +8,7 @@ import { breadcrumbItems } from '@/config/breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { router } from '@inertiajs/react';
-import { DialogTitle } from '@radix-ui/react-dialog';
+import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 import { DeleteIcon, EditIcon, Loader2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 
@@ -18,14 +18,14 @@ export default function Index() {
     const tableRef = useRef<{ refetch: () => void }>(null);
     const [open, setOpen] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
-    const [form, setForm] = useState({ id: undefined, company_name: '', company_short_name: '', company_logo: null as File | null });
+    const [form, setForm] = useState({ id: undefined, name: '', short_name: '', company_logo: null as File | null });
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
 
     const columns = [
         { accessorKey: 'id', header: 'ID', sortable: true, searchable: true },
-        { accessorKey: 'company_name', header: 'Company Name', sortable: true, searchable: true },
-        { accessorKey: 'company_short_name', header: 'Short Name', sortable: true, searchable: true },
+        { accessorKey: 'name', header: 'Name', sortable: true, searchable: true },
+        { accessorKey: 'short_name', header: 'Short Name', sortable: true, searchable: true },
         {
             accessorKey: 'company_logo',
             header: 'Logo',
@@ -55,14 +55,14 @@ export default function Index() {
     ];
 
     const handleOpenAdd = () => {
-        setForm({ id: undefined, company_name: '', company_short_name: '', company_logo: null });
+        setForm({ id: undefined, name: '', short_name: '', company_logo: null });
         setIsEdit(false);
         setOpen(true);
         setFormErrors({});
     };
 
     const handleEdit = (row: any) => {
-        setForm({ id: row.id, company_name: row.company_name, company_short_name: row.company_short_name, company_logo: null });
+        setForm({ id: row.id, name: row.name, short_name: row.short_name, company_logo: null });
         setIsEdit(true);
         setOpen(true);
         setFormErrors({});
@@ -83,8 +83,8 @@ export default function Index() {
         e.preventDefault();
         setLoading(true);
         const data = new FormData();
-        data.append('company_name', form.company_name);
-        data.append('company_short_name', form.company_short_name);
+        data.append('name', form.name);
+        data.append('short_name', form.short_name);
         if (form.company_logo) data.append('company_logo', form.company_logo);
         const onFinish = () => setLoading(false);
         if (isEdit && form.id) {
@@ -124,17 +124,20 @@ export default function Index() {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>{isEdit ? 'Edit Company' : 'Add Company'}</DialogTitle>
+                        <DialogDescription>
+                            This action cannot be undone. Are you sure you want to permanently delete this file from our servers?
+                        </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="mt-2 space-y-4">
                         <div>
-                            <Label htmlFor="company_name">Company Name</Label>
-                            <Input name="company_name" value={form.company_name} onChange={handleChange} required />
-                            {formErrors.company_name && <p className="text-sm text-red-500">{formErrors.company_name}</p>}
+                            <Label htmlFor="name">Company Name</Label>
+                            <Input name="name" value={form.name} onChange={handleChange} required />
+                            {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
                         </div>
                         <div>
-                            <Label htmlFor="company_short_name">Short Name</Label>
-                            <Input name="company_short_name" value={form.company_short_name} onChange={handleChange} required />
-                            {formErrors.company_short_name && <p className="text-sm text-red-500">{formErrors.company_short_name}</p>}
+                            <Label htmlFor="short_name">Short Name</Label>
+                            <Input name="short_name" value={form.short_name} onChange={handleChange} required />
+                            {formErrors.short_name && <p className="text-sm text-red-500">{formErrors.short_name}</p>}
                         </div>
                         <div>
                             <Label htmlFor="company_logo">Logo</Label>
