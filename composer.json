@@ -28,6 +28,7 @@
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
+        "nunomaduro/larastan": "^3.7",
         "phpunit/phpunit": "^11.5.3",
         "rector/rector": "^2.1"
     },
@@ -44,6 +45,9 @@
         }
     },
     "scripts": {
+        "phpstan": [
+            "./vendor/bin/phpstan analyse"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
@@ -72,6 +76,9 @@
             "@php artisan config:clear --ansi",
             "@php artisan test"
         ]
+    },
+    "scripts-descriptions": {
+        "phpstan": "Run PHPStan static analysis against your application."
     },
     "extra": {
         "laravel": {

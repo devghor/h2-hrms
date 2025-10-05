@@ -5,7 +5,7 @@ namespace App\Repositories\Uam\Role;
 use App\Models\Uam\Role;
 use App\Repositories\Core\CoreRepository;
 
-class RoleRepository  extends CoreRepository
+class RoleRepository extends CoreRepository
 {
     /**
      * Specify Model class name
