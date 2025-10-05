@@ -8,7 +8,7 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(function () {
+Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(function (): void {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
@@ -19,7 +19,7 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
      */
     Route::name('uam.')
         ->prefix('uam')
-        ->group(function () {
+        ->group(function (): void {
             Route::resource('users', App\Http\Controllers\Uam\User\UserController::class);
             Route::resource('roles', App\Http\Controllers\Uam\Role\RoleController::class);
             Route::resource('permissions', App\Http\Controllers\Uam\Permission\PermissionController::class);
@@ -31,7 +31,7 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
      */
     Route::name('configuration.')
         ->prefix('configuration')
-        ->group(function () {
+        ->group(function (): void {
             Route::resource('desks', App\Http\Controllers\Configuration\Desk\DeskController::class);
             Route::resource('companies', App\Http\Controllers\Configuration\Company\CompanyController::class);
             Route::resource('divisions', App\Http\Controllers\Configuration\Division\DivisionController::class);

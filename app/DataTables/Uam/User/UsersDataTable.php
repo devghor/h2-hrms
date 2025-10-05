@@ -16,7 +16,7 @@ class UsersDataTable extends DataTable
     {
         return datatables()
             ->eloquent($query)
-            ->filterColumn('id', function ($query, $keyword) {
+            ->filterColumn('id', function ($query, $keyword): void {
                 $query->where('id', $keyword);
             })
             ->rawColumns(['actions']);
