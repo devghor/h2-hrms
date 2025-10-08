@@ -123,7 +123,7 @@ function CompanySwitcher({ companies, currentCompany }: { companies: Company[] |
                 <DropdownMenuSeparator />
                 {companies.map((company) => (
                     <DropdownMenuItem key={company.id} asChild className="cursor-pointer gap-2 p-2">
-                        <Link href={`/switch-company/${company.id}`}>{company.name}</Link>
+                        <Link href={route('configuration.companies.switch', company.id)}>{company.name}</Link>
                     </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />

@@ -87,4 +87,16 @@ class CompanyController extends Controller
             'success' => __('Company deleted successfully.'),
         ]);
     }
+
+    public function switchCompany(Company $company)
+    {
+        $isUserCompany = $this->companyRepository->isAuthUserCompany($company->id);
+
+        if ($isUserCompany) {
+            tenancy()->initialize($company);
+            session()->put(config('tenancy.current_company_session_key'), $company->id);
+        }
+
+        return redirect()->back();
+    }
 }

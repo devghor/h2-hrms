@@ -34,4 +34,9 @@ class CompanyRepository extends CoreRepository
         Auth::user()->companies()->save($model);
         return $model;
     }
+
+    public function isAuthUserCompany(int $companyId): bool
+    {
+        return Auth::user()->companies->contains('id', $companyId);
+    }
 }

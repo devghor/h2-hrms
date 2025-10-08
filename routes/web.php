@@ -1,5 +1,12 @@
 <?php
 
+use App\Http\Controllers\Configuration\Company\CompanyController;
+use App\Http\Controllers\Configuration\Department\DepartmentController;
+use App\Http\Controllers\Configuration\Desk\DeskController;
+use App\Http\Controllers\Configuration\Division\DivisionController;
+use App\Http\Controllers\Uam\Permission\PermissionController;
+use App\Http\Controllers\Uam\Role\RoleController;
+use App\Http\Controllers\Uam\User\UserController;
 use App\Http\Middleware\HandleTenancyFromSession;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -20,9 +27,9 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
     Route::name('uam.')
         ->prefix('uam')
         ->group(function (): void {
-            Route::resource('users', App\Http\Controllers\Uam\User\UserController::class);
-            Route::resource('roles', App\Http\Controllers\Uam\Role\RoleController::class);
-            Route::resource('permissions', App\Http\Controllers\Uam\Permission\PermissionController::class);
+            Route::resource('users', UserController::class);
+            Route::resource('roles', RoleController::class);
+            Route::resource('permissions', PermissionController::class);
         });
 
     /**
@@ -32,10 +39,11 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
     Route::name('configuration.')
         ->prefix('configuration')
         ->group(function (): void {
-            Route::resource('desks', App\Http\Controllers\Configuration\Desk\DeskController::class);
-            Route::resource('companies', App\Http\Controllers\Configuration\Company\CompanyController::class);
-            Route::resource('divisions', App\Http\Controllers\Configuration\Division\DivisionController::class);
-            Route::resource('departments', App\Http\Controllers\Configuration\Department\DepartmentController::class);
+            Route::resource('desks', DeskController::class);
+            Route::get('companies/{company}/switch', [CompanyController::class, 'switchCompany'])->name('companies.switch');
+            Route::resource('companies', CompanyController::class);
+            Route::resource('divisions', DivisionController::class);
+            Route::resource('departments', DepartmentController::class);
         });
 });
 
