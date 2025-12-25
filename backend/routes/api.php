@@ -6,22 +6,37 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
-    // Public routes
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-
-    // Protected routes
-    Route::middleware('auth:api')->group(function () {
-        // Auth routes
-        Route::post('/auth/logout', [AuthController::class, 'logout']);
-        Route::post('/auth/refresh', [AuthController::class, 'refresh']);
-        Route::get('/auth/me', [AuthController::class, 'me']);
-        Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
-
-        // User routes
-        Route::get('/user', function (Request $request) {
-            return $request->user();
+    Route::prefix('auth')
+        ->name('auth.')
+        ->group(function () {
+            Route::post('/register', [AuthController::class, 'register']);
+            Route::post('/login', [AuthController::class, 'login']);
         });
-        Route::apiResource('users', UserController::class);
+
+    /** Protected Routes **/
+    Route::middleware('auth:api')->group(function () {
+        /**
+         * Auth Module
+         */
+        Route::prefix('auth')
+            ->name('auth.')
+            ->group(function () {
+                Route::post('/logout', [AuthController::class, 'logout']);
+                Route::post('/refresh', [AuthController::class, 'refresh']);
+                Route::post('/change-password', [AuthController::class, 'changePassword']);
+            });
+
+        /**
+         * User Module
+         */
+        Route::prefix('users')
+            ->name('users.')
+            ->group(function () {
+                Route::get('/me', [AuthController::class, 'me']);
+                Route::get('/user', function (Request $request) {
+                    return $request->user();
+                });
+                Route::apiResource('users', UserController::class);
+            });
     });
 });
