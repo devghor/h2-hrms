@@ -54,7 +54,7 @@ return [
          * @see \Stancl\Tenancy\UniqueIdentifierGenerators\RandomIntGenerator
          * @see \Stancl\Tenancy\UniqueIdentifierGenerators\RandomStringGenerator
          */
-        'id_generator' => UniqueIdentifierGenerators\UUIDGenerator::class,
+        'id_generator' => null,
     ],
 
     'identification' => [
@@ -152,7 +152,7 @@ return [
                 'cookie' => 'tenant',
                 'query_parameter' => 'tenant',
 
-                'tenant_model_column' => null, // null = tenant key
+                'tenant_model_column' => 'ulid', // null = tenant key
 
                 'cache' => false,
                 'cache_ttl' => 3600, // seconds

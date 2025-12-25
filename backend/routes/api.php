@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\User\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Middleware\InitializeTenancyByRequestData;
 
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')
@@ -14,7 +15,7 @@ Route::prefix('v1')->group(function () {
         });
 
     /** Protected Routes **/
-    Route::middleware('auth:api')->group(function () {
+    Route::middleware(['auth:api', InitializeTenancyByRequestData::class])->group(function () {
         /**
          * Auth Module
          */

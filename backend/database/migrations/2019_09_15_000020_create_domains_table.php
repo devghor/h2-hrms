@@ -19,10 +19,8 @@ return new class extends Migration
         Schema::create('domains', function (Blueprint $table) {
             $table->increments('id');
             $table->string('domain', 255)->unique();
-            $table->string(Tenancy::tenantKeyColumn())->comment('no-rls');
-
+            $table->bigInteger(Tenancy::tenantKeyColumn())->comment('no-rls');
             $table->timestamps();
-            $table->foreign(Tenancy::tenantKeyColumn())->references('id')->on('tenants')->onUpdate('cascade');
         });
     }
 
