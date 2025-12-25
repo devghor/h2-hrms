@@ -28,7 +28,7 @@ return [
      * Configuration for the models used by Tenancy.
      */
     'models' => [
-        'tenant' => App\Models\Tenant::class,
+        'tenant' => App\Models\Tenancy\Tenant::class,
         'domain' => Stancl\Tenancy\Database\Models\Domain::class,
         'impersonation_token' => Stancl\Tenancy\Database\Models\ImpersonationToken::class,
 

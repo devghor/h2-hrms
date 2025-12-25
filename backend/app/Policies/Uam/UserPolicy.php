@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Policies\User;
+namespace App\Policies\Uam;
 
-use App\Models\User;
+use App\Models\Uam\User;
 
 class UserPolicy
 {

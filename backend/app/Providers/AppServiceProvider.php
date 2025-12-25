@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\User;
-use App\Policies\User\UserPolicy;
+use App\Models\Uam\User;
+use App\Policies\Uam\UserPolicy;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;

@@ -21,8 +21,8 @@ return new class extends Migration
             SchemaHelper::addUlidColumn($table);
             $table->string('name')->unique();
             $table->string('slug')->unique();
-            $table->timestamps();
             $table->json('data')->nullable();
+            $table->timestamps();
         });
     }
 

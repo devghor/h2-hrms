@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Tenancy;
 
-use App\Models\Traits\HasUlidAttribute;
+use App\Traits\HasUlidAttribute;
 use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
 

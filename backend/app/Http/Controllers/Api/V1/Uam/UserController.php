@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\User;
+namespace App\Http\Controllers\Api\V1\Uam;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\User\UserCollection;
-use App\Http\Resources\User\UserResource;
-use App\Models\User;
-use App\Services\User\UserService;
+use App\Http\Resources\Uam\UserCollection;
+use App\Http\Resources\Uam\UserResource;
+use App\Models\Uam\User;
+use App\Services\Uam\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -24,7 +24,7 @@ class UserController extends Controller
         return new UserCollection($users);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsosnResponse
     {
         $this->authorize('create', User::class);
 

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Uam;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Models\Traits\HasUlidAttribute;
+use App\Models\Tenancy\Tenant;
+use App\Traits\HasUlidAttribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\User;
+namespace App\Services\Uam;
 
-use App\Models\User;
+use App\Models\Uam\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;

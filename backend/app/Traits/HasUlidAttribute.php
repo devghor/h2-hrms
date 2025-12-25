@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Traits;
+namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
@@ -11,7 +11,7 @@ trait HasUlidAttribute
     /**
      * Columns that should receive ULIDs.
      */
-    protected function uniqueIds(): array
+    public function uniqueIds(): array
     {
         return ['ulid'];
     }
