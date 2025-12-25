@@ -25,7 +25,7 @@ class PermissionSeeder extends Seeder
              */
 
             // Dashboard
-            ['module' => 'General', 'group' => 'General > Dashboard', 'name' => 'ReadGeneralDashboard', 'display_name' => self::KEY_READ],
+            ['module' => 'General', 'group' => 'General > Dashboard', 'name' => 'READ_GENERAL_DASHBOARD', 'display_name' => self::KEY_READ],
 
             /**
              * Uam Module
