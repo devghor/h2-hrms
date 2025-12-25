@@ -1,0 +1,58 @@
+services:
+  backend:
+    container_name: h2-hrms-backend
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/var/www
+    depends_on:
+      - mysql
+    networks:
+      - h2-hrms
+
+  nginx:
+    container_name: h2-hrms-nginx
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./backend:/var/www
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    networks:
+      - h2-hrms
+
+  client:
+    container_name: h2-hrms-client
+    build:
+      context: ./client
+    volumes:
+      - ./client:/app       # mount source code
+      - /app/node_modules   # keep container node_modules isolated
+    ports:
+      - "5173:5173"
+    networks:
+      - h2-hrms
+
+  mysql:
+    container_name: h2-hrms-mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: h2_hrms
+      MYSQL_USER: h2user
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - h2-hrms
+
+networks:
+  h2-hrms:
+    driver: bridge
+
+volumes:
+  mysql_data:
