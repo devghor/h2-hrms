@@ -25,15 +25,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
-
-        // Enable password grant type
-        Passport::enablePasswordGrant();
-
-        // Passport token expiration
-        Passport::tokensExpireIn(CarbonInterval::days(15));
-        Passport::refreshTokensExpireIn(CarbonInterval::days(30));
-        Passport::personalAccessTokensExpireIn(CarbonInterval::months(6));
-
     }
 
     public function registerPolicies(): void

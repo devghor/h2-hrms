@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Auth\AuthController;
-use App\Http\Controllers\Api\V1\User\UserController;
+use App\Http\Controllers\Api\V1\Uam\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByRequestData;
@@ -15,7 +15,7 @@ Route::prefix('v1')->group(function () {
         });
 
     /** Protected Routes **/
-    Route::middleware(['auth:api', InitializeTenancyByRequestData::class])->group(function () {
+    Route::middleware(['auth:sanctum', InitializeTenancyByRequestData::class])->group(function () {
         /**
          * Auth Module
          */
@@ -30,8 +30,8 @@ Route::prefix('v1')->group(function () {
         /**
          * User Module
          */
-        Route::prefix('users')
-            ->name('users.')
+        Route::prefix('uam')
+            ->name('uam.')
             ->group(function () {
                 Route::get('/me', [AuthController::class, 'me']);
                 Route::get('/user', function (Request $request) {

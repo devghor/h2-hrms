@@ -34,12 +34,18 @@ class AuthService
         }
 
         $user = auth()->user();
-        $token = $user->createToken('auth_token')->accessToken;
+
+        $token = $user->createToken(
+            'access_token',
+            ['*'],
+            now()->addMinutes(5)
+        );
 
         return [
             'user' => $user,
-            'access_token' => $token,
+            'access_token' => $token->plainTextToken,
             'token_type' => 'Bearer',
+            'expires_at' => $token->accessToken->expires_at,
         ];
     }
 
