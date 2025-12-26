@@ -6,6 +6,7 @@ namespace App\Models\Uam;
 
 use App\Models\Tenancy\Tenant;
 use App\Traits\HasUlidAttribute;
+use App\Traits\HasPermissionCache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -15,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasUlidAttribute;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasUlidAttribute, HasPermissionCache;
 
     /**
      * The guard name for Spatie Permission.

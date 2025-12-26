@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Uam\UserController;
+use App\Http\Controllers\Api\V1\Uam\RoleController;
+use App\Http\Controllers\Api\V1\Uam\PermissionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByRequestData;
@@ -37,7 +39,29 @@ Route::prefix('v1')->group(function () {
                 Route::get('/user', function (Request $request) {
                     return $request->user();
                 });
+
+                // User resource routes with specific permissions
                 Route::apiResource('users', UserController::class);
+
+                // Role management
+                Route::apiResource('roles', RoleController::class);
+                Route::post('roles/{role}/permissions', [RoleController::class, 'assignPermissions'])
+                    ->name('roles.assign-permissions');
+
+                // Permission management
+                Route::get('permissions', [PermissionController::class, 'index'])
+                    ->name('permissions.index');
+                Route::get('permissions/grouped', [PermissionController::class, 'grouped'])
+                    ->name('permissions.grouped');
+                Route::get('permissions/user', [PermissionController::class, 'userPermissions'])
+                    ->name('permissions.user');
+
+                // Alternative: Apply middleware per route
+                // Route::get('/users', [UserController::class, 'index'])->middleware('permission:READ_UAM_USER');
+                // Route::post('/users', [UserController::class, 'store'])->middleware('permission:CREATE_UAM_USER');
+                // Route::get('/users/{user}', [UserController::class, 'show'])->middleware('permission:READ_UAM_USER');
+                // Route::put('/users/{user}', [UserController::class, 'update'])->middleware('permission:UPDATE_UAM_USER');
+                // Route::delete('/users/{user}', [UserController::class, 'destroy'])->middleware('permission:DELETE_UAM_USER');
             });
     });
 });
