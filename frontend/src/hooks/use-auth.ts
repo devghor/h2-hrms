@@ -44,11 +44,12 @@ export const useAuth = () => {
       const searchParams = new URLSearchParams(window.location.search)
       const redirectTo = searchParams.get('redirect')
 
-      // Navigate to redirect URL or dashboard
+      // Use window.location.href for reliable navigation after login
+      // This ensures the router re-evaluates auth state properly
       if (redirectTo) {
         window.location.href = redirectTo
       } else {
-        navigate({ to: '/', replace: true })
+        window.location.href = '/'
       }
     },
     onError: (error: AxiosError<ApiErrorResponse>) => {
@@ -89,11 +90,12 @@ export const useAuth = () => {
       const searchParams = new URLSearchParams(window.location.search)
       const redirectTo = searchParams.get('redirect')
 
-      // Navigate to redirect URL or dashboard
+      // Use window.location.href for reliable navigation after registration
+      // This ensures the router re-evaluates auth state properly
       if (redirectTo) {
         window.location.href = redirectTo
       } else {
-        navigate({ to: '/', replace: true })
+        window.location.href = '/'
       }
     },
     onError: (error: AxiosError<ApiErrorResponse>) => {
