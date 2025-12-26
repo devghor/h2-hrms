@@ -40,8 +40,16 @@ export const useAuth = () => {
 
       toast.success(response.message || 'Login successful!')
 
-      // Navigate to dashboard
-      navigate({ to: '/', replace: true })
+      // Get redirect URL from current location search params
+      const searchParams = new URLSearchParams(window.location.search)
+      const redirectTo = searchParams.get('redirect')
+
+      // Navigate to redirect URL or dashboard
+      if (redirectTo) {
+        window.location.href = redirectTo
+      } else {
+        navigate({ to: '/', replace: true })
+      }
     },
     onError: (error: AxiosError<ApiErrorResponse>) => {
       const message =
@@ -77,8 +85,16 @@ export const useAuth = () => {
 
       toast.success(response.message || 'Registration successful!')
 
-      // Navigate to dashboard
-      navigate({ to: '/', replace: true })
+      // Get redirect URL from current location search params
+      const searchParams = new URLSearchParams(window.location.search)
+      const redirectTo = searchParams.get('redirect')
+
+      // Navigate to redirect URL or dashboard
+      if (redirectTo) {
+        window.location.href = redirectTo
+      } else {
+        navigate({ to: '/', replace: true })
+      }
     },
     onError: (error: AxiosError<ApiErrorResponse>) => {
       const message =

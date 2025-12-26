@@ -54,12 +54,12 @@ class AuthService
 
     public function logout(User $user): void
     {
-        $user->token()->revoke();
+        $user->currentAccessToken()->delete();
     }
 
     public function refreshToken(User $user): array
     {
-        $user->token()->revoke();
+        $user->currentAccessToken()->delete();
         $token = $user->createToken('auth_token')->accessToken;
 
         return [
