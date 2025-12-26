@@ -23,16 +23,16 @@ export interface ChangePasswordData {
 
 export interface AuthUser {
   id: number
-  accountNo: string
   name: string
   email: string
   email_verified_at: string | null
-  roles: Array<{
+  tenant_id: string
+  roles?: Array<{
     id: number
     name: string
     guard_name: string
   }>
-  permissions: string[]
+  permissions?: string[]
   created_at: string
   updated_at: string
 }
@@ -42,7 +42,8 @@ export interface AuthResponse {
   message: string
   data: {
     user: AuthUser
-    token: string
+    access_token: string
+    token_type: string
     expires_at: string
   }
 }
@@ -57,7 +58,8 @@ export interface RefreshTokenResponse {
   success: boolean
   message: string
   data: {
-    token: string
+    access_token: string
+    token_type: string
     expires_at: string
   }
 }

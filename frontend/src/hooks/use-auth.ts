@@ -28,11 +28,13 @@ export const useAuth = () => {
       authService.login(credentials),
     onSuccess: (response) => {
       // Store token and user data
-      auth.setAccessToken(response.data.token)
+      auth.setAccessToken(response.data.access_token)
       auth.setUser({
-        accountNo: response.data.user.accountNo,
+        id: response.data.user.id,
+        name: response.data.user.name,
         email: response.data.user.email,
-        role: response.data.user.roles.map((role) => role.name),
+        tenant_id: response.data.user.tenant_id,
+        role: response.data.user.roles?.map((role) => role.name) || [],
         exp: new Date(response.data.expires_at).getTime(),
       })
 
@@ -63,11 +65,13 @@ export const useAuth = () => {
       authService.register(credentials),
     onSuccess: (response) => {
       // Store token and user data
-      auth.setAccessToken(response.data.token)
+      auth.setAccessToken(response.data.access_token)
       auth.setUser({
-        accountNo: response.data.user.accountNo,
+        id: response.data.user.id,
+        name: response.data.user.name,
         email: response.data.user.email,
-        role: response.data.user.roles.map((role) => role.name),
+        tenant_id: response.data.user.tenant_id,
+        role: response.data.user.roles?.map((role) => role.name) || [],
         exp: new Date(response.data.expires_at).getTime(),
       })
 

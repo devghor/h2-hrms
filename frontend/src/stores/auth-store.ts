@@ -4,8 +4,10 @@ import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
 const ACCESS_TOKEN = 'thisisjustarandomstring'
 
 interface AuthUser {
-  accountNo: string
+  id: number
+  name: string
   email: string
+  tenant_id: string
   role: string[]
   exp: number
 }
@@ -28,8 +30,13 @@ export const useAuthStore = create<AuthState>()((set) => {
   return {
     auth: {
       user: null,
-      setUser: (user) =>
-        set((state) => ({ ...state, auth: { ...state.auth, user } })),
+      setUser: (user) => {
+        // Store tenant_id in cookie when user is set
+        if (user?.tenant_id) {
+          setCookie('tenant_id', user.tenant_id)
+        }
+        set((state) => ({ ...state, auth: { ...state.auth, user } }))
+      },
       accessToken: initToken,
       setAccessToken: (accessToken) =>
         set((state) => {
@@ -44,6 +51,7 @@ export const useAuthStore = create<AuthState>()((set) => {
       reset: () =>
         set((state) => {
           removeCookie(ACCESS_TOKEN)
+          removeCookie('tenant_id')
           return {
             ...state,
             auth: { ...state.auth, user: null, accessToken: '' },

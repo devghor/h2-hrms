@@ -29,7 +29,7 @@ axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Get token from cookie
     const cookieState = getCookie(ACCESS_TOKEN)
-    const token = cookieState ? JSON.parse(cookieState) : null
+    const token = cookieState ? cookieState : null
 
     // Add authorization header if token exists
     if (token) {
