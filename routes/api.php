@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Base\DesignationController;
 use App\Http\Controllers\Api\V1\Uam\UserController;
 use App\Http\Controllers\Api\V1\Uam\RoleController;
 use App\Http\Controllers\Api\V1\Uam\PermissionController;
@@ -62,6 +63,20 @@ Route::prefix('v1')->group(function () {
                 // Route::get('/users/{user}', [UserController::class, 'show'])->middleware('permission:READ_UAM_USER');
                 // Route::put('/users/{user}', [UserController::class, 'update'])->middleware('permission:UPDATE_UAM_USER');
                 // Route::delete('/users/{user}', [UserController::class, 'destroy'])->middleware('permission:DELETE_UAM_USER');
+            });
+
+        /**
+         * Base Module
+         */
+        Route::prefix('base')
+            ->name('base.')
+            ->group(function () {
+                // Designation management
+                Route::get('designations/all', [DesignationController::class, 'all'])
+                    ->name('designations.all');
+                Route::post('designations/{ulid}/restore', [DesignationController::class, 'restore'])
+                    ->name('designations.restore');
+                Route::apiResource('designations', DesignationController::class);
             });
     });
 });
