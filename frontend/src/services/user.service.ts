@@ -1,5 +1,6 @@
 import axiosInstance from '@/lib/axios'
 import { AuthUser } from '@/types/auth.types'
+import { UsersResponse } from '@/features/users/data/schema'
 
 /**
  * User Management Service
@@ -9,24 +10,15 @@ class UserService {
   private readonly USER_PREFIX = '/uam/users'
 
   /**
-   * Get all users
-   * @returns Promise with list of users
+   * Get all users with pagination
+   * @returns Promise with paginated users response
    */
   async getUsers(params?: {
     page?: number
     per_page?: number
-    search?: string
-    role?: string
-  }): Promise<{
-    success: boolean
-    data: AuthUser[]
-    meta?: {
-      current_page: number
-      total: number
-      per_page: number
-      last_page: number
-    }
-  }> {
+    name?: string
+    email?: string
+  }): Promise<UsersResponse> {
     const response = await axiosInstance.get(this.USER_PREFIX, { params })
     return response.data
   }
