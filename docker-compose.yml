@@ -2,31 +2,37 @@ services:
     php:
         build: .docker/php
         volumes:
-            - .:/var/www:cached
+            - ./backend:/var/www:cached
+        networks:
+        - app-network
 
     nginx:
         image: nginx
         ports:
             - 8080:80
         volumes:
-            - .:/var/www
+            - ./backend:/var/www
             - .docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
             - .docker/nginx/nginx.conf:/etc/nginx/nginx.conf
         depends_on:
             - php
+        networks:
+        - app-network
 
     db:
         image: mysql:8.1
         ports:
             - 3307:3306
         volumes:
+            - db_data:/var/lib/mysql
             - .docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
         environment:
             MYSQL_ROOT_PASSWORD: root
             MYSQL_DATABASE: refactorian
             MYSQL_USER: refactorian
             MYSQL_PASSWORD: refactorian
-
+        networks:
+        - app-network
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         ports:
@@ -39,6 +45,10 @@ services:
             PMA_ARBITRARY: 1
         volumes:
             - .docker/phpmyadmin/sessions:/sessions
+        depends_on:
+            - db
+        networks:
+        - app-network
 
     adminer:
         image: adminer
@@ -46,12 +56,15 @@ services:
             - 8082:8080
         depends_on:
         - db
-
+        networks:
+        - app-network
     mail:
         image: axllent/mailpit:latest
         ports:
         - 8083:8025
         - 8084:1025
+        networks:
+        - app-network
 
     redis:
         image: redis:latest
@@ -60,3 +73,12 @@ services:
         - .docker/redis/data:/data
         ports:
         - 8085:6379
+        networks:
+        - app-network
+volumes:
+  db_data:
+
+
+networks:
+  app-network:
+    driver: bridge
