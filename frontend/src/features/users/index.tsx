@@ -30,7 +30,7 @@ export function Users() {
         setError(null)
         const params = {
           page: (search.page as number) || 1,
-          per_page: (search.pageSize as number) || 15,
+          per_page: (search.pageSize as number) || 10,
           name: (search.name as string) || undefined,
           email: (search.email as string) || undefined,
         }

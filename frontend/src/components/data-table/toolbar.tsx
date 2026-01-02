@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Cross2Icon } from '@radix-ui/react-icons'
 import { type Table } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
@@ -29,25 +30,39 @@ export function DataTableToolbar<TData>({
   const isFiltered =
     table.getState().columnFilters.length > 0 || table.getState().globalFilter
 
+  const [searchInput, setSearchInput] = useState(
+    searchKey
+      ? ((table.getColumn(searchKey)?.getFilterValue() as string) ?? '')
+      : (table.getState().globalFilter ?? '')
+  )
+
+  const handleSearchKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      if (searchKey) {
+        table.getColumn(searchKey)?.setFilterValue(searchInput)
+      } else {
+        table.setGlobalFilter(searchInput)
+      }
+    }
+  }
+
   return (
     <div className='flex items-center justify-between'>
       <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
         {searchKey ? (
           <Input
             placeholder={searchPlaceholder}
-            value={
-              (table.getColumn(searchKey)?.getFilterValue() as string) ?? ''
-            }
-            onChange={(event) =>
-              table.getColumn(searchKey)?.setFilterValue(event.target.value)
-            }
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
+            onKeyDown={handleSearchKeyPress}
             className='h-8 w-[150px] lg:w-[250px]'
           />
         ) : (
           <Input
             placeholder={searchPlaceholder}
-            value={table.getState().globalFilter ?? ''}
-            onChange={(event) => table.setGlobalFilter(event.target.value)}
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
+            onKeyDown={handleSearchKeyPress}
             className='h-8 w-[150px] lg:w-[250px]'
           />
         )}
@@ -71,6 +86,7 @@ export function DataTableToolbar<TData>({
             onClick={() => {
               table.resetColumnFilters()
               table.setGlobalFilter('')
+              setSearchInput('')
             }}
             className='h-8 px-2 lg:px-3'
           >
