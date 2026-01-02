@@ -6,6 +6,7 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { Skeleton } from '@/components/ui/skeleton'
 import { UsersDialogs } from './components/users-dialogs'
 import { UsersPrimaryButtons } from './components/users-primary-buttons'
 import { UsersProvider } from './components/users-provider'
@@ -21,6 +22,7 @@ export function Users() {
   const [usersData, setUsersData] = useState<User[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export function Users() {
         setError(err instanceof Error ? err.message : 'Failed to load users')
       } finally {
         setIsLoading(false)
+        setIsInitialLoad(false)
       }
     }
 
@@ -75,21 +78,13 @@ export function Users() {
           </div>
         )}
 
-        {isLoading ? (
-          <div className='flex h-96 items-center justify-center'>
-            <div className='text-center'>
-              <div className='mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent' />
-              <p className='text-sm text-muted-foreground'>Loading users...</p>
-            </div>
-          </div>
-        ) : (
-          <UsersTable
-            data={usersData}
-            totalCount={totalCount}
-            search={search}
-            navigate={navigate}
-          />
-        )}
+        <UsersTable
+          data={usersData}
+          totalCount={totalCount}
+          search={search}
+          navigate={navigate}
+          isLoading={isInitialLoad && isLoading}
+        />
       </Main>
 
       <UsersDialogs />
