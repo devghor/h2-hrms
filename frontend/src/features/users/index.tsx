@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import { Main } from '@/components/layout/main'
+import { PageHeader } from '@/components/layout/page-header'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { UsersTable } from './components/users-table'
@@ -127,19 +128,17 @@ export function Users() {
 
   return (
     <>
-      <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
-        <div className='flex flex-wrap items-end justify-between gap-2'>
-          <div>
-            <h2 className='text-2xl font-bold tracking-tight'>User List</h2>
-            <p className='text-muted-foreground'>
-              Manage your users and their roles here.
-            </p>
-          </div>
-          <Button onClick={() => setDialogOpen('add')}>
-            <Plus className='mr-2 h-4 w-4' />
-            Add User
-          </Button>
-        </div>
+      <Main>
+        <PageHeader
+          title='User List'
+          description='Manage your users and their roles here.'
+          action={
+            <Button onClick={() => setDialogOpen('add')}>
+              <Plus className='mr-2 h-4 w-4' />
+              Add User
+            </Button>
+          }
+        />
 
         {error && (
           <div className='rounded-md border border-destructive bg-destructive/10 p-4 text-sm text-destructive'>
