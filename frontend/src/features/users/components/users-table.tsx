@@ -3,12 +3,13 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type ColumnDef, type Row, type Table } from '@tanstack/react-table'
 import { Trash2, UserPen, UserX, UserCheck } from 'lucide-react'
 import { toast } from 'sonner'
+import { cn, sleep } from '@/lib/utils'
 import { useDataTable } from '@/hooks/use-data-table'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { DataTable } from '@/components/ui/data-table'
 import { DataTableViewOptions } from '@/components/ui/data-table/data-table-view-options'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,17 +26,20 @@ import {
 import { DataTableColumnHeader } from '@/components/data-table'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { LongText } from '@/components/long-text'
-import { cn, sleep } from '@/lib/utils'
 import { type User } from '../data/schema'
+import {
+  UsersFiltersPopover,
+  ActiveFiltersDisplay,
+  type UsersFilters,
+} from './users-filters'
 import { UsersMultiDeleteDialog } from './users-multi-delete-dialog'
-import { UsersFiltersPopover, ActiveFiltersDisplay, type UsersFilters } from './users-filters'
 
 // ============= Row Actions Component =============
-function DataTableRowActions({ 
+function DataTableRowActions({
   row,
   onEdit,
-  onDelete 
-}: { 
+  onDelete,
+}: {
   row: Row<User>
   onEdit: (user: User) => void
   onDelete: (user: User) => void
@@ -193,9 +197,7 @@ function getUsersColumns(
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='ULID' />
       ),
-      cell: ({ row }) => (
-        <div className='w-full'>{row.getValue('ulid')}</div>
-      ),
+      cell: ({ row }) => <div className='w-full'>{row.getValue('ulid')}</div>,
       meta: {
         className: cn(
           'drop-shadow-[0_1px_2px_rgb(0_0_0_/_0.1)] dark:drop-shadow-[0_1px_2px_rgb(255_255_255_/_0.1)]',
@@ -348,7 +350,8 @@ export function UsersTable({
         pageIndex: page - 1,
         pageSize,
       },
-      sorting: sortBy && sortOrder ? [{ id: sortBy, desc: sortOrder === 'desc' }] : [],
+      sorting:
+        sortBy && sortOrder ? [{ id: sortBy, desc: sortOrder === 'desc' }] : [],
     },
   })
 
@@ -357,25 +360,31 @@ export function UsersTable({
     const currentPagination = table.getState().pagination
     const newPage = currentPagination.pageIndex + 1
     const newPageSize = currentPagination.pageSize
-    
+
     if (newPage !== page) {
       onPageChange(newPage)
     }
     if (newPageSize !== pageSize) {
       onPageSizeChange(newPageSize)
     }
-  }, [table.getState().pagination, page, pageSize, onPageChange, onPageSizeChange])
+  }, [
+    table.getState().pagination,
+    page,
+    pageSize,
+    onPageChange,
+    onPageSizeChange,
+  ])
 
   // Sync sorting with server
   useEffect(() => {
     if (!onSort) return
-    
+
     const sorting = table.getState().sorting
     if (sorting.length > 0) {
       const { id, desc } = sorting[0]
       const newSortBy = id
       const newSortOrder = desc ? 'desc' : 'asc'
-      
+
       if (newSortBy !== sortBy || newSortOrder !== sortOrder) {
         onSort(newSortBy, newSortOrder)
       }
@@ -395,21 +404,19 @@ export function UsersTable({
       actionBar={<DataTableBulkActions table={table} />}
       isLoading={isLoading}
     >
-      <div className="space-y-3">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <UsersFiltersPopover
-              filters={filters}
-              onFiltersChange={onFiltersChange}
-              onApply={onApplyFilters}
-            />
-            <ActiveFiltersDisplay
-              filters={filters}
-              onRemoveFilter={handleRemoveFilter}
-            />
-          </div>
-          <DataTableViewOptions table={table} />
+      <div className='flex items-center justify-between gap-2'>
+        <div className='flex items-center gap-2'>
+          <UsersFiltersPopover
+            filters={filters}
+            onFiltersChange={onFiltersChange}
+            onApply={onApplyFilters}
+          />
+          <ActiveFiltersDisplay
+            filters={filters}
+            onRemoveFilter={handleRemoveFilter}
+          />
         </div>
+        <DataTableViewOptions table={table} />
       </div>
     </DataTable>
   )
