@@ -4,6 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { type User } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { usersColumns } from './users-columns'
+import { UsersToolbar } from './users-toolbar'
 
 type DataTableProps = {
   data: User[]
@@ -114,6 +115,27 @@ export function UsersTable({ data, totalCount, search, navigate, isLoading = fal
           defaultPage: 1,
           defaultPageSize: 10,
         },
+
+        // Custom toolbar with date filter
+        customToolbar: ({ table }) => (
+          <UsersToolbar
+            table={table}
+            search={search}
+            navigate={navigate}
+            searchPlaceholder='Search by name or email...'
+            searchKey='name'
+            filters={[
+              {
+                columnId: 'email_verified_at',
+                title: 'Email Status',
+                options: [
+                  { label: 'Verified', value: 'verified' },
+                  { label: 'Unverified', value: 'unverified' },
+                ],
+              },
+            ]}
+          />
+        ),
 
         // Custom bulk actions
         customBulkActions: ({ table }) => <DataTableBulkActions table={table} />,

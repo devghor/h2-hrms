@@ -95,7 +95,7 @@ export type DataGridOptions = {
   onFilterChange?: (filters: Record<string, unknown>) => void
 
   // Custom Components
-  customToolbar?: React.ReactNode
+  customToolbar?: React.ReactNode | ((props: { table: ReturnType<typeof useReactTable> }) => React.ReactNode)
   customBulkActions?: (props: { table: ReturnType<typeof useReactTable> }) => React.ReactNode
   customEmptyState?: React.ReactNode
 
@@ -306,7 +306,7 @@ export function DataGrid<TData>({
       )}
 
       {/* Custom Toolbar or Default Toolbar */}
-      {customToolbar || (enableFiltering && (
+      {typeof customToolbar === 'function' ? customToolbar({ table }) : customToolbar || (enableFiltering && (
         <DataTableToolbar
           table={table}
           searchPlaceholder={searchPlaceholder}

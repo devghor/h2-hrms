@@ -24,6 +24,9 @@ const usersSearchSchema = z.object({
     .catch([]),
   // Per-column text filter (example for username)
   username: z.string().optional().catch(''),
+  // Date range filters
+  from_date: z.string().optional().catch(''),
+  to_date: z.string().optional().catch(''),
 })
 
 export const Route = createFileRoute('/_authenticated/users/')({

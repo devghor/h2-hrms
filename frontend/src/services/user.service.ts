@@ -18,6 +18,8 @@ class UserService {
     per_page?: number
     name?: string
     email?: string
+    from_date?: string
+    to_date?: string
   }): Promise<UsersResponse> {
     const response = await axiosInstance.get(this.USER_PREFIX, { params })
     return response.data
