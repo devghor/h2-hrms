@@ -6,27 +6,53 @@ use App\Models\Uam\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Spatie\QueryBuilder\AllowedFilter;
-use Spatie\QueryBuilder\QueryBuilder;
 
 class UserService
 {
     public function getAllUsers(Request $request): LengthAwarePaginator
     {
-        return QueryBuilder::for(User::class)
-            ->allowedFilters([
-                AllowedFilter::partial('name'),
-                AllowedFilter::partial('email'),
-                AllowedFilter::callback('search', function ($query, $value) {
-                    $query->where(function ($q) use ($value) {
-                        $q->where('name', 'like', "%{$value}%")
-                          ->orWhere('email', 'like', "%{$value}%");
-                    });
-                }),
-            ])
-            ->allowedSorts(['name', 'email', 'created_at'])
-            ->defaultSort('-created_at')
-            ->paginate($request->input('per_page', 15));
+        $query = User::query();
+
+        // Apply filters manually
+        if ($request->filled('ulid')) {
+            $query->where('ulid', $request->input('ulid'));
+        }
+
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        }
+
+        if ($request->filled('email')) {
+            $query->where('email', 'like', '%' . $request->input('email') . '%');
+        }
+
+        if ($request->filled('tenant_id')) {
+            $query->where('tenant_id', 'like', '%' . $request->input('tenant_id') . '%');
+        }
+
+        if ($request->filled('from_date')) {
+            $query->whereDate('created_at', '>=', $request->input('from_date'));
+        }
+
+        if ($request->filled('to_date')) {
+            $query->whereDate('created_at', '<=', $request->input('to_date'));
+        }
+
+        // Apply sorting
+        if ($request->filled('sort_by')) {
+            $sortBy = $request->input('sort_by');
+            $sortOrder = $request->input('sort_order', 'asc');
+
+            // Validate sort column
+            $allowedSorts = ['ulid', 'name', 'email', 'tenant_id', 'created_at', 'updated_at'];
+            if (in_array($sortBy, $allowedSorts)) {
+                $query->orderBy($sortBy, $sortOrder);
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        return $query->paginate($request->input('per_page', 15));
     }
 
     public function createUser(array $data): User
