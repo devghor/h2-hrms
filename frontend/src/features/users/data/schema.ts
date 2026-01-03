@@ -50,4 +50,4 @@ export type PaginationMeta = z.infer<typeof paginationMetaSchema>
 export const userListSchema = z.array(userSchema)
 
 // User status type for filtering
-export type UserStatus = 'active' | 'inactive' | 'invited' | 'suspended'
+export type UserStatus = 'active' | 'inactive' | 'suspended'
