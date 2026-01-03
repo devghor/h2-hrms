@@ -20,6 +20,8 @@ class UserService {
     email?: string
     from_date?: string
     to_date?: string
+    sort_by?: string
+    sort_order?: 'asc' | 'desc'
   }): Promise<UsersResponse> {
     const response = await axiosInstance.get(this.USER_PREFIX, { params })
     return response.data

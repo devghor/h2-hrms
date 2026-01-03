@@ -26,6 +26,9 @@ const usersSearchSchema = z.object({
   // Date range filters
   from_date: z.string().optional().catch(''),
   to_date: z.string().optional().catch(''),
+  // Sorting
+  sort_by: z.string().optional().catch(''),
+  sort_order: z.enum(['asc', 'desc']).optional().catch('asc'),
 })
 
 export const Route = createFileRoute('/_authenticated/users/')({

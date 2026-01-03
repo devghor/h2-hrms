@@ -110,6 +110,17 @@ export function UsersTable({ data, totalCount, search, navigate, isLoading = fal
           { columnId: 'email', searchKey: 'email', type: 'string' },
         ],
 
+        // Sorting - server-side
+        onSortChange: (columnId, direction) => {
+          navigate({
+            search: (prev) => ({
+              ...prev,
+              sort_by: columnId,
+              sort_order: direction,
+            }),
+          })
+        },
+
         // Pagination
         pagination: {
           defaultPage: 1,
@@ -119,21 +130,12 @@ export function UsersTable({ data, totalCount, search, navigate, isLoading = fal
         // Custom toolbar with date filter
         customToolbar: ({ table }) => (
           <UsersToolbar
-            table={table}
+            table={table as any}
             search={search}
             navigate={navigate}
             searchPlaceholder='Search by name or email...'
             searchKey='name'
-            filters={[
-              {
-                columnId: 'email_verified_at',
-                title: 'Email Status',
-                options: [
-                  { label: 'Verified', value: 'verified' },
-                  { label: 'Unverified', value: 'unverified' },
-                ],
-              },
-            ]}
+            filters={[]}
           />
         ),
 

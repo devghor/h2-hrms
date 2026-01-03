@@ -34,6 +34,8 @@ export function Users() {
         name: (search.username as string) || undefined,
         from_date: (search.from_date as string) || undefined,
         to_date: (search.to_date as string) || undefined,
+        sort_by: (search.sort_by as string) || undefined,
+        sort_order: (search.sort_order as 'asc' | 'desc') || undefined,
       }
       const response: UsersResponse = await userService.getUsers(params)
       setUsersData(response.data)
@@ -48,7 +50,7 @@ export function Users() {
 
   useEffect(() => {
     fetchUsers()
-  }, [search.page, search.pageSize, search.username, search.from_date, search.to_date])
+  }, [search.page, search.pageSize, search.username, search.from_date, search.to_date, search.sort_by, search.sort_order])
 
   const refreshUsers = () => {
     fetchUsers()
