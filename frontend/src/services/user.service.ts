@@ -45,8 +45,7 @@ class UserService {
     email: string
     password: string
     password_confirmation: string
-    roles?: string[]
-  }): Promise<{ success: boolean; data: AuthUser; message: string }> {
+  }): Promise<{ data: AuthUser }> {
     const response = await axiosInstance.post(this.USER_PREFIX, data)
     return response.data
   }

@@ -32,6 +32,7 @@ class UserService
     public function createUser(array $data): User
     {
         $data['password'] = Hash::make($data['password']);
+        $data['tenant_id'] = tenant('id');
 
         return User::create($data);
     }

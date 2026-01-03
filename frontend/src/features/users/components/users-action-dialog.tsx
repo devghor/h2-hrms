@@ -35,7 +35,6 @@ const formSchema = z
     email: z.string().email('Invalid email address'),
     password: z.string().transform((pwd) => pwd.trim()),
     password_confirmation: z.string().transform((pwd) => pwd.trim()),
-    roles: z.array(z.string()).optional(),
     isEdit: z.boolean(),
   })
   .refine(
@@ -113,7 +112,6 @@ export function UsersActionDialog({
           email: currentRow.email,
           password: '',
           password_confirmation: '',
-          roles: [],
           isEdit,
         }
       : {
@@ -121,7 +119,6 @@ export function UsersActionDialog({
           email: '',
           password: '',
           password_confirmation: '',
-          roles: [],
           isEdit,
         },
   })
@@ -146,7 +143,6 @@ export function UsersActionDialog({
           email: values.email,
           password: values.password,
           password_confirmation: values.password_confirmation,
-          roles: values.roles,
         }
         
         await userService.createUser(createData)
@@ -156,8 +152,27 @@ export function UsersActionDialog({
       form.reset()
       onOpenChange(false)
       refreshUsers()
-    } catch (error) {
-      handleServerError(error)
+    } catch (error: any) {
+      // Handle validation errors
+      if (error?.response?.data?.errors) {
+        const validationErrors = error.response.data.errors
+        
+        // Set errors on form fields
+        Object.keys(validationErrors).forEach((fieldName) => {
+          const errorMessages = validationErrors[fieldName]
+          if (Array.isArray(errorMessages) && errorMessages.length > 0) {
+            form.setError(fieldName as any, {
+              type: 'server',
+              message: errorMessages[0],
+            })
+          }
+        })
+        
+        // Show general error message
+        toast.error(error.response.data.message || 'Validation failed')
+      } else {
+        handleServerError(error)
+      }
     } finally {
       setIsSubmitting(false)
     }
