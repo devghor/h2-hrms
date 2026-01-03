@@ -78,7 +78,13 @@ function DataTableRowActions({
 }
 
 // ============= Bulk Actions Component =============
-function DataTableBulkActions({ table }: { table: Table<User> }) {
+function DataTableBulkActions({ 
+  table,
+  onSuccess 
+}: { 
+  table: Table<User>
+  onSuccess: () => void
+}) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
@@ -154,6 +160,7 @@ function DataTableBulkActions({ table }: { table: Table<User> }) {
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
         table={table}
+        onSuccess={onSuccess}
       />
     </>
   )
@@ -316,6 +323,7 @@ type UsersTableProps = {
   isLoading?: boolean
   onEdit: (user: User) => void
   onDelete: (user: User) => void
+  onRefresh: () => void
   filters: UsersFilters
   onFiltersChange: (filters: UsersFilters) => void
   onApplyFilters: (filters: UsersFilters) => void
@@ -334,6 +342,7 @@ export function UsersTable({
   isLoading = false,
   onEdit,
   onDelete,
+  onRefresh,
   filters,
   onFiltersChange,
   onApplyFilters,
@@ -401,7 +410,7 @@ export function UsersTable({
   return (
     <DataTable
       table={table}
-      actionBar={<DataTableBulkActions table={table} />}
+      actionBar={<DataTableBulkActions table={table} onSuccess={onRefresh} />}
       isLoading={isLoading}
     >
       <div className='flex items-center justify-between gap-2'>

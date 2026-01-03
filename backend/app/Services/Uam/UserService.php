@@ -78,4 +78,9 @@ class UserService
     {
         $user->delete();
     }
+
+    public function bulkDeleteUsers(array $ulids): int
+    {
+        return User::whereIn('ulid', $ulids)->delete();
+    }
 }

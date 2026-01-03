@@ -175,6 +175,7 @@ export function Users() {
           filters={filters}
           onFiltersChange={handleFiltersChange}
           onApplyFilters={handleApplyFilters}
+          onRefresh={refreshUsers}
           onEdit={(user) => {
             setCurrentRow(user)
             setDialogOpen('edit')

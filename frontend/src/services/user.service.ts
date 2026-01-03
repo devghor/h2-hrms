@@ -84,6 +84,18 @@ class UserService {
   }
 
   /**
+   * Bulk delete users
+   * @param ulids - Array of user ULIDs
+   * @returns Promise with deletion response
+   */
+  async bulkDeleteUsers(
+    ulids: string[]
+  ): Promise<{ success: boolean; message: string; data: { deleted_count: number } }> {
+    const response = await axiosInstance.post(`${this.USER_PREFIX}/bulk-delete`, { ulids })
+    return response.data
+  }
+
+  /**
    * Get current authenticated user
    * @returns Promise with current user data
    */

@@ -42,6 +42,8 @@ Route::prefix('v1')->group(function () {
                 });
 
                 // User resource routes with specific permissions
+                Route::post('users/bulk-delete', [UserController::class, 'bulkDestroy'])
+                    ->name('users.bulk-destroy');
                 Route::apiResource('users', UserController::class);
 
                 // Role management

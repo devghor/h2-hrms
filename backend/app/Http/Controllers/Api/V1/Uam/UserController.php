@@ -70,4 +70,23 @@ class UserController extends Controller
 
         return ApiResponse::noContent();
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        // $this->authorize('delete', User::class);
+
+        $validated = $request->validate([
+            'ulids' => 'required|array|min:1',
+            'ulids.*' => 'required|string|exists:users,ulid',
+        ]);
+
+        $deletedCount = $this->userService->bulkDeleteUsers($validated['ulids']);
+
+        return ApiResponse::success(
+            "{$deletedCount} user(s) deleted successfully",
+            [
+                'deleted_count' => $deletedCount,
+            ]
+        );
+    }
 }
