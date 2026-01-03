@@ -6,7 +6,6 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { Skeleton } from '@/components/ui/skeleton'
 import { UsersDialogs } from './components/users-dialogs'
 import { UsersPrimaryButtons } from './components/users-primary-buttons'
 import { UsersProvider } from './components/users-provider'
@@ -25,33 +24,36 @@ export function Users() {
   const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-        const params = {
-          page: (search.page as number) || 1,
-          per_page: (search.pageSize as number) || 10,
-          name: (search.name as string) || undefined,
-          email: (search.email as string) || undefined,
-        }
-        const response: UsersResponse = await userService.getUsers(params)
-        setUsersData(response.data)
-        setTotalCount(response.meta.total)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load users')
-      } finally {
-        setIsLoading(false)
-        setIsInitialLoad(false)
+  const fetchUsers = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const params = {
+        page: (search.page as number) || 1,
+        per_page: (search.pageSize as number) || 10,
+        name: (search.username as string) || undefined,
       }
+      const response: UsersResponse = await userService.getUsers(params)
+      setUsersData(response.data)
+      setTotalCount(response.meta.total)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load users')
+    } finally {
+      setIsLoading(false)
+      setIsInitialLoad(false)
     }
+  }
 
+  useEffect(() => {
     fetchUsers()
-  }, [search.page, search.pageSize, search.name, search.email])
+  }, [search.page, search.pageSize, search.username])
+
+  const refreshUsers = () => {
+    fetchUsers()
+  }
 
   return (
-    <UsersProvider>
+    <UsersProvider refreshUsers={refreshUsers}>
       <Header fixed>
         <Search />
         <div className='ms-auto flex items-center space-x-4'>

@@ -112,7 +112,7 @@ export function UsersTable({ data, totalCount, search, navigate, isLoading = fal
         // Pagination
         pagination: {
           defaultPage: 1,
-          defaultPageSize: 15,
+          defaultPageSize: 10,
         },
 
         // Custom bulk actions

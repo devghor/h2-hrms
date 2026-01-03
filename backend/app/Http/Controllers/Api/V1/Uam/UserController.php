@@ -24,7 +24,7 @@ class UserController extends Controller
         return new UserCollection($users);
     }
 
-    public function store(Request $request): JsosnResponse
+    public function store(Request $request)
     {
         $this->authorize('create', User::class);
 
@@ -36,21 +36,18 @@ class UserController extends Controller
 
         $user = $this->userService->createUser($validated);
 
-        return ApiResponse::created('User created successfully', [
-            'user' => new UserResource($user),
-        ]);
+        return new UserResource($user);
+
     }
 
-    public function show(User $user): JsonResponse
+    public function show(User $user)
     {
         $this->authorize('view', $user);
 
-        return ApiResponse::success('User retrieved successfully', [
-            'user' => new UserResource($user),
-        ]);
+        return new UserResource($user);
     }
 
-    public function update(Request $request, User $user): JsonResponse
+    public function update(Request $request, User $user)
     {
         $this->authorize('update', $user);
 
@@ -62,12 +59,10 @@ class UserController extends Controller
 
         $user = $this->userService->updateUser($user, $validated);
 
-        return ApiResponse::success('User updated successfully', [
-            'user' => new UserResource($user),
-        ]);
+        return new UserResource($user);
     }
 
-    public function destroy(User $user): JsonResponse
+    public function destroy(User $user)
     {
         $this->authorize('delete', $user);
 

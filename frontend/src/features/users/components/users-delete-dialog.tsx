@@ -2,12 +2,15 @@
 
 import { useState } from 'react'
 import { AlertTriangle } from 'lucide-react'
-import { showSubmittedData } from '@/lib/show-submitted-data'
+import { toast } from 'sonner'
+import { handleServerError } from '@/lib/handle-server-error'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { userService } from '@/services/user.service'
 import { type User } from '../data/schema'
+import { useUsers } from './users-provider'
 
 type UserDeleteDialogProps = {
   open: boolean
@@ -21,20 +24,37 @@ export function UsersDeleteDialog({
   currentRow,
 }: UserDeleteDialogProps) {
   const [value, setValue] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
+  const { refreshUsers } = useUsers()
 
-  const handleDelete = () => {
-    if (value.trim() !== currentRow.username) return
+  const handleDelete = async () => {
+    if (value.trim() !== currentRow.name) return
 
-    onOpenChange(false)
-    showSubmittedData(currentRow, 'The following user has been deleted:')
+    try {
+      setIsDeleting(true)
+      await userService.deleteUser(currentRow.ulid)
+      toast.success('User deleted successfully')
+      onOpenChange(false)
+      setValue('')
+      refreshUsers()
+    } catch (error) {
+      handleServerError(error)
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   return (
     <ConfirmDialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(state) => {
+        if (!isDeleting) {
+          onOpenChange(state)
+          setValue('')
+        }
+      }}
       handleConfirm={handleDelete}
-      disabled={value.trim() !== currentRow.username}
+      disabled={value.trim() !== currentRow.name || isDeleting}
       title={
         <span className='text-destructive'>
           <AlertTriangle
@@ -48,21 +68,18 @@ export function UsersDeleteDialog({
         <div className='space-y-4'>
           <p className='mb-2'>
             Are you sure you want to delete{' '}
-            <span className='font-bold'>{currentRow.username}</span>?
+            <span className='font-bold'>{currentRow.name}</span>?
             <br />
-            This action will permanently remove the user with the role of{' '}
-            <span className='font-bold'>
-              {currentRow.role.toUpperCase()}
-            </span>{' '}
-            from the system. This cannot be undone.
+            This action will permanently remove the user from the system. This cannot be undone.
           </p>
 
           <Label className='my-2'>
-            Username:
+            Name:
             <Input
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder='Enter username to confirm deletion.'
+              placeholder='Enter user name to confirm deletion.'
+              disabled={isDeleting}
             />
           </Label>
 
@@ -74,7 +91,7 @@ export function UsersDeleteDialog({
           </Alert>
         </div>
       }
-      confirmText='Delete'
+      confirmText={isDeleting ? 'Deleting...' : 'Delete'}
       destructive
     />
   )

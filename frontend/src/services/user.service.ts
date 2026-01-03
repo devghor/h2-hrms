@@ -25,10 +25,10 @@ class UserService {
 
   /**
    * Get single user by ID
-   * @param id - User ID
+   * @param id - User ID (ULID)
    * @returns Promise with user data
    */
-  async getUser(id: number): Promise<{ success: boolean; data: AuthUser }> {
+  async getUser(id: string): Promise<{ success: boolean; data: AuthUser }> {
     const response = await axiosInstance.get(`${this.USER_PREFIX}/${id}`)
     return response.data
   }
@@ -51,17 +51,16 @@ class UserService {
 
   /**
    * Update existing user
-   * @param id - User ID
+   * @param id - User ID (ULID)
    * @param data - User update data
    * @returns Promise with updated user
    */
   async updateUser(
-    id: number,
-    data: Partial<{
+    id: string,
+    data: {
       name: string
       email: string
-      roles: string[]
-    }>
+    }
   ): Promise<{ success: boolean; data: AuthUser; message: string }> {
     const response = await axiosInstance.put(`${this.USER_PREFIX}/${id}`, data)
     return response.data
@@ -69,11 +68,11 @@ class UserService {
 
   /**
    * Delete user
-   * @param id - User ID
+   * @param id - User ID (ULID)
    * @returns Promise with deletion response
    */
   async deleteUser(
-    id: number
+    id: string
   ): Promise<{ success: boolean; message: string }> {
     const response = await axiosInstance.delete(`${this.USER_PREFIX}/${id}`)
     return response.data

@@ -36,12 +36,12 @@ export const usersColumns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'id',
+    accessorKey: 'ulid',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='ID' />
+      <DataTableColumnHeader column={column} title='ULID' />
     ),
     cell: ({ row }) => (
-      <div className='w-[60px]'>{row.getValue('id')}</div>
+      <div className='w-full'>{row.getValue('ulid')}</div>
     ),
     meta: {
       className: cn(

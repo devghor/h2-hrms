@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 // API User Schema matching backend response
 const userSchema = z.object({
-  id: z.number(),
+  ulid: z.string(), // ULID
   name: z.string(),
   email: z.string(),
   email_verified_at: z.string().nullable(),
@@ -48,3 +48,6 @@ export type UsersResponse = z.infer<typeof usersResponseSchema>
 export type PaginationMeta = z.infer<typeof paginationMetaSchema>
 
 export const userListSchema = z.array(userSchema)
+
+// User status type for filtering
+export type UserStatus = 'active' | 'inactive' | 'invited' | 'suspended'
