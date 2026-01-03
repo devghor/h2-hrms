@@ -56,7 +56,7 @@ export function UsersFiltersPopover({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" className="relative">
-          <Filter className="mr-2 h-4 w-4" />
+          <Filter/>
           Filters
           {activeFilterCount > 0 && (
             <Badge
