@@ -10,39 +10,42 @@ import { Label } from '@/components/ui/label'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { userService } from '@/services/user.service'
 import { type User } from '../data/schema'
-import { useUsers } from './users-provider'
 
 type UserDeleteDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentRow: User
+  user: User | null | undefined
+  onSuccess: () => void
 }
 
 export function UsersDeleteDialog({
   open,
   onOpenChange,
-  currentRow,
+  user,
+  onSuccess,
 }: UserDeleteDialogProps) {
   const [value, setValue] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
-  const { refreshUsers } = useUsers()
 
   const handleDelete = async () => {
-    if (value.trim() !== currentRow.name) return
+    if (!user) return
+    if (value.trim() !== user.name) return
 
     try {
       setIsDeleting(true)
-      await userService.deleteUser(currentRow.ulid)
+      await userService.deleteUser(user.ulid)
       toast.success('User deleted successfully')
       onOpenChange(false)
       setValue('')
-      refreshUsers()
+      onSuccess()
     } catch (error) {
       handleServerError(error)
     } finally {
       setIsDeleting(false)
     }
   }
+
+  if (!user) return null
 
   return (
     <ConfirmDialog
@@ -54,7 +57,7 @@ export function UsersDeleteDialog({
         }
       }}
       handleConfirm={handleDelete}
-      disabled={value.trim() !== currentRow.name || isDeleting}
+      disabled={value.trim() !== user.name || isDeleting}
       title={
         <span className='text-destructive'>
           <AlertTriangle
@@ -68,7 +71,7 @@ export function UsersDeleteDialog({
         <div className='space-y-4'>
           <p className='mb-2'>
             Are you sure you want to delete{' '}
-            <span className='font-bold'>{currentRow.name}</span>?
+            <span className='font-bold'>{user.name}</span>?
             <br />
             This action will permanently remove the user from the system. This cannot be undone.
           </p>

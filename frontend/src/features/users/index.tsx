@@ -6,31 +6,42 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { UsersDialogs } from './components/users-dialogs'
-import { UsersPrimaryButtons } from './components/users-primary-buttons'
-import { UsersProvider } from './components/users-provider'
+import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
 import { UsersTable } from './components/users-table'
+import { UsersActionDialog } from './components/users-action-dialog'
+import { UsersDeleteDialog } from './components/users-delete-dialog'
 import { userService } from '@/services/user.service'
 import { type User, type UsersResponse } from './data/schema'
 
 const route = getRouteApi('/_authenticated/users/')
 
+type UsersDialogType = 'add' | 'edit' | 'delete'
+
 export function Users() {
   const search = route.useSearch()
   const navigate = route.useNavigate()
+  
+  // Data state
   const [usersData, setUsersData] = useState<User[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
-  const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // Dialog state
+  const [dialogOpen, setDialogOpen] = useState<UsersDialogType | null>(null)
+  const [currentRow, setCurrentRow] = useState<User | null>(null)
+
+  const page = (search.page as number) || 1
+  const pageSize = (search.pageSize as number) || 10
 
   const fetchUsers = async () => {
     try {
       setIsLoading(true)
       setError(null)
       const params = {
-        page: (search.page as number) || 1,
-        per_page: (search.pageSize as number) || 10,
+        page,
+        per_page: pageSize,
         name: (search.username as string) || undefined,
         from_date: (search.from_date as string) || undefined,
         to_date: (search.to_date as string) || undefined,
@@ -44,20 +55,43 @@ export function Users() {
       setError(err instanceof Error ? err.message : 'Failed to load users')
     } finally {
       setIsLoading(false)
-      setIsInitialLoad(false)
     }
   }
 
   useEffect(() => {
     fetchUsers()
-  }, [search.page, search.pageSize, search.username, search.from_date, search.to_date, search.sort_by, search.sort_order])
+  }, [page, pageSize, search.username, search.from_date, search.to_date, search.sort_by, search.sort_order])
 
   const refreshUsers = () => {
     fetchUsers()
   }
 
+  const handlePageChange = (newPage: number) => {
+    navigate({
+      search: (prev) => ({ ...prev, page: newPage }),
+    })
+  }
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    navigate({
+      search: (prev) => ({ ...prev, pageSize: newPageSize, page: 1 }),
+    })
+  }
+
+  const handleSearch = (value: string) => {
+    navigate({
+      search: (prev) => ({ ...prev, username: value || undefined, page: 1 }),
+    })
+  }
+
+  const handleSort = (columnId: string, direction: 'asc' | 'desc') => {
+    navigate({
+      search: (prev) => ({ ...prev, sort_by: columnId, sort_order: direction, page: 1 }),
+    })
+  }
+
   return (
-    <UsersProvider refreshUsers={refreshUsers}>
+    <>
       <Header fixed>
         <Search />
         <div className='ms-auto flex items-center space-x-4'>
@@ -75,7 +109,10 @@ export function Users() {
               Manage your users and their roles here.
             </p>
           </div>
-          <UsersPrimaryButtons />
+          <Button onClick={() => setDialogOpen('add')}>
+            <Plus className='mr-2 h-4 w-4' />
+            Add User
+          </Button>
         </div>
 
         {error && (
@@ -87,13 +124,52 @@ export function Users() {
         <UsersTable
           data={usersData}
           totalCount={totalCount}
-          search={search}
-          navigate={navigate}
-          isLoading={isInitialLoad && isLoading}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          onSearch={handleSearch}
+          onSort={handleSort}
+          searchValue={(search.username as string) || ''}
+          sortBy={(search.sort_by as string) || undefined}
+          sortOrder={(search.sort_order as 'asc' | 'desc') || undefined}
+          isLoading={isLoading}
+          onEdit={(user) => {
+            setCurrentRow(user)
+            setDialogOpen('edit')
+          }}
+          onDelete={(user) => {
+            setCurrentRow(user)
+            setDialogOpen('delete')
+          }}
         />
       </Main>
 
-      <UsersDialogs />
-    </UsersProvider>
+      {/* Dialogs */}
+      <UsersActionDialog
+        key={dialogOpen === 'add' || dialogOpen === 'edit' ? 'action' : undefined}
+        open={dialogOpen === 'add' || dialogOpen === 'edit'}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDialogOpen(null)
+            setCurrentRow(null)
+          }
+        }}
+        currentRow={currentRow}
+        onSuccess={refreshUsers}
+      />
+
+      <UsersDeleteDialog
+        open={dialogOpen === 'delete'}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDialogOpen(null)
+            setCurrentRow(null)
+          }
+        }}
+        user={currentRow}
+        onSuccess={refreshUsers}
+      />
+    </>
   )
 }

@@ -27,7 +27,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { type User } from '../data/schema'
-import { useUsers } from './users-provider'
 
 const formSchema = z
   .object({
@@ -90,19 +89,20 @@ const formSchema = z
 type UserForm = z.infer<typeof formSchema>
 
 type UserActionDialogProps = {
-  currentRow?: User
+  currentRow?: User | null
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSuccess: () => void
 }
 
 export function UsersActionDialog({
   currentRow,
   open,
   onOpenChange,
+  onSuccess,
 }: UserActionDialogProps) {
   const isEdit = !!currentRow
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { refreshUsers } = useUsers()
   
   const form = useForm<UserForm>({
     resolver: zodResolver(formSchema),
@@ -151,7 +151,7 @@ export function UsersActionDialog({
       
       form.reset()
       onOpenChange(false)
-      refreshUsers()
+      onSuccess()
     } catch (error: any) {
       // Handle validation errors
       if (error?.response?.data?.errors) {
