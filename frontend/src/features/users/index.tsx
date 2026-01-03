@@ -11,6 +11,7 @@ import { Plus } from 'lucide-react'
 import { UsersTable } from './components/users-table'
 import { UsersActionDialog } from './components/users-action-dialog'
 import { UsersDeleteDialog } from './components/users-delete-dialog'
+import { type UsersFilters } from './components/users-filters'
 import { userService } from '@/services/user.service'
 import { type User, type UsersResponse } from './data/schema'
 
@@ -32,6 +33,16 @@ export function Users() {
   const [dialogOpen, setDialogOpen] = useState<UsersDialogType | null>(null)
   const [currentRow, setCurrentRow] = useState<User | null>(null)
 
+  // Filters state
+  const [filters, setFilters] = useState<UsersFilters>({
+    ulid: (search.ulid as string) || undefined,
+    name: (search.name as string) || undefined,
+    email: (search.email as string) || undefined,
+    tenant_id: (search.tenant_id as string) || undefined,
+    from_date: (search.from_date as string) || undefined,
+    to_date: (search.to_date as string) || undefined,
+  })
+
   const page = (search.page as number) || 1
   const pageSize = (search.pageSize as number) || 10
 
@@ -42,9 +53,12 @@ export function Users() {
       const params = {
         page,
         per_page: pageSize,
-        name: (search.username as string) || undefined,
-        from_date: (search.from_date as string) || undefined,
-        to_date: (search.to_date as string) || undefined,
+        ulid: filters.ulid || undefined,
+        name: filters.name || undefined,
+        email: filters.email || undefined,
+        tenant_id: filters.tenant_id || undefined,
+        from_date: filters.from_date || undefined,
+        to_date: filters.to_date || undefined,
         sort_by: (search.sort_by as string) || undefined,
         sort_order: (search.sort_order as 'asc' | 'desc') || undefined,
       }
@@ -60,7 +74,20 @@ export function Users() {
 
   useEffect(() => {
     fetchUsers()
-  }, [page, pageSize, search.username, search.from_date, search.to_date, search.sort_by, search.sort_order])
+  }, [page, pageSize, filters.ulid, filters.name, filters.email, filters.tenant_id, filters.from_date, filters.to_date, search.sort_by, search.sort_order])
+
+  // Sync URL search params with filters state
+  useEffect(() => {
+    const newFilters: UsersFilters = {
+      ulid: (search.ulid as string) || undefined,
+      name: (search.name as string) || undefined,
+      email: (search.email as string) || undefined,
+      tenant_id: (search.tenant_id as string) || undefined,
+      from_date: (search.from_date as string) || undefined,
+      to_date: (search.to_date as string) || undefined,
+    }
+    setFilters(newFilters)
+  }, [search.ulid, search.name, search.email, search.tenant_id, search.from_date, search.to_date])
 
   const refreshUsers = () => {
     fetchUsers()
@@ -78,9 +105,22 @@ export function Users() {
     })
   }
 
-  const handleSearch = (value: string) => {
+  const handleFiltersChange = (newFilters: UsersFilters) => {
+    setFilters(newFilters)
+  }
+
+  const handleApplyFilters = (appliedFilters: UsersFilters) => {
     navigate({
-      search: (prev) => ({ ...prev, username: value || undefined, page: 1 }),
+      search: (prev) => ({
+        ...prev,
+        ulid: appliedFilters.ulid || undefined,
+        name: appliedFilters.name || undefined,
+        email: appliedFilters.email || undefined,
+        tenant_id: appliedFilters.tenant_id || undefined,
+        from_date: appliedFilters.from_date || undefined,
+        to_date: appliedFilters.to_date || undefined,
+        page: 1,
+      }),
     })
   }
 
@@ -128,12 +168,13 @@ export function Users() {
           pageSize={pageSize}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
-          onSearch={handleSearch}
           onSort={handleSort}
-          searchValue={(search.username as string) || ''}
           sortBy={(search.sort_by as string) || undefined}
           sortOrder={(search.sort_order as 'asc' | 'desc') || undefined}
           isLoading={isLoading}
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          onApplyFilters={handleApplyFilters}
           onEdit={(user) => {
             setCurrentRow(user)
             setDialogOpen('edit')

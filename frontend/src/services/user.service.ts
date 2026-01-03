@@ -16,8 +16,10 @@ class UserService {
   async getUsers(params?: {
     page?: number
     per_page?: number
+    ulid?: string
     name?: string
     email?: string
+    tenant_id?: string
     from_date?: string
     to_date?: string
     sort_by?: string

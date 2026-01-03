@@ -4,7 +4,8 @@ import { type ColumnDef, type Row, type Table } from '@tanstack/react-table'
 import { Trash2, UserPen, UserX, UserCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { useDataTable } from '@/hooks/use-data-table'
-import { DataTable, DataTableToolbar } from '@/components/ui/data-table'
+import { DataTable } from '@/components/ui/data-table'
+import { DataTableViewOptions } from '@/components/ui/data-table/data-table-view-options'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -27,6 +28,7 @@ import { LongText } from '@/components/long-text'
 import { cn, sleep } from '@/lib/utils'
 import { type User } from '../data/schema'
 import { UsersMultiDeleteDialog } from './users-multi-delete-dialog'
+import { UsersFiltersPopover, ActiveFiltersDisplay, type UsersFilters } from './users-filters'
 
 // ============= Row Actions Component =============
 function DataTableRowActions({ 
@@ -306,14 +308,15 @@ type UsersTableProps = {
   pageSize: number
   onPageChange: (page: number) => void
   onPageSizeChange: (pageSize: number) => void
-  onSearch?: (value: string) => void
   onSort?: (columnId: string, direction: 'asc' | 'desc') => void
-  searchValue?: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
   isLoading?: boolean
   onEdit: (user: User) => void
   onDelete: (user: User) => void
+  filters: UsersFilters
+  onFiltersChange: (filters: UsersFilters) => void
+  onApplyFilters: (filters: UsersFilters) => void
 }
 
 export function UsersTable({
@@ -323,14 +326,15 @@ export function UsersTable({
   pageSize,
   onPageChange,
   onPageSizeChange,
-  onSearch,
   onSort,
-  searchValue,
   sortBy,
   sortOrder,
   isLoading = false,
   onEdit,
   onDelete,
+  filters,
+  onFiltersChange,
+  onApplyFilters,
 }: UsersTableProps) {
   const pageCount = Math.ceil(totalCount / pageSize)
   const usersColumns = getUsersColumns(onEdit, onDelete)
@@ -378,19 +382,35 @@ export function UsersTable({
     }
   }, [table.getState().sorting, sortBy, sortOrder, onSort])
 
+  const handleRemoveFilter = (key: keyof UsersFilters) => {
+    const newFilters = { ...filters }
+    delete newFilters[key]
+    onFiltersChange(newFilters)
+    onApplyFilters(newFilters)
+  }
+
   return (
     <DataTable
       table={table}
       actionBar={<DataTableBulkActions table={table} />}
       isLoading={isLoading}
     >
-      <DataTableToolbar
-        table={table}
-        searchKey='name'
-        searchPlaceholder='Search by name...'
-        onSearch={onSearch}
-        searchValue={searchValue}
-      />
+      <div className="space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <UsersFiltersPopover
+              filters={filters}
+              onFiltersChange={onFiltersChange}
+              onApply={onApplyFilters}
+            />
+            <ActiveFiltersDisplay
+              filters={filters}
+              onRemoveFilter={handleRemoveFilter}
+            />
+          </div>
+          <DataTableViewOptions table={table} />
+        </div>
+      </div>
     </DataTable>
   )
 }
