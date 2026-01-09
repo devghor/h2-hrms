@@ -1,6 +1,6 @@
 import axiosInstance from '@/lib/axios'
 import { AuthUser } from '@/types/auth.types'
-import { UsersResponse } from '@/features/users/data/schema'
+import { UsersResponse } from '@/features/uam/users/data/schema'
 
 /**
  * User Management Service

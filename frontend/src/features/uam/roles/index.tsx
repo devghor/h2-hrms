@@ -4,37 +4,35 @@ import { Main } from '@/components/layout/main'
 import { PageHeader } from '@/components/layout/page-header'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
-import { UsersTable } from './components/users-table'
-import { UsersActionDialog } from './components/users-action-dialog'
-import { UsersDeleteDialog } from './components/users-delete-dialog'
-import { type UsersFilters } from './components/users-filters'
-import { userService } from '@/services/user.service'
-import { type User, type UsersResponse } from './data/schema'
+import { RolesTable } from './components/roles-table'
+import { RolesActionDialog } from './components/roles-action-dialog'
+import { RolesDeleteDialog } from './components/roles-delete-dialog'
+import { type RolesFilters } from './components/roles-filters'
+import { roleService } from '@/services/role.service'
+import { type Role, type RolesResponse } from './data/schema'
 
-const route = getRouteApi('/_authenticated/users/')
+const route = getRouteApi('/_authenticated/uam/roles/')
 
-type UsersDialogType = 'add' | 'edit' | 'delete'
+type RolesDialogType = 'add' | 'edit' | 'delete'
 
-export function Users() {
+export function Roles() {
   const search = route.useSearch()
   const navigate = route.useNavigate()
   
   // Data state
-  const [usersData, setUsersData] = useState<User[]>([])
+  const [rolesData, setRolesData] = useState<Role[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   // Dialog state
-  const [dialogOpen, setDialogOpen] = useState<UsersDialogType | null>(null)
-  const [currentRow, setCurrentRow] = useState<User | null>(null)
+  const [dialogOpen, setDialogOpen] = useState<RolesDialogType | null>(null)
+  const [currentRow, setCurrentRow] = useState<Role | null>(null)
 
   // Filters state
-  const [filters, setFilters] = useState<UsersFilters>({
-    ulid: (search.ulid as string) || undefined,
+  const [filters, setFilters] = useState<RolesFilters>({
     name: (search.name as string) || undefined,
-    email: (search.email as string) || undefined,
-    tenant_id: (search.tenant_id as string) || undefined,
+    description: (search.description as string) || undefined,
     from_date: (search.from_date as string) || undefined,
     to_date: (search.to_date as string) || undefined,
   })
@@ -42,51 +40,47 @@ export function Users() {
   const page = (search.page as number) || 1
   const pageSize = (search.pageSize as number) || 10
 
-  const fetchUsers = async () => {
+  const fetchRoles = async () => {
     try {
       setIsLoading(true)
       setError(null)
       const params = {
         page,
         per_page: pageSize,
-        ulid: filters.ulid || undefined,
         name: filters.name || undefined,
-        email: filters.email || undefined,
-        tenant_id: filters.tenant_id || undefined,
+        description: filters.description || undefined,
         from_date: filters.from_date || undefined,
         to_date: filters.to_date || undefined,
         sort_by: (search.sort_by as string) || undefined,
         sort_order: (search.sort_order as 'asc' | 'desc') || undefined,
       }
-      const response: UsersResponse = await userService.getUsers(params)
-      setUsersData(response.data)
+      const response: RolesResponse = await roleService.getRoles(params)
+      setRolesData(response.data)
       setTotalCount(response.meta.total)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load users')
+      setError(err instanceof Error ? err.message : 'Failed to load roles')
     } finally {
       setIsLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchUsers()
-  }, [page, pageSize, filters.ulid, filters.name, filters.email, filters.tenant_id, filters.from_date, filters.to_date, search.sort_by, search.sort_order])
+    fetchRoles()
+  }, [page, pageSize, filters.name, filters.description, filters.from_date, filters.to_date, search.sort_by, search.sort_order])
 
   // Sync URL search params with filters state
   useEffect(() => {
-    const newFilters: UsersFilters = {
-      ulid: (search.ulid as string) || undefined,
+    const newFilters: RolesFilters = {
       name: (search.name as string) || undefined,
-      email: (search.email as string) || undefined,
-      tenant_id: (search.tenant_id as string) || undefined,
+      description: (search.description as string) || undefined,
       from_date: (search.from_date as string) || undefined,
       to_date: (search.to_date as string) || undefined,
     }
     setFilters(newFilters)
-  }, [search.ulid, search.name, search.email, search.tenant_id, search.from_date, search.to_date])
+  }, [search.name, search.description, search.from_date, search.to_date])
 
-  const refreshUsers = () => {
-    fetchUsers()
+  const refreshRoles = () => {
+    fetchRoles()
   }
 
   const handlePageChange = (newPage: number) => {
@@ -101,18 +95,16 @@ export function Users() {
     })
   }
 
-  const handleFiltersChange = (newFilters: UsersFilters) => {
+  const handleFiltersChange = (newFilters: RolesFilters) => {
     setFilters(newFilters)
   }
 
-  const handleApplyFilters = (appliedFilters: UsersFilters) => {
+  const handleApplyFilters = (appliedFilters: RolesFilters) => {
     navigate({
       search: (prev) => ({
         ...prev,
-        ulid: appliedFilters.ulid || undefined,
         name: appliedFilters.name || undefined,
-        email: appliedFilters.email || undefined,
-        tenant_id: appliedFilters.tenant_id || undefined,
+        description: appliedFilters.description || undefined,
         from_date: appliedFilters.from_date || undefined,
         to_date: appliedFilters.to_date || undefined,
         page: 1,
@@ -130,12 +122,12 @@ export function Users() {
     <>
       <Main>
         <PageHeader
-          title='User List'
-          description='Manage your users and their roles here.'
+          title='Role List'
+          description='Manage system roles and their permissions here.'
           action={
             <Button onClick={() => setDialogOpen('add')}>
               <Plus className='mr-2 h-4 w-4' />
-              Add User
+              Add Role
             </Button>
           }
         />
@@ -146,8 +138,8 @@ export function Users() {
           </div>
         )}
 
-        <UsersTable
-          data={usersData}
+        <RolesTable
+          data={rolesData}
           totalCount={totalCount}
           page={page}
           pageSize={pageSize}
@@ -160,20 +152,20 @@ export function Users() {
           filters={filters}
           onFiltersChange={handleFiltersChange}
           onApplyFilters={handleApplyFilters}
-          onRefresh={refreshUsers}
-          onEdit={(user) => {
-            setCurrentRow(user)
+          onRefresh={refreshRoles}
+          onEdit={(role) => {
+            setCurrentRow(role)
             setDialogOpen('edit')
           }}
-          onDelete={(user) => {
-            setCurrentRow(user)
+          onDelete={(role) => {
+            setCurrentRow(role)
             setDialogOpen('delete')
           }}
         />
       </Main>
 
       {/* Dialogs */}
-      <UsersActionDialog
+      <RolesActionDialog
         key={dialogOpen === 'add' || dialogOpen === 'edit' ? 'action' : undefined}
         open={dialogOpen === 'add' || dialogOpen === 'edit'}
         onOpenChange={(open) => {
@@ -183,10 +175,10 @@ export function Users() {
           }
         }}
         currentRow={currentRow}
-        onSuccess={refreshUsers}
+        onSuccess={refreshRoles}
       />
 
-      <UsersDeleteDialog
+      <RolesDeleteDialog
         open={dialogOpen === 'delete'}
         onOpenChange={(open) => {
           if (!open) {
@@ -194,8 +186,8 @@ export function Users() {
             setCurrentRow(null)
           }
         }}
-        user={currentRow}
-        onSuccess={refreshUsers}
+        role={currentRow}
+        onSuccess={refreshRoles}
       />
     </>
   )

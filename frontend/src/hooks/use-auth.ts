@@ -27,8 +27,10 @@ export const useAuth = () => {
     mutationFn: (credentials: LoginCredentials) =>
       authService.login(credentials),
     onSuccess: (response) => {
-      // Store token and user data
-      auth.setAccessToken(response.data.access_token)
+      // Store token with expiry
+      auth.setAccessToken(response.data.access_token, response.data.expires_at)
+      
+      // Store user data
       auth.setUser({
         id: response.data.user.id,
         name: response.data.user.name,

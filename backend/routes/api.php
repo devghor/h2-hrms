@@ -47,6 +47,8 @@ Route::prefix('v1')->group(function () {
                 Route::apiResource('users', UserController::class);
 
                 // Role management
+                Route::post('roles/bulk-delete', [RoleController::class, 'bulkDestroy'])
+                    ->name('roles.bulk-destroy');
                 Route::apiResource('roles', RoleController::class);
                 Route::post('roles/{role}/permissions', [RoleController::class, 'assignPermissions'])
                     ->name('roles.assign-permissions');

@@ -19,7 +19,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'email_verified_at' => $this->email_verified_at,
-            'tenant_id' => tenant('ulid'),
+            'tenant_id' => tenant()->getTenantKey(),
             'roles' => $this->whenLoaded('roles', function () {
                 return $this->roles->pluck('name');
             }),

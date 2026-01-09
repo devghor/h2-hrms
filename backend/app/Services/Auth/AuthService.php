@@ -48,7 +48,7 @@ class AuthService
             'user' => new UserResource($user),
             'access_token' => $token->plainTextToken,
             'token_type' => 'Bearer',
-            'expires_at' => $token->accessToken->expires_at,
+            'expires_at' => $token->accessToken->expires_at->toISOString(),
         ];
     }
 

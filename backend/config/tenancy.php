@@ -152,7 +152,7 @@ return [
                 'cookie' => 'tenant',
                 'query_parameter' => 'tenant',
 
-                'tenant_model_column' => 'ulid', // null = tenant key
+                'tenant_model_column' => 'id', // null = tenant key
 
                 'cache' => false,
                 'cache_ttl' => 3600, // seconds

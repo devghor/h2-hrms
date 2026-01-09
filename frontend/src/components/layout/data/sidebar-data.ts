@@ -74,10 +74,22 @@ export const sidebarData: SidebarData = {
           icon: MessagesSquare,
         },
         {
-          title: 'Users',
-          url: '/users',
-          icon: Users,
+          title: 'UAM',
+          icon: UserCog,
+          items: [
+            {
+              title: 'Users',
+              url: '/uam/users',
+              icon: Users,
+            },
+            {
+              title: 'Roles',
+              url: '/uam/roles',
+              icon: ShieldCheck,
+            },
+          ],
         },
+        
         {
           title: 'Secured by Clerk',
           icon: ClerkLogo,

@@ -30,11 +30,29 @@ class RoleService {
   private readonly PERMISSION_PREFIX = '/uam/permissions'
 
   /**
-   * Get all roles
+   * Get all roles with pagination
+   * @returns Promise with paginated roles response
+   */
+  async getRoles(params?: {
+    page?: number
+    per_page?: number
+    name?: string
+    description?: string
+    from_date?: string
+    to_date?: string
+    sort_by?: string
+    sort_order?: 'asc' | 'desc'
+  }): Promise<any> {
+    const response = await axiosInstance.get(this.ROLE_PREFIX, { params })
+    return response.data
+  }
+
+  /**
+   * Get all roles (without pagination)
    * @returns Promise with list of roles
    */
-  async getRoles(): Promise<{ success: boolean; data: Role[] }> {
-    const response = await axiosInstance.get(this.ROLE_PREFIX)
+  async getAllRoles(): Promise<{ success: boolean; data: Role[] }> {
+    const response = await axiosInstance.get(`${this.ROLE_PREFIX}?per_page=1000`)
     return response.data
   }
 
@@ -55,8 +73,9 @@ class RoleService {
    */
   async createRole(data: {
     name: string
-    permissions?: number[]
-  }): Promise<{ success: boolean; data: Role; message: string }> {
+    description?: string
+    permissions?: string[]
+  }): Promise<{ data: Role }> {
     const response = await axiosInstance.post(this.ROLE_PREFIX, data)
     return response.data
   }
@@ -139,6 +158,24 @@ class RoleService {
     const response = await axiosInstance.get(`${this.PERMISSION_PREFIX}/user`)
     return response.data
   }
+
+    /**
+   * Bulk delete roles
+   * @param ids - Array of role IDs
+   * @returns Promise with deletion response
+   */
+  async bulkDeleteRoles(ids: number[]): Promise<{ success: boolean; message: string }> {
+    const response = await axiosInstance.post(`${this.ROLE_PREFIX}/bulk-delete`, {
+      ids,
+    })
+    return response.data
+  }
+
+  /**
+   * Bulk delete users by ULIDs
+   * @param ulids - Array of user ULIDs
+   * @returns Promise with deletion response
+   */
 }
 
 // Export singleton instance

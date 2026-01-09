@@ -25,7 +25,7 @@ class Tenant extends BaseTenant
 
     public function getTenantKeyName(): string
     {
-        return 'ulid';
+        return 'id';
     }
 
     public function getTenantKey(): int|string

@@ -4,37 +4,38 @@ namespace App\Http\Controllers\Api\V1\Uam;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Uam\RoleCollection;
+use App\Http\Resources\Uam\RoleResource;
 use App\Models\Uam\Role;
 use App\Services\Uam\PermissionService;
+use App\Services\Uam\RoleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
     public function __construct(
-        protected PermissionService $permissionService
+        protected PermissionService $permissionService, protected RoleService $roleService
     ) {}
 
     /**
      * Display a listing of roles
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse|RoleCollection
     {
-        $this->authorize('viewAny', Role::class);
+        // $this->authorize('viewAny', Role::class);
 
-        $roles = Role::with('permissions')->get();
+        $roles = $this->roleService->getAllRoles($request);
 
-        return ApiResponse::success('Roles retrieved successfully', [
-            'roles' => $roles,
-        ]);
+        return new RoleCollection($roles);
     }
 
     /**
      * Store a newly created role
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RoleResource
     {
-        $this->authorize('create', Role::class);
+        // $this->authorize('create', Role::class);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles',
@@ -48,29 +49,25 @@ class RoleController extends Controller
             $validated['permissions'] ?? []
         );
 
-        return ApiResponse::created('Role created successfully', [
-            'role' => $role->load('permissions'),
-        ]);
+        return new RoleResource($role);
     }
 
     /**
      * Display the specified role
      */
-    public function show(Role $role): JsonResponse
+    public function show(Role $role)
     {
-        $this->authorize('view', $role);
+        // $this->authorize('view', $role);
 
-        return ApiResponse::success('Role retrieved successfully', [
-            'role' => $role->load('permissions'),
-        ]);
+        return new RoleResource($role);
     }
 
     /**
      * Update the specified role
      */
-    public function update(Request $request, Role $role): JsonResponse
+    public function update(Request $request, Role $role): JsonResponse|RoleResource
     {
-        $this->authorize('update', $role);
+        // $this->authorize('update', $role);
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255|unique:roles,name,' . $role->id,
@@ -93,9 +90,7 @@ class RoleController extends Controller
             $this->permissionService->assignPermissionsToRole($role, $validated['permissions']);
         }
 
-        return ApiResponse::success('Role updated successfully', [
-            'role' => $role->fresh()->load('permissions'),
-        ]);
+        return new RoleResource($role);
     }
 
     /**
@@ -103,7 +98,7 @@ class RoleController extends Controller
      */
     public function destroy(Role $role): JsonResponse
     {
-        $this->authorize('delete', $role);
+        // $this->authorize('delete', $role);
 
         // Prevent deletion of system roles
         if (in_array($role->name, ['Super Admin', 'Admin'])) {
@@ -113,6 +108,34 @@ class RoleController extends Controller
         $role->delete();
 
         return ApiResponse::noContent();
+    }
+
+    public function bulkDestroy(Request $request): JsonResponse
+    {
+        // $this->authorize('delete', Role::class);
+
+        $validated = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'required|integer|exists:roles,id',
+        ]);
+
+        // Prevent deletion of system roles
+        $systemRoles = Role::whereIn('id', $validated['ids'])
+            ->whereIn('name', ['Super Admin', 'Admin'])
+            ->exists();
+
+        if ($systemRoles) {
+            return ApiResponse::error('Cannot delete system roles', [], 403);
+        }
+
+        $deletedCount = $this->roleService->bulkDeleteRoles($validated['ids']);
+
+        return ApiResponse::success(
+            "{$deletedCount} role(s) deleted successfully",
+            [
+                'deleted_count' => $deletedCount,
+            ]
+        );
     }
 
     /**

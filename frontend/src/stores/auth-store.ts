@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
 
 const ACCESS_TOKEN = 'thisisjustarandomstring'
+const TOKEN_EXPIRY = 'token_expiry'
 
 interface AuthUser {
   id: number
@@ -17,18 +18,23 @@ interface AuthState {
     user: AuthUser | null
     setUser: (user: AuthUser | null) => void
     accessToken: string
-    setAccessToken: (accessToken: string) => void
+    tokenExpiry: string | null
+    setAccessToken: (accessToken: string, expiresAt?: string) => void
     resetAccessToken: () => void
+    isTokenExpired: () => boolean
     reset: () => void
   }
 }
 
-export const useAuthStore = create<AuthState>()((set) => {
+export const useAuthStore = create<AuthState>()((set, get) => {
   const cookieState = getCookie(ACCESS_TOKEN)
   const initToken = cookieState ? cookieState : ''
+  const initExpiry = getCookie(TOKEN_EXPIRY) || null
+  
   return {
     auth: {
       user: null,
+      tokenExpiry: initExpiry,
       setUser: (user) => {
         // Store tenant_id in cookie when user is set
         if (user?.tenant_id) {
@@ -37,23 +43,57 @@ export const useAuthStore = create<AuthState>()((set) => {
         set((state) => ({ ...state, auth: { ...state.auth, user } }))
       },
       accessToken: initToken,
-      setAccessToken: (accessToken) =>
+      setAccessToken: (accessToken, expiresAt) =>
         set((state) => {
           setCookie(ACCESS_TOKEN, accessToken)
-          return { ...state, auth: { ...state.auth, accessToken } }
+          if (expiresAt) {
+            // Store expiry as ISO string in cookie
+            setCookie(TOKEN_EXPIRY, expiresAt)
+          }
+          return { 
+            ...state, 
+            auth: { 
+              ...state.auth, 
+              accessToken,
+              tokenExpiry: expiresAt || null
+            } 
+          }
         }),
+      isTokenExpired: () => {
+        const { tokenExpiry } = get().auth
+        if (!tokenExpiry) return false
+        
+        const expiryTime = new Date(tokenExpiry).getTime()
+        const currentTime = new Date().getTime()
+        
+        return currentTime >= expiryTime
+      },
       resetAccessToken: () =>
         set((state) => {
           removeCookie(ACCESS_TOKEN)
-          return { ...state, auth: { ...state.auth, accessToken: '' } }
+          removeCookie(TOKEN_EXPIRY)
+          return { 
+            ...state, 
+            auth: { 
+              ...state.auth, 
+              accessToken: '',
+              tokenExpiry: null
+            } 
+          }
         }),
       reset: () =>
         set((state) => {
           removeCookie(ACCESS_TOKEN)
+          removeCookie(TOKEN_EXPIRY)
           removeCookie('tenant_id')
           return {
             ...state,
-            auth: { ...state.auth, user: null, accessToken: '' },
+            auth: { 
+              ...state.auth, 
+              user: null, 
+              accessToken: '',
+              tokenExpiry: null
+            },
           }
         }),
     },

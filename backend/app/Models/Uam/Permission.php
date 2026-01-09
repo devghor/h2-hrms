@@ -13,6 +13,6 @@ class Permission extends SpatiePermission
         'module',
         'group',
         'guard_name',
-        'company_id',
+        'tenant_id',
     ];
 }

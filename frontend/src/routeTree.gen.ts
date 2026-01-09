@@ -25,7 +25,6 @@ import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-p
 import { Route as ClerkAuthenticatedRouteRouteImport } from './routes/clerk/_authenticated/route'
 import { Route as ClerkauthRouteRouteImport } from './routes/clerk/(auth)/route'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
-import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
@@ -39,6 +38,8 @@ import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_auth
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
+import { Route as AuthenticatedUamUsersIndexRouteImport } from './routes/_authenticated/uam/users/index'
+import { Route as AuthenticatedUamRolesIndexRouteImport } from './routes/_authenticated/uam/roles/index'
 
 const ClerkRouteRoute = ClerkRouteRouteImport.update({
   id: '/clerk',
@@ -118,11 +119,6 @@ const AuthenticatedSettingsRouteRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
-  id: '/users/',
-  path: '/users/',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexRouteImport.update({
   id: '/tasks/',
   path: '/tasks/',
@@ -196,6 +192,18 @@ const AuthenticatedErrorsErrorRoute =
     path: '/errors/$error',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedUamUsersIndexRoute =
+  AuthenticatedUamUsersIndexRouteImport.update({
+    id: '/uam/users/',
+    path: '/uam/users/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedUamRolesIndexRoute =
+  AuthenticatedUamRolesIndexRouteImport.update({
+    id: '/uam/roles/',
+    path: '/uam/roles/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/clerk': typeof ClerkAuthenticatedRouteRouteWithChildren
@@ -224,7 +232,8 @@ export interface FileRoutesByFullPath {
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
-  '/users': typeof AuthenticatedUsersIndexRoute
+  '/uam/roles': typeof AuthenticatedUamRolesIndexRoute
+  '/uam/users': typeof AuthenticatedUamUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/clerk': typeof ClerkAuthenticatedRouteRouteWithChildren
@@ -252,7 +261,8 @@ export interface FileRoutesByTo {
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
-  '/users': typeof AuthenticatedUsersIndexRoute
+  '/uam/roles': typeof AuthenticatedUamRolesIndexRoute
+  '/uam/users': typeof AuthenticatedUamUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -285,7 +295,8 @@ export interface FileRoutesById {
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
-  '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/_authenticated/uam/roles/': typeof AuthenticatedUamRolesIndexRoute
+  '/_authenticated/uam/users/': typeof AuthenticatedUamUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -316,7 +327,8 @@ export interface FileRouteTypes {
     | '/help-center'
     | '/settings/'
     | '/tasks'
-    | '/users'
+    | '/uam/roles'
+    | '/uam/users'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/clerk'
@@ -344,7 +356,8 @@ export interface FileRouteTypes {
     | '/help-center'
     | '/settings'
     | '/tasks'
-    | '/users'
+    | '/uam/roles'
+    | '/uam/users'
   id:
     | '__root__'
     | '/_authenticated'
@@ -376,7 +389,8 @@ export interface FileRouteTypes {
     | '/_authenticated/help-center/'
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
-    | '/_authenticated/users/'
+    | '/_authenticated/uam/roles/'
+    | '/_authenticated/uam/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -508,13 +522,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/users/': {
-      id: '/_authenticated/users/'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AuthenticatedUsersIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/tasks/': {
       id: '/_authenticated/tasks/'
       path: '/tasks'
@@ -606,6 +613,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedErrorsErrorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/uam/users/': {
+      id: '/_authenticated/uam/users/'
+      path: '/uam/users'
+      fullPath: '/uam/users'
+      preLoaderRoute: typeof AuthenticatedUamUsersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/uam/roles/': {
+      id: '/_authenticated/uam/roles/'
+      path: '/uam/roles'
+      fullPath: '/uam/roles'
+      preLoaderRoute: typeof AuthenticatedUamRolesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -640,7 +661,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
-  AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
+  AuthenticatedUamRolesIndexRoute: typeof AuthenticatedUamRolesIndexRoute
+  AuthenticatedUamUsersIndexRoute: typeof AuthenticatedUamUsersIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -651,7 +673,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
-  AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
+  AuthenticatedUamRolesIndexRoute: AuthenticatedUamRolesIndexRoute,
+  AuthenticatedUamUsersIndexRoute: AuthenticatedUamUsersIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
