@@ -23,12 +23,10 @@ class UserResource extends JsonResource
             'roles' => $this->whenLoaded('roles', function () {
                 return $this->roles->pluck('name');
             }),
-            'permissions' => $this->when(
-                $request->user() && $request->user()->can('READ_UAM_PERMISSION'),
-                function () {
-                    return $this->getAllPermissions()->pluck('name');
-                }
-            ),
+            'permissions' => [
+                'READ_UAM_USER',
+                'READ_UAM_ROLE',
+            ],
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

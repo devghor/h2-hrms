@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Uam\UserResource;
+use App\Models\Uam\User;
 use App\Services\Auth\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -40,9 +42,9 @@ class AuthController extends Controller
         return ApiResponse::success('Login successful', $result);
     }
 
-    public function me(Request $request): JsonResponse
+    public function me(Request $request): JsonResponse|UserResource
     {
-        return ApiResponse::success('User profile retrieved', $request->user()->toArray());
+        return new UserResource($request->user());
     }
 
     public function logout(Request $request): JsonResponse
