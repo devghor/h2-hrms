@@ -31,7 +31,7 @@ import {
   type NavItem,
   type NavLink,
   type NavGroup as NavGroupProps,
-} from './types'
+} from '@/types/layout.type'
 import { useAbility } from '@/hooks/use-ability'
 import { hasPermission } from '@/lib/casl'
 

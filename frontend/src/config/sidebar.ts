@@ -23,7 +23,7 @@ import {
   GalleryVerticalEnd,
 } from 'lucide-react'
 import { ClerkLogo } from '@/assets/clerk-logo'
-import { type SidebarData } from '../types'
+import { SidebarData } from '@/types/layout.type'
 
 export const sidebarData: SidebarData = {
   user: {

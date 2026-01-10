@@ -12,7 +12,7 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
-import { sidebarData } from './layout/data/sidebar-data'
+import { sidebarData } from '@/config/sidebar'
 import { ScrollArea } from './ui/scroll-area'
 import { hasPermission } from '@/lib/casl'
 import { useAbility } from '@/hooks/use-ability'

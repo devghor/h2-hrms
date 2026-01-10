@@ -10,7 +10,7 @@ import {
 import { NavGroup } from './nav-group'
 import { NavUser } from './nav-user'
 import { TeamSwitcher } from './team-switcher'
-import { sidebarData } from './data/sidebar-data'
+import { sidebarData } from '@/config/sidebar'
 
 export function AppSidebar() {
   const { collapsible, variant } = useLayout()
