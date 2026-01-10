@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Base;
 
+use App\Exports\DesignationsExport;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Base\StoreDesignationRequest;
@@ -11,6 +12,7 @@ use App\Models\Base\Designation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DesignationController extends Controller
 {
@@ -137,5 +139,19 @@ class DesignationController extends Controller
             'All designations retrieved successfully.',
             DesignationResource::collection($designations)->toArray(request())
         );
+    }
+
+    /**
+     * Export designations to Excel.
+     */
+    public function export(Request $request)
+    {
+        $this->authorize('viewAny', Designation::class);
+
+        $filters = $request->only(['search', 'level', 'include_deleted']);
+
+        $fileName = 'designations_' . now()->format('Y-m-d_His') . '.xlsx';
+
+        return Excel::download(new DesignationsExport($filters), $fileName);
     }
 }

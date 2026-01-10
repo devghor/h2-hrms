@@ -106,6 +106,22 @@ class UserService {
     const response = await axiosInstance.get('/uam/me')
     return response.data
   }
+
+  /**
+   * Export users to Excel
+   * @param filters - Optional filters for export
+   * @returns Promise with blob data
+   */
+  async exportUsers(filters?: {
+    search?: string
+    role?: string
+  }): Promise<Blob> {
+    const response = await axiosInstance.get(`${this.USER_PREFIX}/export`, {
+      params: filters,
+      responseType: 'blob',
+    })
+    return response.data
+  }
 }
 
 // Export singleton instance

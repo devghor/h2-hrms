@@ -10,6 +10,7 @@ import { UsersDeleteDialog } from './components/users-delete-dialog'
 import { type UsersFilters } from './components/users-filters'
 import { userService } from '@/services/user.service'
 import { type User, type UsersResponse } from './data/schema'
+import { ExportButton } from '@/components/export-button'
 
 const route = getRouteApi('/_authenticated/uam/users/')
 
@@ -133,10 +134,20 @@ export function Users() {
           title='User List'
           description='Manage your users and their roles here.'
           action={
-            <Button onClick={() => setDialogOpen('add')}>
-              <Plus className='mr-2 h-4 w-4' />
-              Add User
-            </Button>
+            <div className='flex gap-2'>
+              <ExportButton
+                exportFn={() => userService.exportUsers({
+                  search: filters.name || filters.email || undefined,
+                })}
+                filenamePrefix='users'
+                successMessage='Users exported successfully'
+                errorMessage='Failed to export users'
+              />
+              <Button onClick={() => setDialogOpen('add')}>
+                <Plus className='mr-2 h-4 w-4' />
+                Add User
+              </Button>
+            </div>
           }
         />
 

@@ -10,6 +10,7 @@ import { RolesDeleteDialog } from './components/roles-delete-dialog'
 import { type RolesFilters } from './components/roles-filters'
 import { roleService } from '@/services/role.service'
 import { type Role, type RolesResponse } from './data/schema'
+import { ExportButton } from '@/components/export-button'
 
 const route = getRouteApi('/_authenticated/uam/roles/')
 
@@ -125,10 +126,20 @@ export function Roles() {
           title='Role List'
           description='Manage system roles and their permissions here.'
           action={
-            <Button onClick={() => setDialogOpen('add')}>
-              <Plus className='mr-2 h-4 w-4' />
-              Add Role
-            </Button>
+            <div className='flex gap-2'>
+              <ExportButton
+                exportFn={() => roleService.exportRoles({
+                  search: filters.name || filters.description || undefined,
+                })}
+                filenamePrefix='roles'
+                successMessage='Roles exported successfully'
+                errorMessage='Failed to export roles'
+              />
+              <Button onClick={() => setDialogOpen('add')}>
+                <Plus className='mr-2 h-4 w-4' />
+                Add Role
+              </Button>
+            </div>
           }
         />
 

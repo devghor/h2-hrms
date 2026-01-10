@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Uam;
 
+use App\Exports\UsersExport;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Uam\UserCollection;
@@ -10,6 +11,7 @@ use App\Models\Uam\User;
 use App\Services\Uam\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -88,5 +90,16 @@ class UserController extends Controller
                 'deleted_count' => $deletedCount,
             ]
         );
+    }
+
+    public function export(Request $request)
+    {
+        // $this->authorize('export', User::class);
+
+        $filters = $request->only(['search', 'role']);
+
+        $fileName = 'users_' . now()->format('Y-m-d_His') . '.xlsx';
+
+        return Excel::download(new UsersExport($filters), $fileName);
     }
 }

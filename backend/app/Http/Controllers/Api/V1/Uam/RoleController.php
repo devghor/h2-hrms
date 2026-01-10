@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Uam;
 
+use App\Exports\RolesExport;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Uam\RoleCollection;
@@ -11,6 +12,7 @@ use App\Services\Uam\PermissionService;
 use App\Services\Uam\RoleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RoleController extends Controller
 {
@@ -155,5 +157,19 @@ class RoleController extends Controller
         return ApiResponse::success('Permissions assigned successfully', [
             'role' => $role->fresh()->load('permissions'),
         ]);
+    }
+
+    /**
+     * Export roles to Excel
+     */
+    public function export(Request $request)
+    {
+        // $this->authorize('viewAny', Role::class);
+
+        $filters = $request->only(['search']);
+
+        $fileName = 'roles_' . now()->format('Y-m-d_His') . '.xlsx';
+
+        return Excel::download(new RolesExport($filters), $fileName);
     }
 }

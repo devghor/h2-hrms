@@ -176,6 +176,27 @@ class RoleService {
    * @param ulids - Array of user ULIDs
    * @returns Promise with deletion response
    */
+  async bulkDeleteUsers(ulids: string[]): Promise<{ success: boolean; message: string }> {
+    const response = await axiosInstance.post(`${this.ROLE_PREFIX}/bulk-delete`, {
+      ulids,
+    })
+    return response.data
+  }
+
+  /**
+   * Export roles to Excel
+   * @param filters - Optional filters for export
+   * @returns Promise with blob data
+   */
+  async exportRoles(filters?: {
+    search?: string
+  }): Promise<Blob> {
+    const response = await axiosInstance.get(`${this.ROLE_PREFIX}/export`, {
+      params: filters,
+      responseType: 'blob',
+    })
+    return response.data
+  }
 }
 
 // Export singleton instance
