@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \App\Http\Middleware\CheckPermission::class,
             'role' => \App\Http\Middleware\CheckRole::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'validate.token.expiration' => \App\Http\Middleware\ValidateTokenExpiration::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
