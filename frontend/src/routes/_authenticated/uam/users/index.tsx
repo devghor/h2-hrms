@@ -1,6 +1,7 @@
 import z from 'zod'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Users } from '@/features/uam/users'
+import { hasPermission } from '@/lib/casl'
 
 const usersSearchSchema = z.object({
   page: z.number().optional().catch(1),
@@ -31,7 +32,13 @@ const usersSearchSchema = z.object({
   sort_order: z.enum(['asc', 'desc']).optional().catch('asc'),
 })
 
-export const Route = createFileRoute('/_authenticated/uam/users/')({
+export const Route = createFileRoute('/_authenticated/uam/users/')({  
   validateSearch: usersSearchSchema,
+  beforeLoad: () => {
+    // Check if user has READ_UAM_USER permission
+    if (!hasPermission('READ_UAM_USER')) {
+      throw redirect({ to: '/403' })
+    }
+  },
   component: Users,
 })

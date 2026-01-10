@@ -25,7 +25,7 @@ class UserResource extends JsonResource
             }),
             'permissions' => [
                 'READ_UAM_USER',
-                'READ_UAM_ROLE',
+                // 'READ_UAM_ROLE',
             ],
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

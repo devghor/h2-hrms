@@ -16,6 +16,7 @@ type BaseNavItem = {
   title: string
   badge?: string
   icon?: React.ElementType
+  permission?: string | string[]  // Single: 'READ_UAM_USER' or Multiple: ['READ_UAM_USER', 'EDIT_UAM_USER']
 }
 
 type NavLink = BaseNavItem & {
@@ -42,3 +43,4 @@ type SidebarData = {
 }
 
 export type { SidebarData, NavGroup, NavItem, NavCollapsible, NavLink }
+

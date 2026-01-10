@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { AxiosError } from 'axios'
+import { useEffect } from 'react'
 import { authService } from '@/services/auth.service'
 import { useAuthStore } from '@/stores/auth-store'
 import {
@@ -32,11 +33,13 @@ export const useAuth = () => {
       
       // Store user data
       auth.setUser({
+        ulid: response.data.user.ulid,
         id: response.data.user.id,
         name: response.data.user.name,
         email: response.data.user.email,
         tenant_id: response.data.user.tenant_id,
         role: response.data.user.roles?.map((role) => role.name) || [],
+        permissions: response.data.user.permissions || [],
         exp: new Date(response.data.expires_at).getTime(),
       })
 
@@ -78,11 +81,13 @@ export const useAuth = () => {
       // Store token and user data
       auth.setAccessToken(response.data.access_token)
       auth.setUser({
+        ulid: response.data.user.ulid,
         id: response.data.user.id,
         name: response.data.user.name,
         email: response.data.user.email,
         tenant_id: response.data.user.tenant_id,
         role: response.data.user.roles?.map((role) => role.name) || [],
+        permissions: response.data.user.permissions || [],
         exp: new Date(response.data.expires_at).getTime(),
       })
 
@@ -178,6 +183,24 @@ export const useAuth = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
   })
+
+  // Update user in store when /me data is fetched
+  useEffect(() => {
+    if (userQuery.data?.data) {
+      const userData = userQuery.data.data
+      auth.setUser({
+        ulid: userData.ulid,
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+        tenant_id: userData.tenant_id,
+        role: userData.roles?.map((role) => role.name),
+        permissions: userData.permissions || [],
+        exp: auth.user?.exp || Date.now() + 24 * 60 * 60 * 1000,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userQuery.data])
 
   return {
     // Mutations

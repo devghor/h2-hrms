@@ -76,16 +76,19 @@ export const sidebarData: SidebarData = {
         {
           title: 'UAM',
           icon: UserCog,
+          permission: ['READ_UAM_USER', 'READ_UAM_ROLE'],
           items: [
             {
               title: 'Users',
               url: '/uam/users',
               icon: Users,
+              permission: 'READ_UAM_USER',
             },
             {
               title: 'Roles',
               url: '/uam/roles',
               icon: ShieldCheck,
+              permission: 'READ_UAM_ROLE',
             },
           ],
         },

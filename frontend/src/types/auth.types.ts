@@ -22,17 +22,18 @@ export interface ChangePasswordData {
 }
 
 export interface AuthUser {
-  id: number
+  ulid?: string
+  id?: number
   name: string
   email: string
   email_verified_at: string | null
-  tenant_id: string
+  tenant_id: string | number
   roles?: Array<{
     id: number
     name: string
     guard_name: string
   }>
-  permissions?: string[]
+  permissions: string[]
   created_at: string
   updated_at: string
 }

@@ -32,15 +32,43 @@ import {
   type NavLink,
   type NavGroup as NavGroupProps,
 } from './types'
+import { useAbility } from '@/hooks/use-ability'
+import { hasPermission } from '@/lib/casl'
+
+/**
+ * Check if user has the required permission(s) for a nav item
+ * @param permission - Single permission string or array of permissions (OR logic)
+ */
+function checkPermission(permission?: string | string[]): boolean {
+  if (!permission) return true
+  
+  // If array of permissions, user needs at least one (OR logic)
+  if (Array.isArray(permission)) {
+    return permission.some(p => hasPermission(p))
+  }
+  
+  // Single permission
+  return hasPermission(permission)
+}
 
 export function NavGroup({ title, items }: NavGroupProps) {
   const { state, isMobile } = useSidebar()
   const href = useLocation({ select: (location) => location.href })
+  useAbility() // Ensure component re-renders when permissions change
+
+  // Filter items based on permissions
+  const filteredItems = items.filter((item) => {
+    return checkPermission(item.permission)
+  })
+
+  // If no items are visible after filtering, don't render the group
+  if (filteredItems.length === 0) return null
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => {
+        {filteredItems.map((item) => {
           const key = `${item.title}-${item.url}`
 
           if (!item.items)
@@ -89,6 +117,16 @@ function SidebarMenuCollapsible({
   href: string
 }) {
   const { setOpenMobile } = useSidebar()
+  useAbility() // Ensure component re-renders when permissions change
+
+  // Filter sub-items based on permissions
+  const filteredSubItems = item.items.filter((subItem) => {
+    return checkPermission(subItem.permission)
+  })
+
+  // If no sub-items are visible, don't render the parent
+  if (filteredSubItems.length === 0) return null
+
   return (
     <Collapsible
       asChild
@@ -106,7 +144,7 @@ function SidebarMenuCollapsible({
         </CollapsibleTrigger>
         <CollapsibleContent className='CollapsibleContent'>
           <SidebarMenuSub>
-            {item.items.map((subItem) => (
+            {filteredSubItems.map((subItem) => (
               <SidebarMenuSubItem key={subItem.title}>
                 <SidebarMenuSubButton
                   asChild
@@ -134,6 +172,16 @@ function SidebarMenuCollapsedDropdown({
   item: NavCollapsible
   href: string
 }) {
+  useAbility() // Ensure component re-renders when permissions change
+
+  // Filter sub-items based on permissions
+  const filteredSubItems = item.items.filter((subItem) => {
+    return checkPermission(subItem.permission)
+  })
+
+  // If no sub-items are visible, don't render the parent
+  if (filteredSubItems.length === 0) return null
+
   return (
     <SidebarMenuItem>
       <DropdownMenu>
@@ -153,7 +201,7 @@ function SidebarMenuCollapsedDropdown({
             {item.title} {item.badge ? `(${item.badge})` : ''}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {item.items.map((sub) => (
+          {filteredSubItems.map((sub) => (
             <DropdownMenuItem key={`${sub.title}-${sub.url}`} asChild>
               <Link
                 to={sub.url}

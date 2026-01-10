@@ -1,6 +1,7 @@
 import z from 'zod'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Roles } from '@/features/uam/roles'
+import { hasPermission } from '@/lib/casl'
 
 const rolesSearchSchema = z.object({
   page: z.number().optional().catch(1),
@@ -16,7 +17,13 @@ const rolesSearchSchema = z.object({
   sort_order: z.enum(['asc', 'desc']).optional().catch('asc'),
 })
 
-export const Route = createFileRoute('/_authenticated/uam/roles/')({
+export const Route = createFileRoute('/_authenticated/uam/roles/')({  
   validateSearch: rolesSearchSchema,
+  beforeLoad: () => {
+    // Check if user has READ_UAM_ROLE permission
+    if (!hasPermission('READ_UAM_ROLE')) {
+      throw redirect({ to: '/403' })
+    }
+  },
   component: Roles,
 })
