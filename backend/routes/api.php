@@ -18,7 +18,7 @@ Route::prefix('v1')->group(function () {
         });
 
     /** Protected Routes **/
-    Route::middleware(['auth:sanctum', 'validate.token.expiration', InitializeTenancyByRequestData::class])->group(function () {
+    Route::middleware(['auth:sanctum', InitializeTenancyByRequestData::class])->group(function () {
         /**
          * Auth Module
          */
