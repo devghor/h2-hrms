@@ -10,6 +10,10 @@ interface AuthUser {
   name: string
   email: string
   tenant_id: string | number
+  tenant: {
+    name: string
+    logo?: string
+  }
   role?: string[]
   permissions?: string[]
   exp: number

@@ -9,18 +9,24 @@ import {
 // import { AppTitle } from './app-title'
 import { NavGroup } from './nav-group'
 import { NavUser } from './nav-user'
-import { TeamSwitcher } from './team-switcher'
+import { TenantSwitcher } from './tenant-switcher'
 import { sidebarData } from '@/config/sidebar'
+import { useAuth } from '@/hooks/use-auth'
 
 export function AppSidebar() {
   const { collapsible, variant } = useLayout()
+  const { user } = useAuth()
+  
   return (
     <Sidebar collapsible={collapsible} variant={variant}>
       <SidebarHeader>
-        <TeamSwitcher teams={sidebarData.teams} />
+        <TenantSwitcher
+          name={user?.tenant.name || 'No Tenant'}
+          logo={user?.tenant.logo}
+        />
 
-        {/* Replace <TeamSwitch /> with the following <AppTitle />
-         /* if you want to use the normal app title instead of TeamSwitch dropdown */}
+        {/* Replace <TenantSwitcher /> with the following <AppTitle />
+         /* if you want to use the normal app title instead of TenantSwitcher dropdown */}
         {/* <AppTitle /> */}
       </SidebarHeader>
       <SidebarContent>
@@ -29,7 +35,7 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={sidebarData.user} />
+        <NavUser/>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

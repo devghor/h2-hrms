@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useAuth } from '@clerk/clerk-react'
 
 type TopNavProps = React.HTMLAttributes<HTMLElement> & {
   links: {

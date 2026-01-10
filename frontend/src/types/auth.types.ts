@@ -1,6 +1,10 @@
 /**
  * Authentication related types
  */
+export interface Tenant { 
+  name: string
+  logo?: string
+}
 
 export interface LoginCredentials {
   email: string
@@ -28,6 +32,7 @@ export interface AuthUser {
   email: string
   email_verified_at: string | null
   tenant_id: string | number
+  tenant: Tenant
   roles?: Array<{
     id: number
     name: string
