@@ -12,7 +12,7 @@ class RolePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('READ_UAM_ROLE');
+        return true;
     }
 
     /**
@@ -20,7 +20,7 @@ class RolePolicy
      */
     public function view(User $user, Role $role): bool
     {
-        return $user->hasPermissionTo('READ_UAM_ROLE');
+        return true;
     }
 
     /**
@@ -28,7 +28,7 @@ class RolePolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('CREATE_UAM_ROLE');
+        return true;
     }
 
     /**
@@ -36,7 +36,7 @@ class RolePolicy
      */
     public function update(User $user, Role $role): bool
     {
-        return $user->hasPermissionTo('UPDATE_UAM_ROLE');
+        return true;
     }
 
     /**
@@ -49,6 +49,6 @@ class RolePolicy
             return false;
         }
 
-        return $user->hasPermissionTo('DELETE_UAM_ROLE');
+        return true;
     }
 }

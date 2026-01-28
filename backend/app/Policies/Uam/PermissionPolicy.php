@@ -12,7 +12,7 @@ class PermissionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('READ_UAM_PERMISSION');
+        return true;
     }
 
     /**
@@ -20,7 +20,7 @@ class PermissionPolicy
      */
     public function view(User $user, Permission $permission): bool
     {
-        return $user->hasPermissionTo('READ_UAM_PERMISSION');
+        return true;
     }
 
     /**
@@ -28,7 +28,7 @@ class PermissionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('CREATE_UAM_PERMISSION');
+        return true;
     }
 
     /**
@@ -36,7 +36,7 @@ class PermissionPolicy
      */
     public function update(User $user, Permission $permission): bool
     {
-        return $user->hasPermissionTo('UPDATE_UAM_PERMISSION');
+        return true;
     }
 
     /**
@@ -44,6 +44,6 @@ class PermissionPolicy
      */
     public function delete(User $user, Permission $permission): bool
     {
-        return $user->hasPermissionTo('DELETE_UAM_PERMISSION');
+        return true;
     }
 }
