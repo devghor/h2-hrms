@@ -19,6 +19,8 @@ class PermissionResource extends Resource
 
     protected static ?string $cluster = Uam::class;
 
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
+
     public static function form(Schema $schema): Schema
     {
         return PermissionForm::configure($schema);

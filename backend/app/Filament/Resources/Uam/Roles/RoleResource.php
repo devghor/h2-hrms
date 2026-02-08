@@ -19,6 +19,8 @@ class RoleResource extends Resource
 
     protected static ?string $cluster = Uam::class;
 
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
+
     public static function form(Schema $schema): Schema
     {
         return RoleForm::configure($schema);
