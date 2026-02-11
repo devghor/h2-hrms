@@ -1,0 +1,49 @@
+################################
+# Git
+################################
+.git
+.gitignore
+
+################################
+# Docker
+################################
+docker-compose.override.yml
+.dockerignore
+
+################################
+# OS files
+################################
+.DS_Store
+Thumbs.db
+
+################################
+# IDE
+################################
+.vscode
+.idea
+
+################################
+# Frontend
+################################
+frontend/node_modules
+frontend/dist
+frontend/build
+frontend/.env
+
+################################
+# Backend (Laravel)
+################################
+backend/node_modules
+backend/vendor
+backend/storage/logs/*
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/.env
+backend/.env.*
+backend/tests
+
+################################
+# Logs
+################################
+*.log
