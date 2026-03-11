@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Uam\Permission;
 
-use App\DataTables\Uam\Permission\PermissionsDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Uam\Permission\StorePermissionRequest;
 use App\Http\Requests\Uam\Permission\UpdatePermissionRequest;
@@ -10,15 +9,19 @@ use App\Http\Resources\Uam\Permission\PermissionResource;
 use App\Models\Uam\Permission;
 use App\Repositories\Uam\Permission\PermissionRepository;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class PermissionController extends Controller
 {
     public function __construct(private PermissionRepository $permissionRepository) {}
 
-    public function index(PermissionsDataTable $dataTable)
+    public function index()
     {
         if (request()->query('permissions-data-table')) {
-            return $dataTable->ajax();
+            return DataTables::eloquent(Permission::query())
+                ->editColumn('created_at', fn($p) => $p->created_at->format('Y-m-d H:i:s'))
+                ->editColumn('updated_at', fn($p) => $p->updated_at->format('Y-m-d H:i:s'))
+                ->make(true);
         }
         return inertia('uam/permissions/index');
     }

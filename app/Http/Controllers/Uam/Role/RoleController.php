@@ -2,21 +2,24 @@
 
 namespace App\Http\Controllers\Uam\Role;
 
-use App\DataTables\Uam\Role\RolesDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Uam\Permission;
 use App\Models\Uam\Role;
 use App\Repositories\Uam\Role\RoleRepository;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class RoleController extends Controller
 {
     public function __construct(private RoleRepository $roleRepository) {}
 
-    public function index(RolesDataTable $dataTable)
+    public function index()
     {
         if (request()->query('data-table')) {
-            return $dataTable->ajax();
+            return DataTables::eloquent(Role::query())
+                ->editColumn('created_at', fn($r) => $r->created_at->format('Y-m-d H:i:s'))
+                ->editColumn('updated_at', fn($r) => $r->updated_at->format('Y-m-d H:i:s'))
+                ->make(true);
         }
         return inertia('uam/roles/index');
     }
