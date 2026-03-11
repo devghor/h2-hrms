@@ -235,8 +235,6 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
         });
     };
 
-    const alignClass = (align?: string) => (align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center');
-
     const pageCount = Math.max(1, Math.ceil((recordsFiltered || recordsTotal) / length));
     const currentPage = Math.floor(start / length) + 1;
 
@@ -269,7 +267,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                 localStorage.removeItem(VISIBILITY_KEY);
             }
         } catch {
-            // Ignore localStorage errors
+            // Ignore localStorage clear errors
         }
     };
 
@@ -362,14 +360,10 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                                         columnVisibility[col.accessorKey] && (
                                             <TableHeadCell
                                                 key={col.accessorKey}
-                                                className={`${alignClass(col.align)} ${col.className || ''} ${order[0]?.column === index ? 'font-semibold' : ''}`}
+                                                className={`${col.className || ''} ${order[0]?.column === index ? 'font-semibold' : ''}`}
                                             >
                                                 {col.sortable !== false ? (
-                                                    <Button
-                                                        variant="ghost"
-                                                        onClick={() => handleSort(index)}
-                                                        className={`flex w-full items-center space-x-1 ${col.align === 'left' ? 'justify-start' : col.align === 'right' ? 'justify-end' : 'justify-center'}`}
-                                                    >
+                                                    <Button variant="ghost" onClick={() => handleSort(index)} className="flex items-center space-x-1">
                                                         <span>{col.header}</span>
                                                         {order[0]?.column === index ? (
                                                             order[0]?.dir === 'asc' ? (
@@ -425,7 +419,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                                         {columns.map(
                                             (col: any) =>
                                                 columnVisibility[col.accessorKey] && (
-                                                    <TableCell key={col.accessorKey} className={`${alignClass(col.align)} ${col.className || ''}`}>
+                                                    <TableCell key={col.accessorKey} className={col.className || ''}>
                                                         {col.cell ? col.cell({ row }) : row[col.accessorKey]}
                                                     </TableCell>
                                                 ),
