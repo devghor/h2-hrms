@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { breadcrumbItems } from '@/config/breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
@@ -14,7 +15,7 @@ import { useRef, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [breadcrumbItems.dashboard, breadcrumbItems.configurationDepartments];
 
-export default function Index() {
+export default function Index({ divisions }: { divisions: { id: number; name: string }[] }) {
     const tableRef = useRef<{ refetch: () => void }>(null);
     const [open, setOpen] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
@@ -25,7 +26,7 @@ export default function Index() {
     const columns = [
         { accessorKey: 'id', header: 'ID', sortable: true, searchable: true },
         { accessorKey: 'name', header: 'Name', sortable: true, searchable: true },
-        { accessorKey: 'division_id', header: 'Division', sortable: true, searchable: true },
+        { accessorKey: 'division', header: 'Division', sortable: true, searchable: true },
         { accessorKey: 'description', header: 'Description', sortable: true, searchable: true },
         { accessorKey: 'created_at', header: 'Created At', sortable: true },
         {
@@ -126,8 +127,23 @@ export default function Index() {
                             {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
                         </div>
                         <div>
-                            <Label htmlFor="division_id">Division ID</Label>
-                            <Input name="division_id" value={form.division_id} onChange={handleChange} />
+                            <Label htmlFor="division_id">Division</Label>
+                            <Select
+                                name="division_id"
+                                value={form.division_id ? form.division_id.toString() : ''}
+                                onValueChange={(value) => setForm((prev) => ({ ...prev, division_id: value }))}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a division" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {divisions.map((division) => (
+                                        <SelectItem key={division.id} value={division.id.toString()}>
+                                            {division.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                             {formErrors.division_id && <p className="text-sm text-red-500">{formErrors.division_id}</p>}
                         </div>
                         <div>

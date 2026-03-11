@@ -9,21 +9,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('desks', function (Blueprint $table) {
+        Schema::create('divisions', function (Blueprint $table) {
             $table->id();
             MigrationHelper::ulidField($table);
             MigrationHelper::companyIdField($table);
             $table->string('name');
             $table->string('code')->nullable();
-            $table->unsignedBigInteger('parent_id')->nullable();
             $table->string('description')->nullable();
-            $table->foreign('parent_id')->references('id')->on('desks')->onDelete('set null');
             MigrationHelper::commonFields($table);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('desks');
+        Schema::dropIfExists('departments');
     }
 };

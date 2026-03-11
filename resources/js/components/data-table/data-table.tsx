@@ -111,7 +111,9 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
         try {
             if (typeof window === 'undefined') return;
             localStorage.setItem(key, JSON.stringify(value));
-        } catch {}
+        } catch {
+            // Ignore write errors (e.g. quota exceeded, private mode)
+        }
     };
 
     const defaultColumnSearch = useMemo(

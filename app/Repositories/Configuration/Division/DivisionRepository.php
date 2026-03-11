@@ -18,4 +18,9 @@ class DivisionRepository extends CoreRepository
         $model->save();
         return $model;
     }
+
+    public function getdivisionOptions()
+    {
+        return $this->model->select('id', 'name')->get();
+    }
 }

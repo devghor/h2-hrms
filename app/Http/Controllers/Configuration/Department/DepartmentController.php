@@ -7,16 +7,22 @@ use App\Http\Requests\Configuration\Department\StoreDepartmentRequest;
 use App\Http\Requests\Configuration\Department\UpdateDepartmentRequest;
 use App\Models\Configuration\Department\Department;
 use App\Repositories\Configuration\Department\DepartmentRepository;
+use App\Repositories\Configuration\Division\DivisionRepository;
 use Yajra\DataTables\Facades\DataTables;
 
 class DepartmentController extends Controller
 {
-    public function __construct(private DepartmentRepository $departmentRepository) {}
+    public function __construct(private DepartmentRepository $departmentRepository, private DivisionRepository $divisionRepository) {}
 
     public function index()
     {
+        $divisions = $this->divisionRepository->getdivisionOptions();
+
         if (request()->query('data-table')) {
             return DataTables::eloquent(Department::query())
+                ->addColumn('division', function ($department) {
+                    return $department->division ? $department->division->name : '';
+                })
                 ->editColumn('created_at', function ($department) {
                     return $department->created_at->format('Y-m-d H:i:s');
                 })
@@ -26,7 +32,9 @@ class DepartmentController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return inertia('configuration/departments/index');
+        return inertia('configuration/departments/index', [
+            'divisions' => $divisions,
+        ]);
     }
 
     public function create() {}

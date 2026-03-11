@@ -17,7 +17,7 @@
         "prettus/l5-repository": "^2.10",
         "spatie/laravel-medialibrary": "^11.14",
         "spatie/laravel-permission": "^6.21",
-        "stancl/tenancy": "^3.9",
+        "stancl/tenancy": "dev-master",
         "tightenco/ziggy": "^2.5",
         "yajra/laravel-datatables": "^12.0"
     },
@@ -94,6 +94,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

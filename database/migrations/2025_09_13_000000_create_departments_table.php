@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\MigrationHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,10 +11,13 @@ return new class extends Migration
     {
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
+            MigrationHelper::ulidField($table);
+            MigrationHelper::companyIdField($table);
             $table->string('name');
+            $table->string('code')->nullable();
             $table->unsignedBigInteger('division_id')->nullable();
             $table->string('description')->nullable();
-            $table->timestamps();
+            MigrationHelper::commonFields($table);
         });
     }
 
