@@ -44,7 +44,6 @@ class CompanyController extends Controller
     public function store(StoreCompanyRequest $request)
     {
         $input = $request->validated();
-        $input['company_id'] = tenant()->id;
         $this->companyRepository->create($input);
         return redirect()->back()->with('success', 'Company created successfully.');
     }
