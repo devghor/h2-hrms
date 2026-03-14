@@ -1,17 +1,15 @@
 import DataTable from '@/components/data-table/data-table';
 import { RowActions } from '@/components/data-table/row-actions';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import BulkDeleteButton from '@/components/bulk-delete-button';
+import { BaseDialog } from '@/components/dialog/base-dialog';
 import { breadcrumbItems } from '@/config/breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { router } from '@inertiajs/react';
-import { DialogTitle } from '@radix-ui/react-dialog';
 import axios from 'axios';
-import BulkDeleteButton from '@/components/bulk-delete-button';
-import { Loader2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -23,7 +21,6 @@ export default function Index() {
     const [isEdit, setIsEdit] = useState(false);
     const [form, setForm] = useState({ id: undefined, name: '', parent_id: '', description: '' });
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-    const [loading, setLoading] = useState(false);
     const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
 
     const columns = [
@@ -57,6 +54,11 @@ export default function Index() {
         setFormErrors({});
     };
 
+    const handleClose = () => {
+        setOpen(false);
+        setIsEdit(false);
+    };
+
     const handleDelete = (id: number) => {
         router.delete(route('configuration.desks.destroy', id), {
             onSuccess: () => tableRef.current?.refetch(),
@@ -80,35 +82,29 @@ export default function Index() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
         const data: Record<string, any> = {
             name: form.name,
             parent_id: form.parent_id || null,
             description: form.description,
         };
-        const onFinish = () => setLoading(false);
         if (isEdit && form.id) {
             router.put(route('configuration.desks.update', form.id), data, {
                 onSuccess: () => {
-                    setOpen(false);
+                    handleClose();
                     tableRef.current?.refetch();
-                    onFinish();
                 },
                 onError: (errors) => {
                     setFormErrors(errors);
-                    onFinish();
                 },
             });
         } else {
             router.post(route('configuration.desks.store'), data, {
                 onSuccess: () => {
-                    setOpen(false);
+                    handleClose();
                     tableRef.current?.refetch();
-                    onFinish();
                 },
                 onError: (errors) => {
                     setFormErrors(errors);
-                    onFinish();
                 },
             });
         }
@@ -125,39 +121,31 @@ export default function Index() {
                     <BulkDeleteButton selectedCount={selectedIds.length} onDelete={handleBulkDelete} />
                 }
             />
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle className="text-xl font-bold">{isEdit ? 'Edit Desk' : 'Add Desk'}</DialogTitle>
-                        <DialogDescription className="text-muted-foreground">
-                            {isEdit ? 'Update the details of the existing desk.' : 'Fill in the details to create a new desk.'}
-                        </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmit} className="mt-2 space-y-4">
-                        <div>
-                            <Label htmlFor="name">Name</Label>
-                            <Input name="name" value={form.name} onChange={handleChange} required />
-                            {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
-                        </div>
-                        <div>
-                            <Label htmlFor="parent_id">Parent Desk</Label>
-                            <Input name="parent_id" value={form.parent_id} onChange={handleChange} />
-                            {formErrors.parent_id && <p className="text-sm text-red-500">{formErrors.parent_id}</p>}
-                        </div>
-                        <div>
-                            <Label htmlFor="description">Description</Label>
-                            <Input name="description" value={form.description} onChange={handleChange} />
-                            {formErrors.description && <p className="text-sm text-red-500">{formErrors.description}</p>}
-                        </div>
-                        <div className="flex justify-end gap-2">
-                            <Button type="submit" disabled={loading}>
-                                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                {isEdit ? 'Update' : 'Create'} Desk
-                            </Button>
-                        </div>
-                    </form>
-                </DialogContent>
-            </Dialog>
+            <BaseDialog
+                open={open}
+                onOpenChange={setOpen}
+                title={isEdit ? 'Edit Desk' : 'Add Desk'}
+                description={isEdit ? 'Update the details of the existing desk.' : 'Fill in the details to create a new desk.'}
+                onSubmit={handleSubmit}
+                onCancel={handleClose}
+                submitLabel={isEdit ? 'Update' : 'Create'}
+            >
+                <div>
+                    <Label htmlFor="name">Name</Label>
+                    <Input name="name" value={form.name} onChange={handleChange} required />
+                    {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
+                </div>
+                <div>
+                    <Label htmlFor="parent_id">Parent Desk</Label>
+                    <Input name="parent_id" value={form.parent_id} onChange={handleChange} />
+                    {formErrors.parent_id && <p className="text-sm text-red-500">{formErrors.parent_id}</p>}
+                </div>
+                <div>
+                    <Label htmlFor="description">Description</Label>
+                    <Input name="description" value={form.description} onChange={handleChange} />
+                    {formErrors.description && <p className="text-sm text-red-500">{formErrors.description}</p>}
+                </div>
+            </BaseDialog>
         </AppLayout>
     );
 }

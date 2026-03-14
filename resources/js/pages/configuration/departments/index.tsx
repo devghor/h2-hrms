@@ -1,18 +1,16 @@
 import DataTable from '@/components/data-table/data-table';
 import { RowActions } from '@/components/data-table/row-actions';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import BulkDeleteButton from '@/components/bulk-delete-button';
+import { BaseDialog } from '@/components/dialog/base-dialog';
 import { breadcrumbItems } from '@/config/breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { router } from '@inertiajs/react';
-import { DialogTitle } from '@radix-ui/react-dialog';
 import axios from 'axios';
-import BulkDeleteButton from '@/components/bulk-delete-button';
-import { Loader2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -24,7 +22,6 @@ export default function Index({ divisions }: { divisions: { id: number; name: st
     const [isEdit, setIsEdit] = useState(false);
     const [form, setForm] = useState({ id: undefined, name: '', division_id: '', description: '' });
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-    const [loading, setLoading] = useState(false);
     const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
 
     const columns = [
@@ -58,6 +55,11 @@ export default function Index({ divisions }: { divisions: { id: number; name: st
         setFormErrors({});
     };
 
+    const handleClose = () => {
+        setOpen(false);
+        setIsEdit(false);
+    };
+
     const handleDelete = (id: number) => {
         router.delete(route('configuration.departments.destroy', id), {
             onSuccess: () => tableRef.current?.refetch(),
@@ -81,35 +83,29 @@ export default function Index({ divisions }: { divisions: { id: number; name: st
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
         const data: Record<string, any> = {
             name: form.name,
             division_id: form.division_id,
             description: form.description,
         };
-        const onFinish = () => setLoading(false);
         if (isEdit && form.id) {
             router.put(route('configuration.departments.update', form.id), data, {
                 onSuccess: () => {
-                    setOpen(false);
+                    handleClose();
                     tableRef.current?.refetch();
-                    onFinish();
                 },
                 onError: (errors) => {
                     setFormErrors(errors);
-                    onFinish();
                 },
             });
         } else {
             router.post(route('configuration.departments.store'), data, {
                 onSuccess: () => {
-                    setOpen(false);
+                    handleClose();
                     tableRef.current?.refetch();
-                    onFinish();
                 },
                 onError: (errors) => {
                     setFormErrors(errors);
-                    onFinish();
                 },
             });
         }
@@ -126,54 +122,46 @@ export default function Index({ divisions }: { divisions: { id: number; name: st
                     <BulkDeleteButton selectedCount={selectedIds.length} onDelete={handleBulkDelete} />
                 }
             />
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle className="text-xl font-bold">{isEdit ? 'Edit Department' : 'Add Department'}</DialogTitle>
-                        <DialogDescription className="text-muted-foreground">
-                            {isEdit ? 'Update the details of the existing department.' : 'Fill in the details to create a new department.'}
-                        </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmit} className="mt-2 space-y-4">
-                        <div>
-                            <Label htmlFor="name">Name</Label>
-                            <Input name="name" value={form.name} onChange={handleChange} required />
-                            {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
-                        </div>
-                        <div>
-                            <Label htmlFor="division_id">Division</Label>
-                            <Select
-                                name="division_id"
-                                value={form.division_id ? form.division_id.toString() : ''}
-                                onValueChange={(value) => setForm((prev) => ({ ...prev, division_id: value }))}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a division" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {divisions.map((division) => (
-                                        <SelectItem key={division.id} value={division.id.toString()}>
-                                            {division.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {formErrors.division_id && <p className="text-sm text-red-500">{formErrors.division_id}</p>}
-                        </div>
-                        <div>
-                            <Label htmlFor="description">Description</Label>
-                            <Input name="description" value={form.description} onChange={handleChange} />
-                            {formErrors.description && <p className="text-sm text-red-500">{formErrors.description}</p>}
-                        </div>
-                        <div className="flex justify-end gap-2">
-                            <Button type="submit" disabled={loading}>
-                                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                {isEdit ? 'Update' : 'Create'} Department
-                            </Button>
-                        </div>
-                    </form>
-                </DialogContent>
-            </Dialog>
+            <BaseDialog
+                open={open}
+                onOpenChange={setOpen}
+                title={isEdit ? 'Edit Department' : 'Add Department'}
+                description={isEdit ? 'Update the details of the existing department.' : 'Fill in the details to create a new department.'}
+                onSubmit={handleSubmit}
+                onCancel={handleClose}
+                submitLabel={isEdit ? 'Update' : 'Create'}
+            >
+                <div>
+                    <Label htmlFor="name">Name</Label>
+                    <Input name="name" value={form.name} onChange={handleChange} required />
+                    {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
+                </div>
+                <div>
+                    <Label htmlFor="division_id">Division</Label>
+                    <Select
+                        name="division_id"
+                        value={form.division_id ? form.division_id.toString() : ''}
+                        onValueChange={(value) => setForm((prev) => ({ ...prev, division_id: value }))}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a division" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {divisions.map((division) => (
+                                <SelectItem key={division.id} value={division.id.toString()}>
+                                    {division.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    {formErrors.division_id && <p className="text-sm text-red-500">{formErrors.division_id}</p>}
+                </div>
+                <div>
+                    <Label htmlFor="description">Description</Label>
+                    <Input name="description" value={form.description} onChange={handleChange} />
+                    {formErrors.description && <p className="text-sm text-red-500">{formErrors.description}</p>}
+                </div>
+            </BaseDialog>
         </AppLayout>
     );
 }
