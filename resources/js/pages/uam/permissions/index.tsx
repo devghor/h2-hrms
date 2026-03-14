@@ -54,12 +54,7 @@ export default function Index() {
                 <Input type="text" className="w-50" value={value} onChange={(e) => onChange(e.target.value)} placeholder="Search Guard Name" />
             ),
         },
-        {
-            accessorKey: 'created_at',
-            header: 'Created At',
-            sortable: true,
-            searchable: true,
-        },
+        { accessorKey: 'created_at', header: 'Created At', sortable: true, searchable: true, filterType: 'date' as const },
         {
             accessorKey: 'actions',
             header: 'Actions',

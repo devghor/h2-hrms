@@ -1,6 +1,5 @@
 import DataTable from '@/components/data-table/data-table';
 import { RowActions } from '@/components/data-table/row-actions';
-import { DatePicker } from '@/components/date-picker';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -54,15 +53,7 @@ export default function Index() {
             sortable: true,
             searchable: true,
         },
-        {
-            accessorKey: 'created_at',
-            header: 'Created At',
-            sortable: true,
-            searchable: true,
-            searchComponent: ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
-                <DatePicker className="w-50" value={value} onChange={onChange} />
-            ),
-        },
+        { accessorKey: 'created_at', header: 'Created At', sortable: true, searchable: true, filterType: 'date' as const },
         {
             accessorKey: 'actions',
             header: 'Actions',
