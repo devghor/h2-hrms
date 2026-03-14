@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Uam\User;
 
+use App\DataTables\UsersDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Uam\User\StoreUserRequest;
 use App\Http\Requests\Uam\User\UpdateUserRequest;
 use App\Http\Resources\Uam\User\UserResource;
-use App\Models\Uam\User;
 use App\Repositories\Uam\User\UserRepository;
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
@@ -19,13 +18,16 @@ class UserController extends Controller
     /**
      * Display a listing of the resource for the Inertia view.
      */
-    public function index()
+    public function index(UsersDataTable $dataTable)
     {
         if (request()->query('data-table')) {
-            return DataTables::eloquent(User::select(['id', 'name', 'email', 'created_at']))
-                ->editColumn('created_at', fn($u) => $u->created_at->format('Y-m-d H:i:s'))
-                ->rawColumns(['actions'])
-                ->make(true);
+            $action = request('action');
+
+            if (in_array($action, ['excel', 'csv', 'pdf', 'print'])) {
+                return app()->call([$dataTable, $action === 'print' ? 'printPreview' : $action]);
+            }
+
+            return app()->call([$dataTable, 'ajax']);
         }
 
         return inertia('uam/users/index');

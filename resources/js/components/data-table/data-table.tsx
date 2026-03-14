@@ -18,8 +18,12 @@ import {
     ChevronsRight,
     ChevronsUpDown,
     ChevronUp,
+    Download,
     EyeOff,
+    FileSpreadsheet,
+    FileText,
     ListFilter,
+    Loader2,
     SlidersHorizontal,
     X,
 } from 'lucide-react';
@@ -95,6 +99,8 @@ export interface ColumnDef {
     /** Override filter input type for this column. Defaults to 'text'. */
     filterType?: 'text' | 'date';
     visible?: boolean;
+    /** Set false to exclude this column from exports. Defaults to true. */
+    exportable?: boolean;
     className?: string;
     cell?: (props: { row: any }) => React.ReactNode;
 }
@@ -104,9 +110,11 @@ interface DataTableProps {
     dataUrl: string;
     extraActions?: React.ReactNode;
     tableId?: string;
+    /** Used as the exported file name (e.g. "users" → users.csv / users PDF). Defaults to "export". */
+    exportTitle?: string;
 }
 
-const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions, tableId }: DataTableProps, ref) {
+const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions, tableId, exportTitle = 'export' }: DataTableProps, ref) {
     const encodeUrlKey = (url: string) => encodeURIComponent(url);
     const keySuffix = tableId ?? encodeUrlKey(dataUrl);
 
@@ -254,6 +262,45 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
 
     const clearAllFilters = () => setColumnFilters({});
 
+    // ── Export (via Yajra DataTable backend) ───────────────────────────────
+    const [exportLoading, setExportLoading] = useState(false);
+
+    const handleExport = async (action: 'excel' | 'pdf', mimeType: string, ext: string) => {
+        setExportLoading(true);
+        try {
+            const response = await axios.get(dataUrl, {
+                params: {
+                    draw: 1,
+                    start: 0,
+                    length: -1,
+                    action,
+                    order,
+                    columns: columns.map((col: ColumnDef) => ({
+                        data: col.accessorKey,
+                        name: col.accessorKey,
+                        searchable: col.searchable !== false,
+                        orderable: col.sortable !== false,
+                        search: { value: columnFilters[col.accessorKey] ?? '', regex: false },
+                    })),
+                },
+                responseType: 'blob',
+            });
+            const url = URL.createObjectURL(new Blob([response.data], { type: mimeType }));
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${exportTitle}.${ext}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } finally {
+            setExportLoading(false);
+        }
+    };
+
+    const handleExportExcel = () => handleExport('excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'xlsx');
+    const handleExportPdf   = () => handleExport('pdf',   'application/pdf', 'pdf');
+
     return (
         <div className="w-full space-y-2">
             {/* Toolbar */}
@@ -288,34 +335,56 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                     {extraActions}
                 </div>
 
-                {/* View (column visibility) */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-sm font-normal">
-                            <SlidersHorizontal className="h-3.5 w-3.5" />
-                            View
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {columns
-                            .filter((col: any) => col.header)
-                            .map((col: any) => (
-                                <DropdownMenuCheckboxItem
-                                    key={col.accessorKey}
-                                    className="capitalize"
-                                    checked={!!columnVisibility[col.accessorKey]}
-                                    onCheckedChange={(value) =>
-                                        setColumnVisibility((prev: any) => ({
-                                            ...prev,
-                                            [col.accessorKey]: !!value,
-                                        }))
-                                    }
-                                >
-                                    {col.header}
-                                </DropdownMenuCheckboxItem>
-                            ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex items-center gap-2">
+                    {/* Export */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 gap-1.5 text-sm font-normal" disabled={exportLoading}>
+                                {exportLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                                Export
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={handleExportExcel}>
+                                <FileSpreadsheet className="mr-2 h-3.5 w-3.5" />
+                                Excel (.csv)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportPdf}>
+                                <FileText className="mr-2 h-3.5 w-3.5" />
+                                PDF (Print)
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* View (column visibility) */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 gap-1.5 text-sm font-normal">
+                                <SlidersHorizontal className="h-3.5 w-3.5" />
+                                View
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {columns
+                                .filter((col: any) => col.header)
+                                .map((col: any) => (
+                                    <DropdownMenuCheckboxItem
+                                        key={col.accessorKey}
+                                        className="capitalize"
+                                        checked={!!columnVisibility[col.accessorKey]}
+                                        onCheckedChange={(value) =>
+                                            setColumnVisibility((prev: any) => ({
+                                                ...prev,
+                                                [col.accessorKey]: !!value,
+                                            }))
+                                        }
+                                    >
+                                        {col.header}
+                                    </DropdownMenuCheckboxItem>
+                                ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
 
             {/* Filter panel */}
