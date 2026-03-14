@@ -13,15 +13,19 @@ import React from 'react';
 
 type DeleteConfirmDialogProps = {
     onConfirm: () => void;
-    triggerElement: React.ReactNode;
+    triggerElement?: React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 };
 
-export function DeleteConfirmDialog({ onConfirm, triggerElement }: DeleteConfirmDialogProps) {
-    const [open, setOpen] = React.useState(false);
+export function DeleteConfirmDialog({ onConfirm, triggerElement, open: controlledOpen, onOpenChange }: DeleteConfirmDialogProps) {
+    const [internalOpen, setInternalOpen] = React.useState(false);
+    const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+    const setOpen = onOpenChange ?? setInternalOpen;
 
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
-            <AlertDialogTrigger asChild>{triggerElement}</AlertDialogTrigger>
+            {triggerElement && <AlertDialogTrigger asChild>{triggerElement}</AlertDialogTrigger>}
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>

@@ -1,5 +1,5 @@
 import DataTable from '@/components/data-table/data-table';
-import { DeleteConfirmDialog } from '@/components/dialog/delete-confirmation-dialog';
+import { RowActions } from '@/components/data-table/row-actions';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -14,16 +14,16 @@ import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [breadcrumbItems.dashboard, breadcrumbItems.uamRoles];
 
+interface Role {
+    id: number;
+    name: string;
+    description?: string;
+    created_at: string;
+}
+
 export default function Index() {
     const { errors } = usePage().props;
     const tableRef = useRef<{ refetch: () => void }>(null);
-
-    interface Role {
-        id: number;
-        name: string;
-        description?: string;
-        created_at: string;
-    }
 
     const columns = [
         {
@@ -64,24 +64,10 @@ export default function Index() {
             header: 'Actions',
             sortable: false,
             searchable: false,
-            className: 'min-w-[120px] text-center',
-            cell: ({ row }: any) => {
-                return (
-                    <>
-                        <Button size="sm" onClick={() => router.get(route('uam.roles.edit', row.id))} variant="outline" className="cursor-pointer">
-                            Edit
-                        </Button>
-                        <DeleteConfirmDialog
-                            triggerElement={
-                                <Button size="sm" variant="destructive" className="ml-2">
-                                    Delete
-                                </Button>
-                            }
-                            onConfirm={() => handleDelete(row.id)}
-                        />
-                    </>
-                );
-            },
+            className: 'w-[60px] text-center',
+            cell: ({ row }: any) => (
+                <RowActions onEdit={() => router.get(route('uam.roles.edit', row.id))} onDelete={() => handleDelete(row.id)} />
+            ),
         },
     ];
 

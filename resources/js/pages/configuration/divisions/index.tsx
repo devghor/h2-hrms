@@ -1,5 +1,5 @@
 import DataTable from '@/components/data-table/data-table';
-import { DeleteConfirmDialog } from '@/components/dialog/delete-confirmation-dialog';
+import { RowActions } from '@/components/data-table/row-actions';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,7 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { router } from '@inertiajs/react';
 import { DialogTitle } from '@radix-ui/react-dialog';
-import { DeleteIcon, EditIcon, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [breadcrumbItems.dashboard, breadcrumbItems.configurationDivisions];
@@ -31,20 +31,9 @@ export default function Index() {
             accessorKey: 'actions',
             header: 'Actions',
             sortable: false,
+            className: 'w-[60px] text-center',
             cell: ({ row }: any) => (
-                <>
-                    <Button size="icon" onClick={() => handleEdit(row)} variant="secondary">
-                        <EditIcon />
-                    </Button>
-                    <DeleteConfirmDialog
-                        triggerElement={
-                            <Button size="icon" variant="secondary" className="ml-2">
-                                <DeleteIcon />
-                            </Button>
-                        }
-                        onConfirm={() => handleDelete(row.id)}
-                    />
-                </>
+                <RowActions onEdit={() => handleEdit(row)} onDelete={() => handleDelete(row.id)} />
             ),
         },
     ];
