@@ -20,17 +20,7 @@ class UserController extends Controller
      */
     public function index(UsersDataTable $dataTable)
     {
-        if (request()->query('data-table')) {
-            $action = request('action');
-
-            if (in_array($action, ['excel', 'csv', 'pdf', 'print'])) {
-                return app()->call([$dataTable, $action === 'print' ? 'printPreview' : $action]);
-            }
-
-            return app()->call([$dataTable, 'ajax']);
-        }
-
-        return inertia('uam/users/index');
+        return $dataTable->renderInertia('uam/users/index');
     }
 
     /**
