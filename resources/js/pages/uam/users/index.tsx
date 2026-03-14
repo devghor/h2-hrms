@@ -2,15 +2,14 @@ import DataTable from '@/components/data-table/data-table';
 import { RowActions } from '@/components/data-table/row-actions';
 import { DatePicker } from '@/components/date-picker';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import BulkDeleteButton from '@/components/bulk-delete-button';
+import { BaseDialog } from '@/components/dialog/base-dialog';
 import { breadcrumbItems } from '@/config/breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { router, usePage } from '@inertiajs/react';
-import { DialogTitle } from '@radix-ui/react-dialog';
 import axios from 'axios';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -184,51 +183,43 @@ export default function Index() {
             />
 
             {/* Dialog for adding/editing user */}
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle className="text-xl font-bold">{isEdit ? 'Edit User' : 'Add User'}</DialogTitle>
-                        <DialogDescription className="text-muted-foreground">
-                            {isEdit ? 'Update the details of the existing user.' : 'Fill in the details to create a new user.'}
-                        </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <Label htmlFor="name">Name</Label>
-                        <Input type="text" name="name" value={form.name} onChange={handleChange()} placeholder="Name" required />
-                        {formErrors.name && <p className="text-red-500">{formErrors.name}</p>}
-                        <Label htmlFor="email">Email</Label>
-                        <Input type="email" name="email" value={form.email} onChange={handleChange()} placeholder="Email" required />
-                        {formErrors.email && <p className="text-red-500">{formErrors.email}</p>}
-                        <Label htmlFor="password">Password</Label>
-                        <Input
-                            type="password"
-                            name="password"
-                            value={form.password}
-                            onChange={handleChange()}
-                            placeholder="Password"
-                            required={!isEdit}
-                            autoComplete="new-password"
-                        />
-                        {formErrors.password && <p className="text-red-500">{formErrors.password}</p>}
-                        <Label htmlFor="password_confirmation">Confirm Password</Label>
-                        <Input
-                            type="password"
-                            name="password_confirmation"
-                            value={form.password_confirmation}
-                            onChange={handleChange()}
-                            placeholder="Confirm Password"
-                            required={!isEdit}
-                            autoComplete="new-password"
-                        />
-                        <div className="flex justify-end space-x-2">
-                            <Button variant="outline" onClick={handleClose}>
-                                Cancel
-                            </Button>
-                            <Button type="submit">{isEdit ? 'Update' : 'Create'}</Button>
-                        </div>
-                    </form>
-                </DialogContent>
-            </Dialog>
+            <BaseDialog
+                open={open}
+                onOpenChange={setOpen}
+                title={isEdit ? 'Edit User' : 'Add User'}
+                description={isEdit ? 'Update the details of the existing user.' : 'Fill in the details to create a new user.'}
+                onSubmit={handleSubmit}
+                onCancel={handleClose}
+                submitLabel={isEdit ? 'Update' : 'Create'}
+            >
+                <Label htmlFor="name">Name</Label>
+                <Input type="text" name="name" value={form.name} onChange={handleChange()} placeholder="Name" required />
+                {formErrors.name && <p className="text-red-500">{formErrors.name}</p>}
+                <Label htmlFor="email">Email</Label>
+                <Input type="email" name="email" value={form.email} onChange={handleChange()} placeholder="Email" required />
+                {formErrors.email && <p className="text-red-500">{formErrors.email}</p>}
+                <Label htmlFor="password">Password</Label>
+                <Input
+                    type="password"
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange()}
+                    placeholder="Password"
+                    required={!isEdit}
+                    autoComplete="new-password"
+                />
+                {formErrors.password && <p className="text-red-500">{formErrors.password}</p>}
+                <Label htmlFor="password_confirmation">Confirm Password</Label>
+                <Input
+                    type="password"
+                    name="password_confirmation"
+                    value={form.password_confirmation}
+                    onChange={handleChange()}
+                    placeholder="Confirm Password"
+                    required={!isEdit}
+                    autoComplete="new-password"
+                />
+            </BaseDialog>
         </AppLayout>
     );
 }
