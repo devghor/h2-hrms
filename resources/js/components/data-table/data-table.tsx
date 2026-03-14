@@ -255,7 +255,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
     const clearAllFilters = () => setColumnFilters({});
 
     return (
-        <div className="w-full space-y-4">
+        <div className="w-full space-y-2">
             {/* Toolbar */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -320,9 +320,9 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
 
             {/* Filter panel */}
             {showFilters && filterableColumns.length > 0 && (
-                <div className="flex flex-wrap gap-3 rounded-md border bg-muted/40 p-3">
+                <div className="flex flex-wrap gap-2 rounded-md border bg-muted/40 p-2">
                     {filterableColumns.map((col) => (
-                        <div key={col.accessorKey} className="flex min-w-[160px] flex-1 flex-col gap-1">
+                        <div key={col.accessorKey} className="flex min-w-[140px] flex-1 flex-col gap-1">
                             <label className="text-xs font-medium text-muted-foreground">{col.header}</label>
                             <div className="relative">
                                 <Input
@@ -366,7 +366,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                         <TableHeader className="sticky top-0 z-20 bg-white">
                             <TableRow>
                                 {/* Select all checkbox */}
-                                <TableHeadCell className="w-10">
+                                <TableHeadCell className="w-8 h-8 py-0">
                                     <Checkbox
                                         checked={allSelected}
                                         onCheckedChange={(checked) => toggleSelectAll(!!checked)}
@@ -381,12 +381,12 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                                         columnVisibility[col.accessorKey] && (
                                             <TableHeadCell
                                                 key={col.accessorKey}
-                                                className={`${col.className || ''} ${order[0]?.column === index ? 'font-semibold' : ''}`}
+                                                className={`h-8 py-0 text-xs ${col.className || ''} ${order[0]?.column === index ? 'font-semibold' : ''}`}
                                             >
                                                 {col.sortable !== false ? (
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" className="-ml-3 flex items-center gap-1.5 data-[state=open]:bg-accent">
+                                                            <Button variant="ghost" size="sm" className="-ml-2 h-7 gap-1 px-2 text-xs data-[state=open]:bg-accent">
                                                                 <span>{col.header}</span>
                                                                 {order[0]?.column === index ? (
                                                                     order[0]?.dir === 'asc' ? (
@@ -445,7 +445,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                                     const isSelected = selectedRows.has(rowId);
                                     return (
                                         <TableRow key={rowId} data-state={isSelected ? 'selected' : undefined}>
-                                            <TableCell className="w-10">
+                                            <TableCell className="w-8 py-1.5">
                                                 <Checkbox
                                                     checked={isSelected}
                                                     onCheckedChange={() => toggleSelectRow(rowId)}
@@ -455,7 +455,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                                             {columns.map(
                                                 (col: any) =>
                                                     columnVisibility[col.accessorKey] && (
-                                                        <TableCell key={col.accessorKey} className={col.className || ''}>
+                                                        <TableCell key={col.accessorKey} className={`py-1.5 text-xs ${col.className || ''}`}>
                                                             {col.cell ? col.cell({ row }) : row[col.accessorKey]}
                                                         </TableCell>
                                                     ),
@@ -465,7 +465,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                                 })
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={columns.length + 1} className="h-24 text-center">
+                                    <TableCell colSpan={columns.length + 1} className="h-16 text-center text-xs text-muted-foreground">
                                         No results found.
                                     </TableCell>
                                 </TableRow>
@@ -477,14 +477,14 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
 
             {/* Footer */}
             <div className="flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xs text-muted-foreground">
                     {selectedRows.size} of {data.length} row(s) selected.
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                     {/* Rows per page */}
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">Rows per page</span>
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-xs text-muted-foreground">Rows per page</span>
                         <Select
                             value={String(length)}
                             onValueChange={(value) => {
@@ -492,12 +492,12 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                                 setStart(0);
                             }}
                         >
-                            <SelectTrigger className="h-8 w-[70px] text-sm">
+                            <SelectTrigger className="h-7 w-[60px] text-xs">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                                 {[10, 25, 50, 100].map((size) => (
-                                    <SelectItem key={size} value={String(size)}>
+                                    <SelectItem key={size} value={String(size)} className="text-xs">
                                         {size}
                                     </SelectItem>
                                 ))}
@@ -507,38 +507,38 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
 
                     {/* Page info + navigation */}
                     <div className="flex items-center gap-1">
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                             Page {currentPage} of {pageCount}
                         </span>
-                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => goToPage(1)} disabled={currentPage === 1}>
-                            <ChevronsLeft className="h-4 w-4" />
+                        <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => goToPage(1)} disabled={currentPage === 1}>
+                            <ChevronsLeft className="h-3.5 w-3.5" />
                         </Button>
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-7 w-7"
                             onClick={() => goToPage(currentPage - 1)}
                             disabled={currentPage === 1}
                         >
-                            <ChevronLeft className="h-4 w-4" />
+                            <ChevronLeft className="h-3.5 w-3.5" />
                         </Button>
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-7 w-7"
                             onClick={() => goToPage(currentPage + 1)}
                             disabled={currentPage === pageCount}
                         >
-                            <ChevronRight className="h-4 w-4" />
+                            <ChevronRight className="h-3.5 w-3.5" />
                         </Button>
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-7 w-7"
                             onClick={() => goToPage(pageCount)}
                             disabled={currentPage === pageCount}
                         >
-                            <ChevronsRight className="h-4 w-4" />
+                            <ChevronsRight className="h-3.5 w-3.5" />
                         </Button>
                     </div>
                 </div>
