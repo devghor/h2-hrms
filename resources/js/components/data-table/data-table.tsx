@@ -347,7 +347,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                         <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={handleExportExcel}>
                                 <FileSpreadsheet className="mr-2 h-3.5 w-3.5" />
-                                Excel (.csv)
+                                Excel (.xlsx)
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={handleExportPdf}>
                                 <FileText className="mr-2 h-3.5 w-3.5" />
