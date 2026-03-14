@@ -20,6 +20,12 @@ class CompanyController extends Controller
     {
         if (request()->query('data-table')) {
             return DataTables::eloquent(Company::query())
+                ->filterColumn('id', function ($query, $keyword) {
+                    $query->where('id', $keyword);
+                })
+                ->filterColumn('created_at', function ($query, $keyword) {
+                    $query->whereDate('created_at', $keyword);
+                })
                 ->editColumn('created_at', function ($company) {
                     return $company->created_at->format('Y-m-d H:i:s');
                 })

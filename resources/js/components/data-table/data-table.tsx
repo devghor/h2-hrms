@@ -7,6 +7,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead as TableHeadCell, TableHeader, TableRow } from '@/components/ui/table';
 import axios from 'axios';
 import {
@@ -20,8 +21,9 @@ import {
     EyeOff,
     ListFilter,
     SlidersHorizontal,
+    X,
 } from 'lucide-react';
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface TopProgressBarProps {
@@ -84,8 +86,21 @@ axios.interceptors.response.use(
     },
 );
 
+export interface ColumnDef {
+    accessorKey: string;
+    header?: string;
+    sortable?: boolean;
+    /** Mark column as searchable — also renders a filter input in the filter panel */
+    searchable?: boolean;
+    /** Override filter input type for this column. Defaults to 'text'. */
+    filterType?: 'text' | 'date';
+    visible?: boolean;
+    className?: string;
+    cell?: (props: { row: any }) => React.ReactNode;
+}
+
 interface DataTableProps {
-    columns: any[];
+    columns: ColumnDef[];
     dataUrl: string;
     extraActions?: React.ReactNode;
     tableId?: string;
@@ -123,6 +138,8 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
     const [length, setLength] = useState<number>(() => safeGet(LENGTH_KEY) ?? 10);
     const [start, setStart] = useState<number>(() => safeGet(START_KEY) ?? 0);
     const [selectedRows, setSelectedRows] = useState<Set<string | number>>(new Set());
+    const [showFilters, setShowFilters] = useState(false);
+    const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
 
     const [columnVisibility, setColumnVisibility] = useState(() => {
         const saved = safeGet(VISIBILITY_KEY);
@@ -144,21 +161,21 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
     useEffect(() => safeSet(START_KEY, start), [start]);
     useEffect(() => safeSet(VISIBILITY_KEY, columnVisibility), [columnVisibility]);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async (currentStart = start) => {
         setLoading(true);
         try {
             const response = await axios.get(dataUrl, {
                 params: {
                     draw: draw + 1,
-                    start,
+                    start: currentStart,
                     length,
                     order,
-                    columns: columns.map((col: any) => ({
+                    columns: columns.map((col: ColumnDef) => ({
                         data: col.accessorKey,
                         name: col.accessorKey,
                         searchable: col.searchable !== false,
                         orderable: col.sortable !== false,
-                        search: { value: '', regex: false },
+                        search: { value: columnFilters[col.accessorKey] ?? '', regex: false },
                     })),
                 },
             });
@@ -174,11 +191,26 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
         } finally {
             setLoading(false);
         }
-    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dataUrl, start, length, order, columnFilters]);
 
     useImperativeHandle(ref, () => ({
         refetch: () => fetchData(),
     }));
+
+    // Debounce filter changes
+    const filterDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    useEffect(() => {
+        if (filterDebounceRef.current) clearTimeout(filterDebounceRef.current);
+        filterDebounceRef.current = setTimeout(() => {
+            setStart(0);
+            fetchData(0);
+        }, 350);
+        return () => {
+            if (filterDebounceRef.current) clearTimeout(filterDebounceRef.current);
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [columnFilters]);
 
     useEffect(() => {
         fetchData();
@@ -217,16 +249,41 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
     const allSelected = data.length > 0 && data.every((row, i) => selectedRows.has(row.id ?? i));
     const someSelected = selectedRows.size > 0 && !allSelected;
 
+    const filterableColumns = columns.filter((col) => col.searchable === true);
+    const activeFilterCount = Object.values(columnFilters).filter(Boolean).length;
+
+    const clearAllFilters = () => setColumnFilters({});
+
     return (
         <div className="w-full space-y-4">
             {/* Toolbar */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    {/* Filter button */}
-                    <Button variant="outline" size="sm" className="h-8 gap-1.5 text-sm font-normal">
-                        <ListFilter className="h-3.5 w-3.5" />
-                        Filter
-                    </Button>
+                    {/* Filter toggle button */}
+                    {filterableColumns.length > 0 && (
+                        <Button
+                            variant={showFilters || activeFilterCount > 0 ? 'default' : 'outline'}
+                            size="sm"
+                            className="h-8 gap-1.5 text-sm font-normal"
+                            onClick={() => setShowFilters((v) => !v)}
+                        >
+                            <ListFilter className="h-3.5 w-3.5" />
+                            Filter
+                            {activeFilterCount > 0 && (
+                                <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary-foreground text-xs text-primary">
+                                    {activeFilterCount}
+                                </span>
+                            )}
+                        </Button>
+                    )}
+
+                    {/* Clear filters shortcut */}
+                    {activeFilterCount > 0 && (
+                        <Button variant="ghost" size="sm" className="h-8 gap-1 text-sm font-normal text-muted-foreground" onClick={clearAllFilters}>
+                            <X className="h-3.5 w-3.5" />
+                            Clear
+                        </Button>
+                    )}
 
                     {extraActions}
                 </div>
@@ -260,6 +317,46 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
+
+            {/* Filter panel */}
+            {showFilters && filterableColumns.length > 0 && (
+                <div className="flex flex-wrap gap-3 rounded-md border bg-muted/40 p-3">
+                    {filterableColumns.map((col) => (
+                        <div key={col.accessorKey} className="flex min-w-[160px] flex-1 flex-col gap-1">
+                            <label className="text-xs font-medium text-muted-foreground">{col.header}</label>
+                            <div className="relative">
+                                <Input
+                                    type={col.filterType === 'date' ? 'date' : 'text'}
+                                    placeholder={col.filterType === 'date' ? '' : `Search ${col.header?.toLowerCase()}…`}
+                                    value={columnFilters[col.accessorKey] ?? ''}
+                                    onChange={(e) =>
+                                        setColumnFilters((prev) => ({
+                                            ...prev,
+                                            [col.accessorKey]: e.target.value,
+                                        }))
+                                    }
+                                    className="h-8 pr-7 text-sm"
+                                />
+                                {columnFilters[col.accessorKey] && (
+                                    <button
+                                        type="button"
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                        onClick={() =>
+                                            setColumnFilters((prev) => {
+                                                const next = { ...prev };
+                                                delete next[col.accessorKey];
+                                                return next;
+                                            })
+                                        }
+                                    >
+                                        <X className="h-3.5 w-3.5" />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* Table */}
             <div className="relative overflow-x-auto rounded-md border">

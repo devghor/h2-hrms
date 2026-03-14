@@ -31,7 +31,7 @@ export default function Index() {
             header: 'Logo',
             cell: ({ row }: any) => (row.company_logo ? <img src={row.company_logo} alt="Logo" className="h-8" /> : null),
         },
-        { accessorKey: 'created_at', header: 'Created At', sortable: true },
+        { accessorKey: 'created_at', header: 'Created At', sortable: true, searchable: true, filterType: 'date' as const },
         {
             accessorKey: 'actions',
             header: 'Actions',
