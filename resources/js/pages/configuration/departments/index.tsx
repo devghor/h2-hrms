@@ -11,7 +11,8 @@ import { BreadcrumbItem } from '@/types';
 import { router } from '@inertiajs/react';
 import { DialogTitle } from '@radix-ui/react-dialog';
 import axios from 'axios';
-import { Loader2, Trash2 } from 'lucide-react';
+import BulkDeleteButton from '@/components/bulk-delete-button';
+import { Loader2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -122,12 +123,7 @@ export default function Index({ divisions }: { divisions: { id: number; name: st
                 dataUrl={route('configuration.departments.index')}
                 onSelectionChange={setSelectedIds}
                 extraActions={
-                    selectedIds.length > 0 && (
-                        <Button variant="destructive" size="sm" className="h-8 gap-1.5 text-sm font-normal" onClick={handleBulkDelete}>
-                            <Trash2 className="h-3.5 w-3.5" />
-                            Delete Selected ({selectedIds.length})
-                        </Button>
-                    )
+                    <BulkDeleteButton selectedCount={selectedIds.length} onDelete={handleBulkDelete} />
                 }
             />
             <Dialog open={open} onOpenChange={setOpen}>

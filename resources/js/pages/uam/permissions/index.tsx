@@ -9,8 +9,8 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { router, usePage } from '@inertiajs/react';
 import { DialogTitle } from '@radix-ui/react-dialog';
+import BulkDeleteButton from '@/components/bulk-delete-button';
 import axios from 'axios';
-import { Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -176,12 +176,7 @@ export default function Index() {
                 dataUrl={route('uam.permissions.index')}
                 onSelectionChange={setSelectedIds}
                 extraActions={
-                    selectedIds.length > 0 && (
-                        <Button variant="destructive" size="sm" className="h-8 gap-1.5 text-sm font-normal" onClick={handleBulkDelete}>
-                            <Trash2 className="h-3.5 w-3.5" />
-                            Delete Selected ({selectedIds.length})
-                        </Button>
-                    )
+                    <BulkDeleteButton selectedCount={selectedIds.length} onDelete={handleBulkDelete} />
                 }
             />
 
