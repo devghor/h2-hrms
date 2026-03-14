@@ -2,26 +2,20 @@
 
 namespace App\Http\Controllers\Uam\Role;
 
+use App\DataTables\RolesDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Uam\Permission;
 use App\Models\Uam\Role;
 use App\Repositories\Uam\Role\RoleRepository;
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
 
 class RoleController extends Controller
 {
     public function __construct(private RoleRepository $roleRepository) {}
 
-    public function index()
+    public function index(RolesDataTable $dataTable)
     {
-        if (request()->query('data-table')) {
-            return DataTables::eloquent(Role::query())
-                ->editColumn('created_at', fn($r) => $r->created_at->format('Y-m-d H:i:s'))
-                ->editColumn('updated_at', fn($r) => $r->updated_at->format('Y-m-d H:i:s'))
-                ->make(true);
-        }
-        return inertia('uam/roles/index');
+        return $dataTable->renderInertia('uam/roles/index');
     }
 
     public function store(Request $request)
@@ -33,7 +27,7 @@ class RoleController extends Controller
 
         $validated['company_id'] = tenant()?->id;
 
-        $role = $this->roleRepository->create($validated);
+        $this->roleRepository->create($validated);
         return redirect()->back()->with('success', 'Role created successfully.');
     }
 
@@ -85,5 +79,13 @@ class RoleController extends Controller
         return redirect()->route('uam.roles.index')->with([
             'success' => 'Role deleted successfully.',
         ]);
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
+        $this->roleRepository->bulkDelete($ids);
+
+        return response()->json(['message' => 'Roles deleted successfully.']);
     }
 }

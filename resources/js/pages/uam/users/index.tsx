@@ -162,7 +162,7 @@ export default function Index() {
 
     const handleBulkDelete = () => {
         if (selectedIds.length === 0) return;
-        axios.delete(route('uam.users.bulk-destroy'), { data: { ids: selectedIds } }).then(() => {
+        axios.delete(route('uam.users.bulk-delete'), { data: { ids: selectedIds } }).then(() => {
             toast.success(`${selectedIds.length} user(s) deleted successfully`);
             tableRef.current?.refetch();
         }).catch(() => {

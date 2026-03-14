@@ -2,38 +2,22 @@
 
 namespace App\Http\Controllers\Configuration\Department;
 
+use App\DataTables\DepartmentsDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Department\StoreDepartmentRequest;
 use App\Http\Requests\Configuration\Department\UpdateDepartmentRequest;
-use App\Models\Configuration\Department\Department;
 use App\Repositories\Configuration\Department\DepartmentRepository;
 use App\Repositories\Configuration\Division\DivisionRepository;
-use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
     public function __construct(private DepartmentRepository $departmentRepository, private DivisionRepository $divisionRepository) {}
 
-    public function index()
+    public function index(DepartmentsDataTable $dataTable)
     {
-        $divisions = $this->divisionRepository->getdivisionOptions();
-
-        if (request()->query('data-table')) {
-            return DataTables::eloquent(Department::query())
-                ->addColumn('division', function ($department) {
-                    return $department->division ? $department->division->name : '';
-                })
-                ->editColumn('created_at', function ($department) {
-                    return $department->created_at->format('Y-m-d H:i:s');
-                })
-                ->editColumn('updated_at', function ($department) {
-                    return $department->updated_at->format('Y-m-d H:i:s');
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
-        return inertia('configuration/departments/index', [
-            'divisions' => $divisions,
+        return $dataTable->renderInertia('configuration/departments/index', [
+            'divisions' => $this->divisionRepository->getdivisionOptions(),
         ]);
     }
 
@@ -71,5 +55,13 @@ class DepartmentController extends Controller
         return redirect()->route('configuration.departments.index')->with([
             'success' => __('Department deleted successfully.'),
         ]);
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
+        $this->departmentRepository->bulkDelete($ids);
+
+        return response()->json(['message' => 'Departments deleted successfully.']);
     }
 }

@@ -9,6 +9,8 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { router, usePage } from '@inertiajs/react';
 import { DialogTitle } from '@radix-ui/react-dialog';
+import axios from 'axios';
+import { Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -77,6 +79,7 @@ export default function Index() {
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [open, setOpen] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
 
     const handleOpenAdd = () => {
         setForm(emptyForm);
@@ -157,10 +160,33 @@ export default function Index() {
         });
     };
 
+    const handleBulkDelete = () => {
+        if (selectedIds.length === 0) return;
+        axios.delete(route('uam.roles.bulk-delete'), { data: { ids: selectedIds } }).then(() => {
+            toast.success(`${selectedIds.length} role(s) deleted successfully`);
+            tableRef.current?.refetch();
+        }).catch(() => {
+            toast.error('Error deleting selected roles');
+        });
+    };
+
     return (
         <AppLayout title="Roles" breadcrumbs={breadcrumbs} actions={<Button onClick={handleOpenAdd}>Add Role</Button>}>
             {/* Data table for roles */}
-            <DataTable ref={tableRef} columns={columns} dataUrl={route('uam.roles.index', { 'data-table': true })} />
+            <DataTable
+                ref={tableRef}
+                columns={columns}
+                dataUrl={route('uam.roles.index')}
+                onSelectionChange={setSelectedIds}
+                extraActions={
+                    selectedIds.length > 0 && (
+                        <Button variant="destructive" size="sm" className="h-8 gap-1.5 text-sm font-normal" onClick={handleBulkDelete}>
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Delete Selected ({selectedIds.length})
+                        </Button>
+                    )
+                }
+            />
 
             {/* Dialog for adding/editing role */}
             <Dialog open={open} onOpenChange={setOpen}>

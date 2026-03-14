@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-
     public function __construct(private UserRepository $userRepository) {}
 
     /**
@@ -80,5 +79,13 @@ class UserController extends Controller
         return redirect()->route('uam.users.index')->with([
             'success' => 'User deleted successfully.',
         ]);
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
+        $this->userRepository->bulkDelete($ids);
+
+        return response()->json(['message' => 'Users deleted successfully.']);
     }
 }

@@ -2,31 +2,20 @@
 
 namespace App\Http\Controllers\Configuration\Desk;
 
+use App\DataTables\DesksDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Desk\StoreDeskRequest;
 use App\Http\Requests\Configuration\Desk\UpdateDeskRequest;
-use App\Models\Configuration\Desk\Desk;
 use App\Repositories\Configuration\Desk\DeskRepository;
-use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Http\Request;
 
 class DeskController extends Controller
 {
     public function __construct(private DeskRepository $deskRepository) {}
 
-    public function index()
+    public function index(DesksDataTable $dataTable)
     {
-        if (request()->query('data-table')) {
-            return DataTables::eloquent(Desk::query())
-                ->editColumn('created_at', function ($desk) {
-                    return $desk->created_at->format('Y-m-d H:i:s');
-                })
-                ->editColumn('updated_at', function ($desk) {
-                    return $desk->updated_at->format('Y-m-d H:i:s');
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
-        return inertia('configuration/desks/index');
+        return $dataTable->renderInertia('configuration/desks/index');
     }
 
     public function create() {}
@@ -63,5 +52,13 @@ class DeskController extends Controller
         return redirect()->route('configuration.desks.index')->with([
             'success' => __('Desk deleted successfully.'),
         ]);
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
+        $this->deskRepository->bulkDelete($ids);
+
+        return response()->json(['message' => 'Desks deleted successfully.']);
     }
 }

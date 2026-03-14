@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Configuration\Company;
 
+use App\DataTables\CompaniesDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Company\StoreCompanyRequest;
 use App\Http\Requests\Configuration\Company\UpdateCompanyRequest;
 use App\Models\Configuration\Company\Company;
 use App\Repositories\Configuration\Company\CompanyRepository;
-use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
@@ -16,27 +17,9 @@ class CompanyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(CompaniesDataTable $dataTable)
     {
-        if (request()->query('data-table')) {
-            return DataTables::eloquent(Company::query())
-                ->filterColumn('id', function ($query, $keyword) {
-                    $query->where('id', $keyword);
-                })
-                ->filterColumn('created_at', function ($query, $keyword) {
-                    $query->whereDate('created_at', $keyword);
-                })
-                ->editColumn('created_at', function ($company) {
-                    return $company->created_at->format('Y-m-d H:i:s');
-                })
-                ->editColumn('updated_at', function ($company) {
-                    return $company->updated_at->format('Y-m-d H:i:s');
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
-
-        return inertia('configuration/companies/index');
+        return $dataTable->renderInertia('configuration/companies/index');
     }
 
     /**
@@ -103,5 +86,13 @@ class CompanyController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
+        $this->companyRepository->bulkDelete($ids);
+
+        return response()->json(['message' => 'Companies deleted successfully.']);
     }
 }

@@ -27,8 +27,11 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
     Route::name('uam.')
         ->prefix('uam')
         ->group(function (): void {
+            Route::delete('users/bulk-delete', [UserController::class, 'bulkDelete'])->name('users.bulk-delete');
             Route::resource('users', UserController::class);
+            Route::delete('roles/bulk-delete', [RoleController::class, 'bulkDelete'])->name('roles.bulk-delete');
             Route::resource('roles', RoleController::class);
+            Route::delete('permissions/bulk-delete', [PermissionController::class, 'bulkDelete'])->name('permissions.bulk-delete');
             Route::resource('permissions', PermissionController::class);
         });
 
@@ -39,10 +42,14 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
     Route::name('configuration.')
         ->prefix('configuration')
         ->group(function (): void {
+            Route::delete('desks/bulk-delete', [DeskController::class, 'bulkDelete'])->name('desks.bulk-delete');
             Route::resource('desks', DeskController::class);
             Route::get('companies/{company}/switch', [CompanyController::class, 'switchCompany'])->name('companies.switch');
+            Route::delete('companies/bulk-delete', [CompanyController::class, 'bulkDelete'])->name('companies.bulk-delete');
             Route::resource('companies', CompanyController::class);
+            Route::delete('divisions/bulk-delete', [DivisionController::class, 'bulkDelete'])->name('divisions.bulk-delete');
             Route::resource('divisions', DivisionController::class);
+            Route::delete('departments/bulk-delete', [DepartmentController::class, 'bulkDelete'])->name('departments.bulk-delete');
             Route::resource('departments', DepartmentController::class);
         });
 });

@@ -10,8 +10,10 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { router } from '@inertiajs/react';
 import { DialogTitle } from '@radix-ui/react-dialog';
-import { Loader2 } from 'lucide-react';
+import axios from 'axios';
+import { Loader2, Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [breadcrumbItems.dashboard, breadcrumbItems.configurationDepartments];
 
@@ -22,6 +24,7 @@ export default function Index({ divisions }: { divisions: { id: number; name: st
     const [form, setForm] = useState({ id: undefined, name: '', division_id: '', description: '' });
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
 
     const columns = [
         { accessorKey: 'id', header: 'ID', sortable: true, searchable: true },
@@ -57,6 +60,16 @@ export default function Index({ divisions }: { divisions: { id: number; name: st
     const handleDelete = (id: number) => {
         router.delete(route('configuration.departments.destroy', id), {
             onSuccess: () => tableRef.current?.refetch(),
+        });
+    };
+
+    const handleBulkDelete = () => {
+        if (selectedIds.length === 0) return;
+        axios.delete(route('configuration.departments.bulk-delete'), { data: { ids: selectedIds } }).then(() => {
+            toast.success(`${selectedIds.length} department(s) deleted successfully`);
+            tableRef.current?.refetch();
+        }).catch(() => {
+            toast.error('Error deleting selected departments');
         });
     };
 
@@ -103,7 +116,20 @@ export default function Index({ divisions }: { divisions: { id: number; name: st
 
     return (
         <AppLayout title="Departments" breadcrumbs={breadcrumbs} actions={<Button onClick={handleOpenAdd}>Add Department</Button>}>
-            <DataTable ref={tableRef} columns={columns} dataUrl={route('configuration.departments.index', { 'data-table': true })} />
+            <DataTable
+                ref={tableRef}
+                columns={columns}
+                dataUrl={route('configuration.departments.index')}
+                onSelectionChange={setSelectedIds}
+                extraActions={
+                    selectedIds.length > 0 && (
+                        <Button variant="destructive" size="sm" className="h-8 gap-1.5 text-sm font-normal" onClick={handleBulkDelete}>
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Delete Selected ({selectedIds.length})
+                        </Button>
+                    )
+                }
+            />
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>

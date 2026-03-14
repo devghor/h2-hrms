@@ -2,31 +2,20 @@
 
 namespace App\Http\Controllers\Configuration\Division;
 
+use App\DataTables\DivisionsDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Division\StoreDivisionRequest;
 use App\Http\Requests\Configuration\Division\UpdateDivisionRequest;
-use App\Models\Configuration\Division\Division;
 use App\Repositories\Configuration\Division\DivisionRepository;
-use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Http\Request;
 
 class DivisionController extends Controller
 {
     public function __construct(private DivisionRepository $divisionRepository) {}
 
-    public function index()
+    public function index(DivisionsDataTable $dataTable)
     {
-        if (request()->query('data-table')) {
-            return DataTables::eloquent(Division::query())
-                ->editColumn('created_at', function ($division) {
-                    return $division->created_at->format('Y-m-d H:i:s');
-                })
-                ->editColumn('updated_at', function ($division) {
-                    return $division->updated_at->format('Y-m-d H:i:s');
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
-        return inertia('configuration/divisions/index');
+        return $dataTable->renderInertia('configuration/divisions/index');
     }
 
     public function create() {}
@@ -63,5 +52,13 @@ class DivisionController extends Controller
         return redirect()->route('configuration.divisions.index')->with([
             'success' => __('Division deleted successfully.'),
         ]);
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
+        $this->divisionRepository->bulkDelete($ids);
+
+        return response()->json(['message' => 'Divisions deleted successfully.']);
     }
 }
