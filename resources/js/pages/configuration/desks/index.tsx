@@ -1,7 +1,7 @@
 import DataTable from '@/components/data-table/data-table';
 import { RowActions } from '@/components/data-table/row-actions';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { breadcrumbItems } from '@/config/breadcrumbs';
@@ -106,7 +106,10 @@ export default function Index() {
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{isEdit ? 'Edit Desk' : 'Add Desk'}</DialogTitle>
+                        <DialogTitle className="text-xl font-bold">{isEdit ? 'Edit Desk' : 'Add Desk'}</DialogTitle>
+                        <DialogDescription className="text-muted-foreground">
+                            {isEdit ? 'Update the details of the existing desk.' : 'Fill in the details to create a new desk.'}
+                        </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="mt-2 space-y-4">
                         <div>

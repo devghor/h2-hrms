@@ -2,7 +2,7 @@ import DataTable from '@/components/data-table/data-table';
 import { RowActions } from '@/components/data-table/row-actions';
 import { DatePicker } from '@/components/date-picker';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { breadcrumbItems } from '@/config/breadcrumbs';
@@ -169,7 +169,10 @@ export default function Index() {
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{isEdit ? 'Edit User' : 'Add User'}</DialogTitle>
+                        <DialogTitle className="text-xl font-bold">{isEdit ? 'Edit User' : 'Add User'}</DialogTitle>
+                        <DialogDescription className="text-muted-foreground">
+                            {isEdit ? 'Update the details of the existing user.' : 'Fill in the details to create a new user.'}
+                        </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <Label htmlFor="name">Name</Label>

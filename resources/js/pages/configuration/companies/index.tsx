@@ -112,8 +112,10 @@ export default function Index() {
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{isEdit ? 'Edit Company' : 'Add Company'}</DialogTitle>
-                        <DialogDescription>Update the user here. Click save when you're done?</DialogDescription>
+                        <DialogTitle className="text-xl font-bold">{isEdit ? 'Edit Company' : 'Add Company'}</DialogTitle>
+                        <DialogDescription className="text-muted-foreground">
+                            {isEdit ? 'Update the details of the existing company.' : 'Fill in the details to create a new company.'}
+                        </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="mt-2 space-y-4">
                         <div>
