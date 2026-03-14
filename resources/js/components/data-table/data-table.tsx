@@ -1,23 +1,28 @@
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead as TableHeadCell, TableHeader, TableRow } from '@/components/ui/table';
 import axios from 'axios';
 import {
-    ArrowDown,
-    ArrowUp,
-    ArrowUpDown,
+    ChevronDown,
     ChevronLeft,
     ChevronRight,
     ChevronsLeft,
     ChevronsRight,
-    RotateCcw,
-    Search,
+    ChevronsUpDown,
+    ChevronUp,
+    EyeOff,
+    ListFilter,
     SlidersHorizontal,
 } from 'lucide-react';
-import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 interface TopProgressBarProps {
     loading: boolean;
@@ -38,7 +43,6 @@ export function TopProgressBar({ loading }: TopProgressBarProps) {
                         }
                         return w;
                     }
-                    // Professional, subtle progression
                     const increment = w < 20 ? 2 : w < 50 ? 1.5 : 0.8;
                     return Math.min(w + increment, 70);
                 });
@@ -74,7 +78,7 @@ axios.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error?.response?.status === 401) {
-            window.location.href = '/login'; // Redirect to login
+            window.location.href = '/login';
         }
         return Promise.reject(error);
     },
@@ -84,7 +88,7 @@ interface DataTableProps {
     columns: any[];
     dataUrl: string;
     extraActions?: React.ReactNode;
-    tableId?: string; // optional explicit ID for localStorage keys
+    tableId?: string;
 }
 
 const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions, tableId }: DataTableProps, ref) {
@@ -92,7 +96,6 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
     const keySuffix = tableId ?? encodeUrlKey(dataUrl);
 
     const ORDER_KEY = `datatable_order_${keySuffix}`;
-    const SEARCH_KEY = `datatable_search_${keySuffix}`;
     const LENGTH_KEY = `datatable_length_${keySuffix}`;
     const START_KEY = `datatable_start_${keySuffix}`;
     const VISIBILITY_KEY = `datatable_visibility_${keySuffix}`;
@@ -116,24 +119,10 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
         }
     };
 
-    const defaultColumnSearch = useMemo(
-        () =>
-            columns.reduce((acc: any, col: any) => {
-                acc[col.accessorKey] = '';
-                return acc;
-            }, {}),
-        [columns],
-    );
-
-    const [columnSearchInput, setColumnSearchInput] = useState(() => {
-        const saved = safeGet(SEARCH_KEY);
-        return saved ? { ...defaultColumnSearch, ...saved } : { ...defaultColumnSearch };
-    });
-
-    const [columnSearch, setColumnSearch] = useState({ ...columnSearchInput });
     const [order, setOrder] = useState(() => safeGet(ORDER_KEY) ?? [{ column: 0, dir: 'asc' }]);
     const [length, setLength] = useState<number>(() => safeGet(LENGTH_KEY) ?? 10);
     const [start, setStart] = useState<number>(() => safeGet(START_KEY) ?? 0);
+    const [selectedRows, setSelectedRows] = useState<Set<string | number>>(new Set());
 
     const [columnVisibility, setColumnVisibility] = useState(() => {
         const saved = safeGet(VISIBILITY_KEY);
@@ -150,7 +139,6 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<any[]>([]);
 
-    useEffect(() => safeSet(SEARCH_KEY, columnSearchInput), [columnSearchInput]);
     useEffect(() => safeSet(ORDER_KEY, order), [order]);
     useEffect(() => safeSet(LENGTH_KEY, length), [length]);
     useEffect(() => safeSet(START_KEY, start), [start]);
@@ -170,10 +158,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                         name: col.accessorKey,
                         searchable: col.searchable !== false,
                         orderable: col.sortable !== false,
-                        search: {
-                            value: columnSearch[col.accessorKey] || '',
-                            regex: false,
-                        },
+                        search: { value: '', regex: false },
                     })),
                 },
             });
@@ -183,6 +168,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
             setDraw(result.draw ?? draw + 1);
             setRecordsTotal(result.recordsTotal ?? 0);
             setRecordsFiltered(result.recordsFiltered ?? 0);
+            setSelectedRows(new Set());
         } catch (error) {
             console.error('Failed to fetch data:', error);
         } finally {
@@ -190,7 +176,6 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
         }
     };
 
-    // Expose fetchData via ref
     useImperativeHandle(ref, () => ({
         refetch: () => fetchData(),
     }));
@@ -198,42 +183,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
     useEffect(() => {
         fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [start, length, order, columnSearch]);
-
-    const handleColumnSearchChange = (accessorKey: string, value: string) => {
-        setColumnSearchInput((prev: any) => ({
-            ...prev,
-            [accessorKey]: value,
-        }));
-    };
-
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-        const onKeyDown = (e: KeyboardEvent) => {
-            if (e.key !== 'Enter') return;
-            const active = document.activeElement as HTMLElement | null;
-            if (!active) return;
-            if (!active.closest || !active.closest('[data-search-input]')) return;
-
-            e.preventDefault();
-            setStart(0);
-            setColumnSearch({ ...columnSearchInput });
-        };
-        window.addEventListener('keydown', onKeyDown);
-        return () => window.removeEventListener('keydown', onKeyDown);
-    }, [columnSearchInput]);
-
-    const handleSort = (columnIndex: number) => {
-        setOrder((prevOrder: any) => {
-            const isSameCol = prevOrder[0]?.column === columnIndex;
-            return [
-                {
-                    column: columnIndex,
-                    dir: isSameCol && prevOrder[0]?.dir === 'asc' ? 'desc' : 'asc',
-                },
-            ];
-        });
-    };
+    }, [start, length, order]);
 
     const pageCount = Math.max(1, Math.ceil((recordsFiltered || recordsTotal) / length));
     const currentPage = Math.floor(start / length) + 1;
@@ -243,109 +193,72 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
         setStart((page - 1) * length);
     };
 
-    const handleReset = () => {
-        const emptySearch = columns.reduce((acc: any, col: any) => {
-            acc[col.accessorKey] = '';
-            return acc;
-        }, {});
-        setColumnSearchInput(emptySearch);
-        setColumnSearch(emptySearch);
-        setStart(0);
-        setLength(10);
-        setOrder([{ column: 0, dir: 'asc' }]);
-        const defaultVisibility = columns.reduce((acc: any, col: any) => {
-            acc[col.accessorKey] = col.visible !== false;
-            return acc;
-        }, {});
-        setColumnVisibility(defaultVisibility);
-        try {
-            if (typeof window !== 'undefined') {
-                localStorage.removeItem(SEARCH_KEY);
-                localStorage.removeItem(ORDER_KEY);
-                localStorage.removeItem(LENGTH_KEY);
-                localStorage.removeItem(START_KEY);
-                localStorage.removeItem(VISIBILITY_KEY);
-            }
-        } catch {
-            // Ignore localStorage clear errors
+    const toggleSelectAll = (checked: boolean) => {
+        if (checked) {
+            const allIds = data.map((row, i) => row.id ?? i);
+            setSelectedRows(new Set(allIds));
+        } else {
+            setSelectedRows(new Set());
         }
     };
+
+    const toggleSelectRow = (id: string | number) => {
+        setSelectedRows((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) {
+                next.delete(id);
+            } else {
+                next.add(id);
+            }
+            return next;
+        });
+    };
+
+    const allSelected = data.length > 0 && data.every((row, i) => selectedRows.has(row.id ?? i));
+    const someSelected = selectedRows.size > 0 && !allSelected;
 
     return (
         <div className="w-full space-y-4">
             {/* Toolbar */}
-            <div className="flex items-center justify-between space-x-4">
-                <div className="flex items-center space-x-2">
-                    <label className="text-sm font-medium">Show</label>
-                    <Select
-                        value={String(length)}
-                        onValueChange={(value) => {
-                            setLength(Number(value));
-                            setStart(0);
-                        }}
-                    >
-                        <SelectTrigger className="h-8 w-[80px] rounded border text-sm">
-                            <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {[10, 25, 50, 100].map((size) => (
-                                <SelectItem key={size} value={String(size)}>
-                                    {size}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <span className="text-sm font-medium">entries</span>
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    {/* Filter button */}
+                    <Button variant="outline" size="sm" className="h-8 gap-1.5 text-sm font-normal">
+                        <ListFilter className="h-3.5 w-3.5" />
+                        Filter
+                    </Button>
+
+                    {extraActions}
                 </div>
 
-                <TooltipProvider>
-                    <div className="flex items-center justify-end space-x-2">
-                        {/* Toggle Columns */}
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="icon" className="cursor-pointer">
-                                            <SlidersHorizontal className="h-4 w-4" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        {columns
-                                            .filter((col: any) => col.header)
-                                            .map((col: any) => (
-                                                <DropdownMenuCheckboxItem
-                                                    key={col.accessorKey}
-                                                    className="capitalize"
-                                                    checked={!!columnVisibility[col.accessorKey]}
-                                                    onCheckedChange={(value) =>
-                                                        setColumnVisibility((prev: any) => ({
-                                                            ...prev,
-                                                            [col.accessorKey]: !!value,
-                                                        }))
-                                                    }
-                                                >
-                                                    {col.header}
-                                                </DropdownMenuCheckboxItem>
-                                            ))}
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </TooltipTrigger>
-                            <TooltipContent>Toggle Columns</TooltipContent>
-                        </Tooltip>
-
-                        {/* Reset Button */}
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button variant="outline" size="icon" onClick={handleReset} className="cursor-pointer">
-                                    <RotateCcw className="h-4 w-4" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Reset Table</TooltipContent>
-                        </Tooltip>
-
-                        {extraActions}
-                    </div>
-                </TooltipProvider>
+                {/* View (column visibility) */}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-sm font-normal">
+                            <SlidersHorizontal className="h-3.5 w-3.5" />
+                            View
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {columns
+                            .filter((col: any) => col.header)
+                            .map((col: any) => (
+                                <DropdownMenuCheckboxItem
+                                    key={col.accessorKey}
+                                    className="capitalize"
+                                    checked={!!columnVisibility[col.accessorKey]}
+                                    onCheckedChange={(value) =>
+                                        setColumnVisibility((prev: any) => ({
+                                            ...prev,
+                                            [col.accessorKey]: !!value,
+                                        }))
+                                    }
+                                >
+                                    {col.header}
+                                </DropdownMenuCheckboxItem>
+                            ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             {/* Table */}
@@ -355,6 +268,17 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                     <Table>
                         <TableHeader className="sticky top-0 z-20 bg-white">
                             <TableRow>
+                                {/* Select all checkbox */}
+                                <TableHeadCell className="w-10">
+                                    <Checkbox
+                                        checked={allSelected}
+                                        onCheckedChange={(checked) => toggleSelectAll(!!checked)}
+                                        aria-label="Select all"
+                                        className={someSelected ? 'data-[state=unchecked]:bg-primary/20' : ''}
+                                        data-state={someSelected ? 'indeterminate' : allSelected ? 'checked' : 'unchecked'}
+                                    />
+                                </TableHeadCell>
+
                                 {columns.map(
                                     (col: any, index: number) =>
                                         columnVisibility[col.accessorKey] && (
@@ -363,49 +287,54 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                                                 className={`${col.className || ''} ${order[0]?.column === index ? 'font-semibold' : ''}`}
                                             >
                                                 {col.sortable !== false ? (
-                                                    <Button variant="ghost" onClick={() => handleSort(index)} className="flex items-center space-x-1">
-                                                        <span>{col.header}</span>
-                                                        {order[0]?.column === index ? (
-                                                            order[0]?.dir === 'asc' ? (
-                                                                <ArrowUp className="ml-2 h-4 w-4" />
-                                                            ) : (
-                                                                <ArrowDown className="ml-2 h-4 w-4" />
-                                                            )
-                                                        ) : (
-                                                            <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
-                                                        )}
-                                                    </Button>
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" className="-ml-3 flex items-center gap-1.5 data-[state=open]:bg-accent">
+                                                                <span>{col.header}</span>
+                                                                {order[0]?.column === index ? (
+                                                                    order[0]?.dir === 'asc' ? (
+                                                                        <ChevronUp className="h-4 w-4" />
+                                                                    ) : (
+                                                                        <ChevronDown className="h-4 w-4" />
+                                                                    )
+                                                                ) : (
+                                                                    <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                                                                )}
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="start">
+                                                            <DropdownMenuItem
+                                                                onClick={() =>
+                                                                    setOrder([{ column: index, dir: 'asc' }])
+                                                                }
+                                                            >
+                                                                <ChevronUp className="mr-2 h-3.5 w-3.5" />
+                                                                Asc
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={() =>
+                                                                    setOrder([{ column: index, dir: 'desc' }])
+                                                                }
+                                                            >
+                                                                <ChevronDown className="mr-2 h-3.5 w-3.5" />
+                                                                Desc
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={() =>
+                                                                    setColumnVisibility((prev: any) => ({
+                                                                        ...prev,
+                                                                        [col.accessorKey]: false,
+                                                                    }))
+                                                                }
+                                                            >
+                                                                <EyeOff className="mr-2 h-3.5 w-3.5" />
+                                                                Hide
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
                                                 ) : (
                                                     col.header
                                                 )}
-                                            </TableHeadCell>
-                                        ),
-                                )}
-                            </TableRow>
-
-                            {/* Search Row */}
-                            <TableRow className="sticky top-[40px] z-10 border-b border-border bg-muted/40">
-                                {columns.map(
-                                    (col: any) =>
-                                        columnVisibility[col.accessorKey] && (
-                                            <TableHeadCell key={`${col.accessorKey}-search`} className="p-1" data-search-input>
-                                                {col.searchComponent ? (
-                                                    col.searchComponent({
-                                                        value: columnSearchInput[col.accessorKey] || '',
-                                                        onChange: (val: string) => handleColumnSearchChange(col.accessorKey, val),
-                                                    })
-                                                ) : col.searchFieldType === 'text' ? (
-                                                    <div className="relative">
-                                                        <Search className="absolute top-1/2 left-2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-                                                        <Input
-                                                            type="text"
-                                                            placeholder="Search..."
-                                                            value={columnSearchInput[col.accessorKey] || ''}
-                                                            onChange={(e) => handleColumnSearchChange(col.accessorKey, e.target.value)}
-                                                            className="h-8 pl-7 text-sm"
-                                                        />
-                                                    </div>
-                                                ) : null}
                                             </TableHeadCell>
                                         ),
                                 )}
@@ -414,21 +343,32 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
 
                         <TableBody>
                             {data.length > 0 ? (
-                                data.map((row, rowIndex) => (
-                                    <TableRow key={row.id || rowIndex}>
-                                        {columns.map(
-                                            (col: any) =>
-                                                columnVisibility[col.accessorKey] && (
-                                                    <TableCell key={col.accessorKey} className={col.className || ''}>
-                                                        {col.cell ? col.cell({ row }) : row[col.accessorKey]}
-                                                    </TableCell>
-                                                ),
-                                        )}
-                                    </TableRow>
-                                ))
+                                data.map((row, rowIndex) => {
+                                    const rowId = row.id ?? rowIndex;
+                                    const isSelected = selectedRows.has(rowId);
+                                    return (
+                                        <TableRow key={rowId} data-state={isSelected ? 'selected' : undefined}>
+                                            <TableCell className="w-10">
+                                                <Checkbox
+                                                    checked={isSelected}
+                                                    onCheckedChange={() => toggleSelectRow(rowId)}
+                                                    aria-label="Select row"
+                                                />
+                                            </TableCell>
+                                            {columns.map(
+                                                (col: any) =>
+                                                    columnVisibility[col.accessorKey] && (
+                                                        <TableCell key={col.accessorKey} className={col.className || ''}>
+                                                            {col.cell ? col.cell({ row }) : row[col.accessorKey]}
+                                                        </TableCell>
+                                                    ),
+                                            )}
+                                        </TableRow>
+                                    );
+                                })
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    <TableCell colSpan={columns.length + 1} className="h-24 text-center">
                                         No results found.
                                     </TableCell>
                                 </TableRow>
@@ -438,28 +378,72 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                 </div>
             </div>
 
-            {/* Pagination */}
-            <div className="flex items-center justify-between space-x-2">
+            {/* Footer */}
+            <div className="flex items-center justify-between">
                 <div className="text-sm text-muted-foreground">
-                    Showing {recordsFiltered ? Math.min(start + 1, recordsFiltered) : 0} to{' '}
-                    {recordsFiltered ? Math.min(start + length, recordsFiltered) : 0} of {recordsFiltered || recordsTotal} entries
+                    {selectedRows.size} of {data.length} row(s) selected.
                 </div>
-                <div className="flex items-center space-x-2">
-                    <Button variant="outline" size="sm" onClick={() => goToPage(1)} disabled={currentPage === 1}>
-                        <ChevronsLeft className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}>
-                        <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <span className="text-sm">
-                        Page {currentPage} of {pageCount}
-                    </span>
-                    <Button variant="outline" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === pageCount}>
-                        <ChevronRight className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => goToPage(pageCount)} disabled={currentPage === pageCount}>
-                        <ChevronsRight className="h-4 w-4" />
-                    </Button>
+
+                <div className="flex items-center gap-4">
+                    {/* Rows per page */}
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">Rows per page</span>
+                        <Select
+                            value={String(length)}
+                            onValueChange={(value) => {
+                                setLength(Number(value));
+                                setStart(0);
+                            }}
+                        >
+                            <SelectTrigger className="h-8 w-[70px] text-sm">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {[10, 25, 50, 100].map((size) => (
+                                    <SelectItem key={size} value={String(size)}>
+                                        {size}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Page info + navigation */}
+                    <div className="flex items-center gap-1">
+                        <span className="text-sm text-muted-foreground">
+                            Page {currentPage} of {pageCount}
+                        </span>
+                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => goToPage(1)} disabled={currentPage === 1}>
+                            <ChevronsLeft className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => goToPage(currentPage - 1)}
+                            disabled={currentPage === 1}
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => goToPage(currentPage + 1)}
+                            disabled={currentPage === pageCount}
+                        >
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => goToPage(pageCount)}
+                            disabled={currentPage === pageCount}
+                        >
+                            <ChevronsRight className="h-4 w-4" />
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
