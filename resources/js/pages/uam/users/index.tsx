@@ -6,11 +6,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader } from '@/compon
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { breadcrumbItems } from '@/config/breadcrumbs';
-import { KEY_DATA_TABLE } from '@/constants/data-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { router, usePage } from '@inertiajs/react';
 import { DialogTitle } from '@radix-ui/react-dialog';
+import axios from 'axios';
+import { Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -69,9 +70,7 @@ export default function Index() {
             sortable: false,
             searchable: false,
             className: 'w-[60px] text-center',
-            cell: ({ row }: any) => (
-                <RowActions onEdit={() => handleOpenEdit(row as User)} onDelete={() => handleDelete(row.id)} />
-            ),
+            cell: ({ row }: any) => <RowActions onEdit={() => handleOpenEdit(row as User)} onDelete={() => handleDelete(row.id)} />,
         },
     ];
 
@@ -83,6 +82,7 @@ export default function Index() {
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [open, setOpen] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
 
     const handleOpenAdd = () => {
         setForm(emptyForm);
@@ -160,10 +160,33 @@ export default function Index() {
         });
     };
 
+    const handleBulkDelete = () => {
+        if (selectedIds.length === 0) return;
+        axios.delete(route('uam.users.bulk-destroy'), { data: { ids: selectedIds } }).then(() => {
+            toast.success(`${selectedIds.length} user(s) deleted successfully`);
+            tableRef.current?.refetch();
+        }).catch(() => {
+            toast.error('Error deleting selected users');
+        });
+    };
+
     return (
         <AppLayout title="Users" breadcrumbs={breadcrumbs} actions={<Button onClick={handleOpenAdd}>Add User</Button>}>
             {/* Data table for users */}
-            <DataTable ref={tableRef} columns={columns} dataUrl={route('uam.users.index', { [KEY_DATA_TABLE]: true })} />
+            <DataTable
+                ref={tableRef}
+                columns={columns}
+                dataUrl={route('uam.users.index')}
+                onSelectionChange={setSelectedIds}
+                extraActions={
+                    selectedIds.length > 0 && (
+                        <Button variant="destructive" size="sm" className="h-8 gap-1.5 text-sm font-normal" onClick={handleBulkDelete}>
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Delete Selected ({selectedIds.length})
+                        </Button>
+                    )
+                }
+            />
 
             {/* Dialog for adding/editing user */}
             <Dialog open={open} onOpenChange={setOpen}>

@@ -112,9 +112,11 @@ interface DataTableProps {
     tableId?: string;
     /** Used as the exported file name (e.g. "users" → users.csv / users PDF). Defaults to "export". */
     exportTitle?: string;
+    /** Called whenever the row selection changes, with the array of selected IDs. */
+    onSelectionChange?: (ids: (string | number)[]) => void;
 }
 
-const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions, tableId, exportTitle = 'export' }: DataTableProps, ref) {
+const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions, tableId, exportTitle = 'export', onSelectionChange }: DataTableProps, ref) {
     const encodeUrlKey = (url: string) => encodeURIComponent(url);
     const keySuffix = tableId ?? encodeUrlKey(dataUrl);
 
@@ -168,6 +170,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
     useEffect(() => safeSet(LENGTH_KEY, length), [length]);
     useEffect(() => safeSet(START_KEY, start), [start]);
     useEffect(() => safeSet(VISIBILITY_KEY, columnVisibility), [columnVisibility]);
+    useEffect(() => { onSelectionChange?.(Array.from(selectedRows)); }, [selectedRows]);
 
     const fetchData = useCallback(async (currentStart = start) => {
         setLoading(true);

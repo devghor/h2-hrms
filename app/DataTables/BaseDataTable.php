@@ -13,7 +13,7 @@ abstract class BaseDataTable extends DataTable
      */
     public function renderInertia(string $component, array $props = [])
     {
-        if (request()->query('data-table')) {
+        if (request()->expectsJson()) {
             $action = request('action');
 
             if (in_array($action, ['excel', 'csv', 'pdf', 'print'])) {
