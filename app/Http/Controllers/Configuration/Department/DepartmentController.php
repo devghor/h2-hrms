@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Configuration\Department;
 
-use App\DataTables\DepartmentsDataTable;
+use App\DataTables\Configuration\Department\DepartmentsDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Department\StoreDepartmentRequest;
 use App\Http\Requests\Configuration\Department\UpdateDepartmentRequest;

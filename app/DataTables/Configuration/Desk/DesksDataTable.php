@@ -1,27 +1,28 @@
 <?php
 
-namespace App\DataTables;
+namespace App\DataTables\Configuration\Desk;
 
-use App\Models\Uam\Permission;
+use App\DataTables\BaseDataTable;
+use App\Models\Configuration\Desk\Desk;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Column;
 
-class PermissionsDataTable extends BaseDataTable
+class DesksDataTable extends BaseDataTable
 {
     protected bool $fastExcel = true;
 
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->editColumn('created_at', fn (Permission $p) => $p->created_at->format('Y-m-d H:i:s'))
+            ->editColumn('created_at', fn (Desk $d) => $d->created_at->format('Y-m-d H:i:s'))
             ->setRowId('id');
     }
 
-    public function query(Permission $model): QueryBuilder
+    public function query(Desk $model): QueryBuilder
     {
-        return $model->select(['id', 'name', 'display_name', 'module', 'group', 'guard_name', 'created_at']);
+        return $model->select(['id', 'name', 'description', 'created_at']);
     }
 
     public function getColumns(): array
@@ -29,10 +30,7 @@ class PermissionsDataTable extends BaseDataTable
         return [
             Column::make('id')->title('ID'),
             Column::make('name')->title('Name'),
-            Column::make('display_name')->title('Display Name'),
-            Column::make('module')->title('Module'),
-            Column::make('group')->title('Group'),
-            Column::make('guard_name')->title('Guard Name'),
+            Column::make('description')->title('Description'),
             Column::make('created_at')->title('Created At'),
         ];
     }
@@ -46,6 +44,6 @@ class PermissionsDataTable extends BaseDataTable
 
     protected function filename(): string
     {
-        return 'Permissions_' . date('YmdHis');
+        return 'Desks_' . date('YmdHis');
     }
 }

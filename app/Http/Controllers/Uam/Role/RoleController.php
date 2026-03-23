@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Uam\Role;
 
-use App\DataTables\RolesDataTable;
+use App\DataTables\Uam\Role\RolesDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Uam\Permission;
 use App\Models\Uam\Role;

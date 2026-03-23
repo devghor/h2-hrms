@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Configuration\Company;
 
-use App\DataTables\CompaniesDataTable;
+use App\DataTables\Configuration\Company\CompaniesDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Company\StoreCompanyRequest;
 use App\Http\Requests\Configuration\Company\UpdateCompanyRequest;

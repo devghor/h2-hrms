@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Configuration\Division;
 
-use App\DataTables\DivisionsDataTable;
+use App\DataTables\Configuration\Division\DivisionsDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Division\StoreDivisionRequest;
 use App\Http\Requests\Configuration\Division\UpdateDivisionRequest;

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Uam\User;
 
-use App\DataTables\UsersDataTable;
+use App\DataTables\Uam\User\UsersDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Uam\User\StoreUserRequest;
 use App\Http\Requests\Uam\User\UpdateUserRequest;

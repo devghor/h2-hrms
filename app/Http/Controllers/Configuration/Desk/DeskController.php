@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Configuration\Desk;
 
-use App\DataTables\DesksDataTable;
+use App\DataTables\Configuration\Desk\DesksDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Desk\StoreDeskRequest;
 use App\Http\Requests\Configuration\Desk\UpdateDeskRequest;

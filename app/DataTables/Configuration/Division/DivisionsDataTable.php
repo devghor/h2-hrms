@@ -1,25 +1,26 @@
 <?php
 
-namespace App\DataTables;
+namespace App\DataTables\Configuration\Division;
 
-use App\Models\Configuration\Desk\Desk;
+use App\DataTables\BaseDataTable;
+use App\Models\Configuration\Division\Division;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Column;
 
-class DesksDataTable extends BaseDataTable
+class DivisionsDataTable extends BaseDataTable
 {
     protected bool $fastExcel = true;
 
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->editColumn('created_at', fn (Desk $d) => $d->created_at->format('Y-m-d H:i:s'))
+            ->editColumn('created_at', fn (Division $d) => $d->created_at->format('Y-m-d H:i:s'))
             ->setRowId('id');
     }
 
-    public function query(Desk $model): QueryBuilder
+    public function query(Division $model): QueryBuilder
     {
         return $model->select(['id', 'name', 'description', 'created_at']);
     }
@@ -43,6 +44,6 @@ class DesksDataTable extends BaseDataTable
 
     protected function filename(): string
     {
-        return 'Desks_' . date('YmdHis');
+        return 'Divisions_' . date('YmdHis');
     }
 }

@@ -1,28 +1,28 @@
 <?php
 
-namespace App\DataTables;
+namespace App\DataTables\Uam\Role;
 
-use App\Models\Configuration\Department\Department;
+use App\DataTables\BaseDataTable;
+use App\Models\Uam\Role;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Column;
 
-class DepartmentsDataTable extends BaseDataTable
+class RolesDataTable extends BaseDataTable
 {
     protected bool $fastExcel = true;
 
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('division', fn (Department $d) => $d->division?->name ?? '')
-            ->editColumn('created_at', fn (Department $d) => $d->created_at->format('Y-m-d H:i:s'))
+            ->editColumn('created_at', fn (Role $r) => $r->created_at->format('Y-m-d H:i:s'))
             ->setRowId('id');
     }
 
-    public function query(Department $model): QueryBuilder
+    public function query(Role $model): QueryBuilder
     {
-        return $model->with('division')->select(['id', 'name', 'division_id', 'description', 'created_at']);
+        return $model->select(['id', 'name', 'guard_name', 'description', 'created_at']);
     }
 
     public function getColumns(): array
@@ -30,7 +30,7 @@ class DepartmentsDataTable extends BaseDataTable
         return [
             Column::make('id')->title('ID'),
             Column::make('name')->title('Name'),
-            Column::computed('division')->title('Division'),
+            Column::make('guard_name')->title('Guard Name'),
             Column::make('description')->title('Description'),
             Column::make('created_at')->title('Created At'),
         ];
@@ -45,6 +45,6 @@ class DepartmentsDataTable extends BaseDataTable
 
     protected function filename(): string
     {
-        return 'Departments_' . date('YmdHis');
+        return 'Roles_' . date('YmdHis');
     }
 }

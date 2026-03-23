@@ -1,7 +1,8 @@
 <?php
 
-namespace App\DataTables;
+namespace App\DataTables\Configuration\Company;
 
+use App\DataTables\BaseDataTable;
 use App\Models\Configuration\Company\Company;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;

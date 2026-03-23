@@ -1,27 +1,28 @@
 <?php
 
-namespace App\DataTables;
+namespace App\DataTables\Uam\Permission;
 
-use App\Models\Uam\User;
+use App\DataTables\BaseDataTable;
+use App\Models\Uam\Permission;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Column;
 
-class UsersDataTable extends BaseDataTable
+class PermissionsDataTable extends BaseDataTable
 {
     protected bool $fastExcel = true;
 
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->editColumn('created_at', fn (User $u) => $u->created_at->format('Y-m-d H:i:s'))
+            ->editColumn('created_at', fn (Permission $p) => $p->created_at->format('Y-m-d H:i:s'))
             ->setRowId('id');
     }
 
-    public function query(User $model): QueryBuilder
+    public function query(Permission $model): QueryBuilder
     {
-        return $model->select(['id', 'name', 'email', 'created_at']);
+        return $model->select(['id', 'name', 'display_name', 'module', 'group', 'guard_name', 'created_at']);
     }
 
     public function getColumns(): array
@@ -29,7 +30,10 @@ class UsersDataTable extends BaseDataTable
         return [
             Column::make('id')->title('ID'),
             Column::make('name')->title('Name'),
-            Column::make('email')->title('Email'),
+            Column::make('display_name')->title('Display Name'),
+            Column::make('module')->title('Module'),
+            Column::make('group')->title('Group'),
+            Column::make('guard_name')->title('Guard Name'),
             Column::make('created_at')->title('Created At'),
         ];
     }
@@ -43,6 +47,6 @@ class UsersDataTable extends BaseDataTable
 
     protected function filename(): string
     {
-        return 'Users_' . date('YmdHis');
+        return 'Permissions_' . date('YmdHis');
     }
 }

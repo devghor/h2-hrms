@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Uam\Permission;
 
-use App\DataTables\PermissionsDataTable;
+use App\DataTables\Uam\Permission\PermissionsDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Uam\Permission\StorePermissionRequest;
 use App\Http\Requests\Uam\Permission\UpdatePermissionRequest;
