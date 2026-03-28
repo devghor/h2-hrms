@@ -6,12 +6,12 @@ use App\DataTables\Configuration\Desk\DesksDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Desk\StoreDeskRequest;
 use App\Http\Requests\Configuration\Desk\UpdateDeskRequest;
-use App\Repositories\Configuration\Desk\DeskRepository;
+use App\Services\Configuration\Desk\DeskService;
 use Illuminate\Http\Request;
 
 class DeskController extends Controller
 {
-    public function __construct(private DeskRepository $deskRepository) {}
+    public function __construct(private DeskService $deskService) {}
 
     public function index(DesksDataTable $dataTable)
     {
@@ -22,8 +22,7 @@ class DeskController extends Controller
 
     public function store(StoreDeskRequest $request)
     {
-        $input = $request->validated();
-        $this->deskRepository->create($input);
+        $this->deskService->create($request->validated());
         return redirect()->back()->with('success', 'Desk created successfully.');
     }
 
@@ -39,8 +38,7 @@ class DeskController extends Controller
 
     public function update(UpdateDeskRequest $request, string $id)
     {
-        $input  = $request->validated();
-        $this->deskRepository->update($input, $id);
+        $this->deskService->update($request->validated(), $id);
         return redirect()->route('configuration.desks.index')->with([
             'success' => __('Desk updated successfully.'),
         ]);
@@ -48,7 +46,7 @@ class DeskController extends Controller
 
     public function destroy(string $id)
     {
-        $this->deskRepository->delete($id);
+        $this->deskService->delete($id);
         return redirect()->route('configuration.desks.index')->with([
             'success' => __('Desk deleted successfully.'),
         ]);
@@ -57,7 +55,7 @@ class DeskController extends Controller
     public function bulkDelete(Request $request)
     {
         $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
-        $this->deskRepository->bulkDelete($ids);
+        $this->deskService->bulkDelete($ids);
 
         return response()->json(['message' => 'Desks deleted successfully.']);
     }

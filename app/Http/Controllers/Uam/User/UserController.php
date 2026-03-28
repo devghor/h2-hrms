@@ -7,12 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Uam\User\StoreUserRequest;
 use App\Http\Requests\Uam\User\UpdateUserRequest;
 use App\Http\Resources\Uam\User\UserResource;
-use App\Repositories\Uam\User\UserRepository;
+use App\Services\Uam\User\UserService;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function __construct(private UserRepository $userRepository) {}
+    public function __construct(private UserService $userService) {}
 
     /**
      * Display a listing of the resource for the Inertia view.
@@ -32,8 +32,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $input = $request->validated();
-        $user = $this->userRepository->create($input);
+        $user = $this->userService->create($request->validated());
 
         return inertia('uam/users/index', [
             'user' => new UserResource($user),
@@ -62,7 +61,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, string $id)
     {
-        $this->userRepository->update($request->validated(), $id);
+        $this->userService->update($request->validated(), $id);
 
         return redirect()->route('uam.users.index')->with([
             'success' => 'User updated successfully.',
@@ -74,7 +73,7 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->userRepository->delete($id);
+        $this->userService->delete($id);
 
         return redirect()->route('uam.users.index')->with([
             'success' => 'User deleted successfully.',
@@ -84,7 +83,7 @@ class UserController extends Controller
     public function bulkDelete(Request $request)
     {
         $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
-        $this->userRepository->bulkDelete($ids);
+        $this->userService->bulkDelete($ids);
 
         return response()->json(['message' => 'Users deleted successfully.']);
     }

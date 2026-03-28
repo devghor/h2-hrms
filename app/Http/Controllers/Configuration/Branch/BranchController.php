@@ -6,21 +6,21 @@ use App\DataTables\Configuration\Branch\BranchesDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Branch\StoreBranchRequest;
 use App\Http\Requests\Configuration\Branch\UpdateBranchRequest;
-use App\Repositories\Configuration\Branch\BranchRepository;
-use App\Repositories\Configuration\Company\CompanyRepository;
+use App\Services\Configuration\Branch\BranchService;
+use App\Services\Configuration\Company\CompanyService;
 use Illuminate\Http\Request;
 
 class BranchController extends Controller
 {
     public function __construct(
-        private BranchRepository $branchRepository,
-        private CompanyRepository $companyRepository,
+        private BranchService $branchService,
+        private CompanyService $companyService,
     ) {}
 
     public function index(BranchesDataTable $dataTable)
     {
         return $dataTable->renderInertia('configuration/branches/index', [
-            'companies' => $this->companyRepository->getCompanyOptions(),
+            'companies' => $this->companyService->getCompanyOptions(),
         ]);
     }
 
@@ -28,7 +28,7 @@ class BranchController extends Controller
 
     public function store(StoreBranchRequest $request)
     {
-        $this->branchRepository->create($request->validated());
+        $this->branchService->create($request->validated());
         return redirect()->back()->with('success', 'Branch created successfully.');
     }
 
@@ -38,7 +38,7 @@ class BranchController extends Controller
 
     public function update(UpdateBranchRequest $request, string $id)
     {
-        $this->branchRepository->update($request->validated(), $id);
+        $this->branchService->update($request->validated(), $id);
         return redirect()->route('configuration.branches.index')->with([
             'success' => __('Branch updated successfully.'),
         ]);
@@ -46,7 +46,7 @@ class BranchController extends Controller
 
     public function destroy(string $id)
     {
-        $this->branchRepository->delete($id);
+        $this->branchService->delete($id);
         return redirect()->route('configuration.branches.index')->with([
             'success' => __('Branch deleted successfully.'),
         ]);
@@ -55,7 +55,7 @@ class BranchController extends Controller
     public function bulkDelete(Request $request)
     {
         $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
-        $this->branchRepository->bulkDelete($ids);
+        $this->branchService->bulkDelete($ids);
 
         return response()->json(['message' => 'Branches deleted successfully.']);
     }

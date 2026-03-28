@@ -7,12 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Company\StoreCompanyRequest;
 use App\Http\Requests\Configuration\Company\UpdateCompanyRequest;
 use App\Models\Configuration\Company\Company;
-use App\Repositories\Configuration\Company\CompanyRepository;
+use App\Services\Configuration\Company\CompanyService;
 use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
-    public function __construct(private CompanyRepository $companyRepository) {}
+    public function __construct(private CompanyService $companyService) {}
 
     /**
      * Display a listing of the resource.
@@ -32,8 +32,7 @@ class CompanyController extends Controller
      */
     public function store(StoreCompanyRequest $request)
     {
-        $input = $request->validated();
-        $this->companyRepository->create($input);
+        $this->companyService->create($request->validated());
         return redirect()->back()->with('success', 'Company created successfully.');
     }
 
@@ -58,8 +57,7 @@ class CompanyController extends Controller
      */
     public function update(UpdateCompanyRequest $request, string $id)
     {
-        $input  = $request->validated();
-        $this->companyRepository->update($input, $id);
+        $this->companyService->update($request->validated(), $id);
         return redirect()->route('configuration.companies.index')->with([
             'success' => __('Company updated successfully.'),
         ]);
@@ -70,7 +68,7 @@ class CompanyController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->companyRepository->delete($id);
+        $this->companyService->delete($id);
         return redirect()->route('configuration.companies.index')->with([
             'success' => __('Company deleted successfully.'),
         ]);
@@ -78,9 +76,7 @@ class CompanyController extends Controller
 
     public function switchCompany(Company $company)
     {
-        $isUserCompany = $this->companyRepository->isAuthUserCompany($company->id);
-
-        if ($isUserCompany) {
+        if ($this->companyService->isAuthUserCompany($company->id)) {
             tenancy()->initialize($company);
             session()->put(config('tenancy.current_company_session_key'), $company->id);
         }
@@ -91,7 +87,7 @@ class CompanyController extends Controller
     public function bulkDelete(Request $request)
     {
         $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
-        $this->companyRepository->bulkDelete($ids);
+        $this->companyService->bulkDelete($ids);
 
         return response()->json(['message' => 'Companies deleted successfully.']);
     }

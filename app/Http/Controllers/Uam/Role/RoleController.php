@@ -6,12 +6,12 @@ use App\DataTables\Uam\Role\RolesDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Uam\Permission;
 use App\Models\Uam\Role;
-use App\Repositories\Uam\Role\RoleRepository;
+use App\Services\Uam\Role\RoleService;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
-    public function __construct(private RoleRepository $roleRepository) {}
+    public function __construct(private RoleService $roleService) {}
 
     public function index(RolesDataTable $dataTable)
     {
@@ -27,7 +27,7 @@ class RoleController extends Controller
 
         $validated['company_id'] = tenant()?->id;
 
-        $this->roleRepository->create($validated);
+        $this->roleService->create($validated);
         return redirect()->back()->with('success', 'Role created successfully.');
     }
 
@@ -65,7 +65,7 @@ class RoleController extends Controller
             'description' => 'nullable|string',
             'permissions' => 'nullable|array',
         ]);
-        $this->roleRepository->update($input, $role->id);
+        $this->roleService->update($input, $role->id);
         return redirect()->back()->with('success', 'Role updated successfully.');
     }
 
@@ -74,7 +74,7 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->roleRepository->delete($id);
+        $this->roleService->delete($id);
 
         return redirect()->route('uam.roles.index')->with([
             'success' => 'Role deleted successfully.',
@@ -84,7 +84,7 @@ class RoleController extends Controller
     public function bulkDelete(Request $request)
     {
         $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
-        $this->roleRepository->bulkDelete($ids);
+        $this->roleService->bulkDelete($ids);
 
         return response()->json(['message' => 'Roles deleted successfully.']);
     }

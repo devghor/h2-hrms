@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Laravel 12 + React 19 + Inertia.js 2** monolith with server-side rendering (SSR).
 
-- **Backend**: Laravel 12, Yajra DataTables, l5-repository (Prettus), Spatie Permission, Stancl Tenancy
+- **Backend**: Laravel 12, Yajra DataTables, Spatie Permission, Stancl Tenancy
 - **Frontend**: React 19, TypeScript 5, Tailwind CSS 4, Shadcn/ui (Radix), Lucide + Tabler icons, Sonner (toasts)
 - **Bridge**: Inertia.js + Laravel Wayfinder (typed route helpers in `resources/js/wayfinder/`)
 
@@ -41,20 +41,21 @@ composer run phpstan
 ## Architecture
 
 ### Request flow
-Browser → Inertia → Laravel route → Controller → Repository → DataTable → Inertia render → React page component
+Browser → Inertia → Laravel route → Controller → Service → DataTable → Inertia render → React page component
 
 ### Backend patterns
 
 **Controllers** (`app/Http/Controllers/<Module>/<Entity>/`)
-- Constructor-inject the repository
+- Constructor-inject the service
 - `index()` delegates to a DataTable's `renderInertia('module/entity/index')`
-- `store/update/destroy` delegate to repository, return `redirect()->back()` or `redirect()->route(...)`
-- `bulkDelete()` validates `ids[]` then calls `$repository->bulkDelete($ids)` → JSON response
+- `store/update/destroy` delegate to service, return `redirect()->back()` or `redirect()->route(...)`
+- `bulkDelete()` validates `ids[]` then calls `$service->bulkDelete($ids)` → JSON response
 
-**Repositories** (`app/Repositories/<Module>/<Entity>/`)
-- Extend `App\Repositories\Core\CoreRepository` which extends Prettus `BaseRepository`
-- `CoreRepository` provides `bulkDelete(array $ids)`
+**Services** (`app/Services/<Module>/<Entity>/`)
+- Extend `App\Services\Core\CoreService`
+- `CoreService` provides `create`, `update`, `delete`, `find`, `all`, `bulkDelete` using Eloquent directly
 - Must implement `model()` returning the FQCN of the Eloquent model
+- Place all query logic and business logic in the service
 
 **DataTables** (`app/DataTables/`)
 - Extend `BaseDataTable`
@@ -98,7 +99,7 @@ Browser → Inertia → Laravel route → Controller → Repository → DataTabl
 
 1. **Migration** in `database/migrations/`
 2. **Model** `app/Models/<Module>/<Entity>/<Entity>.php`
-3. **Repository** `app/Repositories/<Module>/<Entity>/<Entity>Repository.php` — extend `CoreRepository`
+3. **Service** `app/Services/<Module>/<Entity>/<Entity>Service.php` — extend `CoreService`
 4. **DataTable** `app/DataTables/<Entities>DataTable.php` — extend `BaseDataTable`
 5. **Form Requests** `Store<Entity>Request` + `Update<Entity>Request`
 6. **Controller** `app/Http/Controllers/<Module>/<Entity>/<Entity>Controller.php`

@@ -6,25 +6,25 @@ use App\DataTables\Employee\Employee\EmployeesDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\Employee\Employee\UpdateEmployeeRequest;
-use App\Repositories\Configuration\Department\DepartmentRepository;
-use App\Repositories\Configuration\Desk\DeskRepository;
-use App\Repositories\Employee\Employee\EmployeeRepository;
+use App\Services\Configuration\Department\DepartmentService;
+use App\Services\Configuration\Desk\DeskService;
+use App\Services\Employee\Employee\EmployeeService;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
     public function __construct(
-        private EmployeeRepository $employeeRepository,
-        private DepartmentRepository $departmentRepository,
-        private DeskRepository $deskRepository,
+        private EmployeeService $employeeService,
+        private DepartmentService $departmentService,
+        private DeskService $deskService,
     ) {}
 
     public function index(EmployeesDataTable $dataTable)
     {
         return $dataTable->renderInertia('employee/employees/index', [
-            'departments'  => $this->departmentRepository->all(['id', 'name']),
-            'designations' => $this->deskRepository->all(['id', 'name']),
-            'managers'     => $this->employeeRepository->getEmployeeOptions(),
+            'departments'  => $this->departmentService->all(['id', 'name']),
+            'designations' => $this->deskService->all(['id', 'name']),
+            'managers'     => $this->employeeService->getEmployeeOptions(),
         ]);
     }
 
@@ -32,21 +32,21 @@ class EmployeeController extends Controller
 
     public function store(StoreEmployeeRequest $request)
     {
-        $this->employeeRepository->create($request->validated());
+        $this->employeeService->create($request->validated());
 
         return redirect()->back()->with('success', 'Employee created successfully.');
     }
 
     public function show(string $id)
     {
-        $employee = $this->employeeRepository->find($id);
+        $employee = $this->employeeService->find($id);
         $employee->load(['department', 'designation', 'manager', 'contacts', 'documents', 'education', 'experience']);
 
         return inertia('employee/employees/show', [
             'employee'     => $employee,
-            'departments'  => $this->departmentRepository->all(['id', 'name']),
-            'designations' => $this->deskRepository->all(['id', 'name']),
-            'managers'     => $this->employeeRepository->getEmployeeOptions(),
+            'departments'  => $this->departmentService->all(['id', 'name']),
+            'designations' => $this->deskService->all(['id', 'name']),
+            'managers'     => $this->employeeService->getEmployeeOptions(),
         ]);
     }
 
@@ -54,14 +54,14 @@ class EmployeeController extends Controller
 
     public function update(UpdateEmployeeRequest $request, string $id)
     {
-        $this->employeeRepository->update($request->validated(), $id);
+        $this->employeeService->update($request->validated(), $id);
 
         return redirect()->back()->with('success', 'Employee updated successfully.');
     }
 
     public function destroy(string $id)
     {
-        $this->employeeRepository->delete($id);
+        $this->employeeService->delete($id);
 
         return redirect()->route('employee.employees.index')->with('success', 'Employee deleted successfully.');
     }
@@ -69,7 +69,7 @@ class EmployeeController extends Controller
     public function bulkDelete(Request $request)
     {
         $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
-        $this->employeeRepository->bulkDelete($ids);
+        $this->employeeService->bulkDelete($ids);
 
         return response()->json(['message' => 'Employees deleted successfully.']);
     }

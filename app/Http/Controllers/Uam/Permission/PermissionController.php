@@ -8,12 +8,12 @@ use App\Http\Requests\Uam\Permission\StorePermissionRequest;
 use App\Http\Requests\Uam\Permission\UpdatePermissionRequest;
 use App\Http\Resources\Uam\Permission\PermissionResource;
 use App\Models\Uam\Permission;
-use App\Repositories\Uam\Permission\PermissionRepository;
+use App\Services\Uam\Permission\PermissionService;
 use Illuminate\Http\Request;
 
 class PermissionController extends Controller
 {
-    public function __construct(private PermissionRepository $permissionRepository) {}
+    public function __construct(private PermissionService $permissionService) {}
 
     public function index(PermissionsDataTable $dataTable)
     {
@@ -22,7 +22,7 @@ class PermissionController extends Controller
 
     public function store(StorePermissionRequest $request)
     {
-        $permission = $this->permissionRepository->create($request->validated());
+        $permission = $this->permissionService->create($request->validated());
         return inertia('uam/permissions/index', [
             'permission' => new PermissionResource($permission),
             'success' => 'Permission created successfully.',
@@ -31,7 +31,7 @@ class PermissionController extends Controller
 
     public function update(UpdatePermissionRequest $request, Permission $permission)
     {
-        $this->permissionRepository->update($request->validated(), $permission->id);
+        $this->permissionService->update($request->validated(), $permission->id);
         return redirect()->route('uam.permissions.index')->with([
             'success' => 'Permission updated successfully.',
         ]);
@@ -39,7 +39,7 @@ class PermissionController extends Controller
 
     public function destroy(Permission $permission)
     {
-        $this->permissionRepository->delete($permission->id);
+        $this->permissionService->delete($permission->id);
         return redirect()->route('uam.permissions.index')->with([
             'success' => 'Permission deleted successfully.',
         ]);
@@ -48,7 +48,7 @@ class PermissionController extends Controller
     public function bulkDelete(Request $request)
     {
         $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
-        $this->permissionRepository->bulkDelete($ids);
+        $this->permissionService->bulkDelete($ids);
 
         return response()->json(['message' => 'Permissions deleted successfully.']);
     }

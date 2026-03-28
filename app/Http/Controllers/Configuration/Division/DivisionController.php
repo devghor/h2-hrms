@@ -6,12 +6,12 @@ use App\DataTables\Configuration\Division\DivisionsDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Configuration\Division\StoreDivisionRequest;
 use App\Http\Requests\Configuration\Division\UpdateDivisionRequest;
-use App\Repositories\Configuration\Division\DivisionRepository;
+use App\Services\Configuration\Division\DivisionService;
 use Illuminate\Http\Request;
 
 class DivisionController extends Controller
 {
-    public function __construct(private DivisionRepository $divisionRepository) {}
+    public function __construct(private DivisionService $divisionService) {}
 
     public function index(DivisionsDataTable $dataTable)
     {
@@ -22,8 +22,7 @@ class DivisionController extends Controller
 
     public function store(StoreDivisionRequest $request)
     {
-        $input = $request->validated();
-        $this->divisionRepository->create($input);
+        $this->divisionService->create($request->validated());
         return redirect()->back()->with('success', 'Division created successfully.');
     }
 
@@ -39,8 +38,7 @@ class DivisionController extends Controller
 
     public function update(UpdateDivisionRequest $request, string $id)
     {
-        $input  = $request->validated();
-        $this->divisionRepository->update($input, $id);
+        $this->divisionService->update($request->validated(), $id);
         return redirect()->route('configuration.divisions.index')->with([
             'success' => __('Division updated successfully.'),
         ]);
@@ -48,7 +46,7 @@ class DivisionController extends Controller
 
     public function destroy(string $id)
     {
-        $this->divisionRepository->delete($id);
+        $this->divisionService->delete($id);
         return redirect()->route('configuration.divisions.index')->with([
             'success' => __('Division deleted successfully.'),
         ]);
@@ -57,7 +55,7 @@ class DivisionController extends Controller
     public function bulkDelete(Request $request)
     {
         $ids = $request->validate(['ids' => 'required|array', 'ids.*' => 'required'])['ids'];
-        $this->divisionRepository->bulkDelete($ids);
+        $this->divisionService->bulkDelete($ids);
 
         return response()->json(['message' => 'Divisions deleted successfully.']);
     }
