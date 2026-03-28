@@ -1,4 +1,4 @@
-import { Briefcase, Building, IdCard, Key, Landmark, LayoutDashboard, Lock, MonitorCog, UserRound, Users } from 'lucide-react';
+import { Briefcase, Building, Building2, IdCard, Key, Landmark, LayoutDashboard, Lock, MonitorCog, UserRound, Users } from 'lucide-react';
 
 type BaseNavItem = {
     title: string;
@@ -76,6 +76,12 @@ export const sidebarData: SidebarData = {
                     url: '/configuration/companies',
                     icon: Landmark,
                     can: 'READ_CONFIGURATION_COMPANY',
+                },
+                {
+                    title: 'Branches',
+                    url: '/configuration/branches',
+                    icon: Building2,
+                    can: 'READ_CONFIGURATION_BRANCH',
                 },
                 {
                     title: 'Divisions',

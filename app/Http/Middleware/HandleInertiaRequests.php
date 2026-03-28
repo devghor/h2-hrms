@@ -61,6 +61,7 @@ class HandleInertiaRequests extends Middleware
                     'READ_CONFIGURATION_SETTING',
                     'READ_EMPLOYEE',
                     'READ_EMPLOYEE_EMPLOYEE',
+                    'READ_CONFIGURATION_BRANCH'
                 ],
                 'current_company' => Company::find(session(config('tenancy.current_company_session_key'))),
                 'companies' => $request->user() ? $request->user()->companies : [],

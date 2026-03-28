@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Configuration\Branch\BranchController;
 use App\Http\Controllers\Configuration\Company\CompanyController;
 use App\Http\Controllers\Configuration\Department\DepartmentController;
 use App\Http\Controllers\Configuration\Desk\DeskController;
@@ -47,6 +48,8 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
     Route::name('configuration.')
         ->prefix('configuration')
         ->group(function (): void {
+            Route::delete('branches/bulk-delete', [BranchController::class, 'bulkDelete'])->name('branches.bulk-delete');
+            Route::resource('branches', BranchController::class);
             Route::delete('desks/bulk-delete', [DeskController::class, 'bulkDelete'])->name('desks.bulk-delete');
             Route::resource('desks', DeskController::class);
             Route::get('companies/{company}/switch', [CompanyController::class, 'switchCompany'])->name('companies.switch');

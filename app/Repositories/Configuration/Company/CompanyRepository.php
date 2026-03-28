@@ -39,4 +39,9 @@ class CompanyRepository extends CoreRepository
     {
         return Auth::user()->companies->contains('id', $companyId);
     }
+
+    public function getCompanyOptions()
+    {
+        return $this->model->select('id', 'name')->get();
+    }
 }
