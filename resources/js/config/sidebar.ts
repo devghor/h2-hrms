@@ -96,6 +96,12 @@ export const sidebarData: SidebarData = {
                     can: 'READ_CONFIGURATION_DEPARTMENT',
                 },
                 {
+                    title: 'Units',
+                    url: '/configuration/units',
+                    icon: Briefcase,
+                    can: 'READ_CONFIGURATION_UNIT',
+                },
+                {
                     title: 'Designations',
                     url: '/configuration/designations',
                     icon: IdCard,

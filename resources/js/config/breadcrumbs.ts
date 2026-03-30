@@ -7,6 +7,7 @@ export const breadcrumbItems = {
     configurationCompanies: { title: 'Companies', href: route('configuration.companies.index') },
     configurationDivisions: { title: 'Divisions', href: route('configuration.divisions.index') },
     configurationDepartments: { title: 'Departments', href: route('configuration.departments.index') },
+    configurationUnits: { title: 'Units', href: route('configuration.units.index') },
     configurationDesks: { title: 'Desks', href: route('configuration.desks.index') },
     employeeEmployees: { title: 'Employees', href: route('employee.employees.index') },
 };

@@ -57,6 +57,7 @@ class HandleInertiaRequests extends Middleware
                     'READ_CONFIGURATION_COMPANY',
                     'READ_CONFIGURATION_DIVISION',
                     'READ_CONFIGURATION_DEPARTMENT',
+                    'READ_CONFIGURATION_UNIT',
                     'READ_CONFIGURATION_DESK',
                     'READ_CONFIGURATION_SETTING',
                     'READ_EMPLOYEE',
