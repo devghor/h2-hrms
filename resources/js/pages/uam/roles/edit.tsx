@@ -44,26 +44,49 @@ interface PermissionGroup {
 
 const breadcrumbs: BreadcrumbItem[] = [breadcrumbItems.dashboard, breadcrumbItems.uamRoles, { title: 'Edit Role', href: '' }];
 
-const CRUD_ACTIONS = ['Create', 'Read', 'Update', 'Delete'] as const;
+// Standard actions rendered first in this order; any extras appear after, sorted A-Z
+const PRIORITY_ORDER = ['Create', 'Read', 'Update', 'Delete'];
 
-const ACTION_CONFIG: Record<string, { activeClass: string; inactiveClass: string }> = {
+// Color map — CRUD has specific colors; any unknown action falls back to violet
+const ACTION_COLORS: Record<string, { active: string; inactive: string; header: string }> = {
     Create: {
-        activeClass: 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700',
-        inactiveClass: 'bg-white text-gray-300 border-gray-200 hover:border-blue-300 hover:text-blue-500',
+        active:   'bg-blue-600 text-white border-blue-600 hover:bg-blue-700',
+        inactive: 'bg-white text-gray-300 border-gray-200 hover:border-blue-300 hover:text-blue-500',
+        header:   'text-blue-600',
     },
     Read: {
-        activeClass: 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700',
-        inactiveClass: 'bg-white text-gray-300 border-gray-200 hover:border-emerald-300 hover:text-emerald-500',
+        active:   'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700',
+        inactive: 'bg-white text-gray-300 border-gray-200 hover:border-emerald-300 hover:text-emerald-500',
+        header:   'text-emerald-600',
     },
     Update: {
-        activeClass: 'bg-amber-500 text-white border-amber-500 hover:bg-amber-600',
-        inactiveClass: 'bg-white text-gray-300 border-gray-200 hover:border-amber-300 hover:text-amber-500',
+        active:   'bg-amber-500 text-white border-amber-500 hover:bg-amber-600',
+        inactive: 'bg-white text-gray-300 border-gray-200 hover:border-amber-300 hover:text-amber-500',
+        header:   'text-amber-500',
     },
     Delete: {
-        activeClass: 'bg-red-600 text-white border-red-600 hover:bg-red-700',
-        inactiveClass: 'bg-white text-gray-300 border-gray-200 hover:border-red-300 hover:text-red-500',
+        active:   'bg-red-600 text-white border-red-600 hover:bg-red-700',
+        inactive: 'bg-white text-gray-300 border-gray-200 hover:border-red-300 hover:text-red-500',
+        header:   'text-red-600',
+    },
+    // Fallback for any custom action (Export, Approve, Publish, SuperAdmin, etc.)
+    _custom: {
+        active:   'bg-violet-600 text-white border-violet-600 hover:bg-violet-700',
+        inactive: 'bg-white text-gray-300 border-gray-200 hover:border-violet-300 hover:text-violet-500',
+        header:   'text-violet-600',
     },
 };
+
+function getActionColor(action: string) {
+    return ACTION_COLORS[action] ?? ACTION_COLORS._custom;
+}
+
+/** Returns actions sorted: CRUD priority order first, then remaining A-Z */
+function sortActions(actions: string[]): string[] {
+    const priority = PRIORITY_ORDER.filter((a) => actions.includes(a));
+    const extras = actions.filter((a) => !PRIORITY_ORDER.includes(a)).sort();
+    return [...priority, ...extras];
+}
 
 function transformPermissions(rawPermissions: RawPermission[]): Permission[] {
     return rawPermissions.map((perm) => {
@@ -172,6 +195,9 @@ export default function EditRole({ role, allPermissions: rawPermissions }: { rol
     const isModulePartiallySelected = (perms: Permission[]) =>
         perms.some((p) => form.permissions.includes(p.id)) && !isModuleFullySelected(perms);
 
+    // All unique action types present in the full dataset (for the legend)
+    const globalActions = sortActions([...new Set(allPermissions.map((p) => p.action))]);
+
     const selectedCount = form.permissions.length;
     const totalCount = allPermissions.length;
     const allSelected = selectedCount === totalCount;
@@ -260,29 +286,40 @@ export default function EditRole({ role, allPermissions: rawPermissions }: { rol
                         </div>
                     </div>
 
-                    {/* Legend */}
-                    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-dashed bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground">
-                        <span className="font-medium">Actions:</span>
-                        {CRUD_ACTIONS.map((action) => (
-                            <span
-                                key={action}
-                                className={`rounded border px-2 py-0.5 font-medium ${ACTION_CONFIG[action].activeClass}`}
-                            >
-                                {action}
-                            </span>
-                        ))}
-                        <span className="ml-1">— click to toggle · row checkbox selects all · module checkbox selects entire module</span>
+                    {/* Dynamic legend — reflects whatever action types exist in this dataset */}
+                    <div className="flex flex-wrap items-center gap-2 rounded-lg border border-dashed bg-muted/30 px-4 py-2.5 text-xs">
+                        <span className="font-medium text-muted-foreground">Available actions:</span>
+                        {globalActions.map((action) => {
+                            const colors = getActionColor(action);
+                            return (
+                                <span key={action} className={`rounded border px-2 py-0.5 font-medium ${colors.active}`}>
+                                    {action}
+                                </span>
+                            );
+                        })}
+                        <span className="ml-1 text-muted-foreground">
+                            — click to toggle · row checkbox = all actions · module checkbox = entire module
+                        </span>
                     </div>
 
                     {/* Module Cards */}
                     <div className="space-y-4">
                         {Object.entries(filteredPermissionsByModuleAndFeature).map(([module, features]: any) => {
                             const allModulePermissions: Permission[] = Object.values(features).flat() as Permission[];
+
+                            // Compute actions present in THIS module — may differ between modules
+                            const moduleActionSet = new Set<string>(allModulePermissions.map((p) => p.action));
+                            const moduleActions = sortActions([...moduleActionSet]);
+                            const hasCustomActions = moduleActions.some((a) => !PRIORITY_ORDER.includes(a));
+
                             const moduleFullySelected = isModuleFullySelected(allModulePermissions);
                             const modulePartiallySelected = isModulePartiallySelected(allModulePermissions);
                             const moduleSelectedCount = form.permissions.filter((id) =>
                                 allModulePermissions.map((p) => p.id).includes(id),
                             ).length;
+
+                            // Dynamic grid: sticky feature column (200px) + 88px per action
+                            const gridTemplate = `200px repeat(${moduleActions.length}, 88px)`;
 
                             return (
                                 <Card key={module} className="overflow-hidden">
@@ -297,6 +334,11 @@ export default function EditRole({ role, allPermissions: rawPermissions }: { rol
                                                 onCheckedChange={() => handleSelectAllModule(allModulePermissions)}
                                             />
                                             <span className="text-sm font-semibold text-foreground">{module}</span>
+                                            {hasCustomActions && (
+                                                <Badge variant="outline" className="text-xs text-violet-600 border-violet-300">
+                                                    Custom actions
+                                                </Badge>
+                                            )}
                                         </div>
                                         <Badge
                                             variant={moduleSelectedCount > 0 ? 'default' : 'secondary'}
@@ -306,71 +348,85 @@ export default function EditRole({ role, allPermissions: rawPermissions }: { rol
                                         </Badge>
                                     </div>
 
-                                    {/* Column Headers */}
-                                    <div className="grid grid-cols-[1fr_repeat(4,_88px)] items-center border-b bg-muted/20 px-4 py-2 text-xs font-medium text-muted-foreground">
-                                        <span>Feature</span>
-                                        {CRUD_ACTIONS.map((action) => (
-                                            <span key={action} className="text-center">
-                                                {action}
-                                            </span>
-                                        ))}
-                                    </div>
+                                    {/* Scrollable table area */}
+                                    <div className="overflow-x-auto">
+                                        {/* Column Headers */}
+                                        <div
+                                            className="grid items-center border-b bg-muted/20 px-4 py-2 text-xs font-medium text-muted-foreground"
+                                            style={{ gridTemplateColumns: gridTemplate }}
+                                        >
+                                            <span>Feature</span>
+                                            {moduleActions.map((action) => {
+                                                const colors = getActionColor(action);
+                                                return (
+                                                    <span key={action} className={`text-center font-semibold ${colors.header}`}>
+                                                        {action}
+                                                    </span>
+                                                );
+                                            })}
+                                        </div>
 
-                                    {/* Feature Rows */}
-                                    <CardContent className="p-0">
-                                        {Object.entries(features).map(([feature, permissions]: any, idx: number, arr: any[]) => {
-                                            const featureFullySelected = isFeatureFullySelected(permissions);
-                                            const featurePartiallySelected = isFeaturePartiallySelected(permissions);
-                                            const permByAction: Record<string, Permission> = {};
-                                            (permissions as Permission[]).forEach((p) => {
-                                                permByAction[p.action] = p;
-                                            });
+                                        {/* Feature Rows */}
+                                        <CardContent className="p-0">
+                                            {Object.entries(features).map(([feature, permissions]: any, idx: number, arr: any[]) => {
+                                                const featureFullySelected = isFeatureFullySelected(permissions);
+                                                const featurePartiallySelected = isFeaturePartiallySelected(permissions);
+                                                const permByAction: Record<string, Permission> = {};
+                                                (permissions as Permission[]).forEach((p) => {
+                                                    permByAction[p.action] = p;
+                                                });
 
-                                            return (
-                                                <div
-                                                    key={feature}
-                                                    className={`grid grid-cols-[1fr_repeat(4,_88px)] items-center px-4 py-2.5 transition-colors hover:bg-muted/25 ${
-                                                        idx < arr.length - 1 ? 'border-b border-border/60' : ''
-                                                    }`}
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <Checkbox
-                                                            checked={featureFullySelected}
-                                                            ref={(el: any) => {
-                                                                if (el) el.indeterminate = featurePartiallySelected;
-                                                            }}
-                                                            onCheckedChange={() => handleSelectAllFeature(permissions)}
-                                                        />
-                                                        <span className="text-sm font-medium text-foreground">{feature}</span>
+                                                return (
+                                                    <div
+                                                        key={feature}
+                                                        className={`grid items-center px-4 py-2.5 transition-colors hover:bg-muted/25 ${
+                                                            idx < arr.length - 1 ? 'border-b border-border/60' : ''
+                                                        }`}
+                                                        style={{ gridTemplateColumns: gridTemplate }}
+                                                    >
+                                                        {/* Feature name + row checkbox */}
+                                                        <div className="flex min-w-0 items-center gap-3">
+                                                            <Checkbox
+                                                                checked={featureFullySelected}
+                                                                ref={(el: any) => {
+                                                                    if (el) el.indeterminate = featurePartiallySelected;
+                                                                }}
+                                                                onCheckedChange={() => handleSelectAllFeature(permissions)}
+                                                            />
+                                                            <span className="truncate text-sm font-medium text-foreground" title={feature}>
+                                                                {feature}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* One cell per action — dash if this feature doesn't have that action */}
+                                                        {moduleActions.map((action) => {
+                                                            const perm = permByAction[action];
+                                                            const colors = getActionColor(action);
+                                                            const isActive = perm && form.permissions.includes(perm.id);
+
+                                                            return (
+                                                                <div key={action} className="flex justify-center">
+                                                                    {perm ? (
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handlePermissionChange(perm.id)}
+                                                                            className={`rounded border px-2.5 py-1 text-xs font-medium transition-all duration-150 ${
+                                                                                isActive ? colors.active : colors.inactive
+                                                                            }`}
+                                                                        >
+                                                                            {action}
+                                                                        </button>
+                                                                    ) : (
+                                                                        <span className="text-xs text-muted-foreground/25">—</span>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
                                                     </div>
-
-                                                    {CRUD_ACTIONS.map((action) => {
-                                                        const perm = permByAction[action];
-                                                        const config = ACTION_CONFIG[action];
-                                                        const isActive = perm && form.permissions.includes(perm.id);
-
-                                                        return (
-                                                            <div key={action} className="flex justify-center">
-                                                                {perm ? (
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handlePermissionChange(perm.id)}
-                                                                        className={`rounded border px-2.5 py-1 text-xs font-medium transition-all duration-150 ${
-                                                                            isActive ? config.activeClass : config.inactiveClass
-                                                                        }`}
-                                                                    >
-                                                                        {action}
-                                                                    </button>
-                                                                ) : (
-                                                                    <span className="text-xs text-muted-foreground/30">—</span>
-                                                                )}
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            );
-                                        })}
-                                    </CardContent>
+                                                );
+                                            })}
+                                        </CardContent>
+                                    </div>
                                 </Card>
                             );
                         })}
