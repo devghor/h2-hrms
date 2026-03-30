@@ -39,9 +39,7 @@
         @routes
         @viteReactRefresh
         @vite('resources/js/app.js')
-        <x-inertia::head>
-            <title>{{ config('app.name') }}</title>
-        </x-inertia::head>
+        <x-inertia::head />
     </head>
     <body class="font-sans antialiased">
         <x-inertia::app />
