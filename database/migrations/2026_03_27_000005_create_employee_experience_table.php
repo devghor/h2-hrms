@@ -13,15 +13,13 @@ return new class extends Migration
             $table->id();
             MigrationHelper::ulidField($table);
             MigrationHelper::companyIdField($table);
-            $table->unsignedBigInteger('employee_id');
+            $table->unsignedBigInteger('user_id');
             $table->string('company_name');
             $table->string('designation')->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->text('responsibilities')->nullable();
             $table->timestamps();
-
-            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
         });
     }
 

@@ -15,7 +15,7 @@ class EmployeeExperience extends Model
     protected $table = 'employee_experience';
 
     protected $fillable = [
-        'employee_id',
+        'user_id',
         'company_name',
         'designation',
         'start_date',
@@ -27,9 +27,4 @@ class EmployeeExperience extends Model
         'start_date' => 'date',
         'end_date' => 'date',
     ];
-
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class);
-    }
 }

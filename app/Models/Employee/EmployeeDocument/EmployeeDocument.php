@@ -2,10 +2,8 @@
 
 namespace App\Models\Employee\EmployeeDocument;
 
-use App\Models\Employee\Employee\Employee;
 use App\Traits\HasUlid;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class EmployeeDocument extends Model
@@ -15,7 +13,7 @@ class EmployeeDocument extends Model
     protected $table = 'employee_documents';
 
     protected $fillable = [
-        'employee_id',
+        'user_id',
         'document_name',
         'document_type',
         'file_path',
@@ -26,9 +24,4 @@ class EmployeeDocument extends Model
     protected $casts = [
         'uploaded_at' => 'datetime',
     ];
-
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class);
-    }
 }

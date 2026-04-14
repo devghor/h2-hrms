@@ -13,13 +13,11 @@ return new class extends Migration
             $table->id();
             MigrationHelper::ulidField($table);
             MigrationHelper::companyIdField($table);
-            $table->unsignedBigInteger('employee_id');
+            $table->unsignedBigInteger('user_id');
             $table->string('degree');
             $table->string('institution')->nullable();
             $table->year('year_of_passing')->nullable();
             $table->timestamps();
-
-            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
         });
     }
 

@@ -152,7 +152,7 @@ export default function Index({ departments, designations, managers }: Props) {
             first_name: form.first_name,
             last_name: form.last_name,
             employee_code: form.employee_code || null,
-            email: form.email || null,
+            email: form.email || undefined,
             phone: form.phone || null,
             date_of_birth: form.date_of_birth || null,
             gender: form.gender || null,
@@ -226,8 +226,8 @@ export default function Index({ departments, designations, managers }: Props) {
                         )}
                     </div>
                     <div>
-                        <Label>Email</Label>
-                        <Input name="email" type="email" value={form.email} onChange={handleChange} />
+                        <Label>Email {!isEdit && '*'}</Label>
+                        <Input name="email" type="email" value={form.email} onChange={handleChange} required={!isEdit} />
                         {formErrors.email && <p className="text-sm text-red-500">{formErrors.email}</p>}
                     </div>
                     <div>

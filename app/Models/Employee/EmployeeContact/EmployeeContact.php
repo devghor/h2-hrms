@@ -15,14 +15,9 @@ class EmployeeContact extends Model
     protected $table = 'employee_contacts';
 
     protected $fillable = [
-        'employee_id',
+        'user_id',
         'contact_name',
         'relationship',
         'phone',
     ];
-
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class);
-    }
 }

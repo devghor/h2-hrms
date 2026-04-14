@@ -3,8 +3,11 @@
 namespace App\Services\Employee\Employee;
 
 use App\Models\Employee\Employee\Employee;
+use App\Models\Uam\User;
 use App\Services\Core\CoreService;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class EmployeeService extends CoreService
 {
@@ -19,7 +22,17 @@ class EmployeeService extends CoreService
             $data['full_name'] = trim(($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? ''));
         }
 
-        return $this->model->create($data);
+        return DB::transaction(function () use ($data) {
+            $user = User::create([
+                'name'     => $data['full_name'],
+                'email'    => $data['email'],
+                'password' => Str::random(16),
+            ]);
+
+            $data['user_id'] = $user->id;
+
+            return $this->model->create($data);
+        });
     }
 
     public function getEmployeeOptions(): array

@@ -26,7 +26,7 @@ class UpdateEmployeeRequest extends FormRequest
             'employment_status' => 'nullable|string|max:50',
             'department_id'     => 'nullable|integer|exists:departments,id',
             'designation_id'    => 'nullable|integer|exists:desks,id',
-            'manager_id'        => 'nullable|integer|exists:employees,id',
+            'manager_user_id'   => 'nullable|integer|exists:users,id',
             'address'           => 'nullable|string',
             'city'              => 'nullable|string|max:100',
             'country'           => 'nullable|string|max:100',

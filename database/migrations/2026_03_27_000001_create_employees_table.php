@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();
             MigrationHelper::ulidField($table);
             MigrationHelper::companyIdField($table);
+            $table->unsignedBigInteger('user_id');
             $table->string('employee_code')->nullable();
             $table->string('first_name');
             $table->string('last_name');
@@ -25,14 +26,13 @@ return new class extends Migration
             $table->string('employment_status')->default('Active');
             $table->unsignedBigInteger('department_id')->nullable();
             $table->unsignedBigInteger('designation_id')->nullable();
-            $table->unsignedBigInteger('manager_id')->nullable();
+            $table->unsignedBigInteger('manager_user_id')->nullable();
             $table->text('address')->nullable();
             $table->string('city')->nullable();
             $table->string('country')->nullable();
             $table->boolean('status')->default(true);
             MigrationHelper::commonFields($table);
 
-            $table->foreign('manager_id')->references('id')->on('employees')->onDelete('set null');
         });
     }
 

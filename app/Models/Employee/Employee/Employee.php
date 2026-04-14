@@ -21,6 +21,7 @@ class Employee extends Model
     protected $table = 'employees';
 
     protected $fillable = [
+        'user_id',
         'employee_code',
         'first_name',
         'last_name',
@@ -33,7 +34,7 @@ class Employee extends Model
         'employment_status',
         'department_id',
         'designation_id',
-        'manager_id',
+        'manager_user_id',
         'address',
         'city',
         'country',
@@ -60,26 +61,26 @@ class Employee extends Model
 
     public function manager(): BelongsTo
     {
-        return $this->belongsTo(Employee::class, 'manager_id');
+        return $this->belongsTo(Employee::class, 'manager_user_id', 'user_id');
     }
 
     public function contacts(): HasMany
     {
-        return $this->hasMany(EmployeeContact::class);
+        return $this->hasMany(EmployeeContact::class, 'user_id', 'user_id');
     }
 
     public function documents(): HasMany
     {
-        return $this->hasMany(EmployeeDocument::class);
+        return $this->hasMany(EmployeeDocument::class, 'user_id', 'user_id');
     }
 
     public function education(): HasMany
     {
-        return $this->hasMany(EmployeeEducation::class);
+        return $this->hasMany(EmployeeEducation::class, 'user_id', 'user_id');
     }
 
     public function experience(): HasMany
     {
-        return $this->hasMany(EmployeeExperience::class);
+        return $this->hasMany(EmployeeExperience::class, 'user_id', 'user_id');
     }
 }
