@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Employee\Employee;
 
 use App\DataTables\Employee\Employee\EmployeesDataTable;
+use App\Enums\Employee\EmployeeStatusEnum;
+use App\Enums\Employee\EmployeeTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\Employee\Employee\UpdateEmployeeRequest;
@@ -22,9 +24,11 @@ class EmployeeController extends Controller
     public function index(EmployeesDataTable $dataTable)
     {
         return $dataTable->renderInertia('employee/employees/index', [
-            'departments'  => $this->departmentService->all(['id', 'name']),
-            'designations' => $this->deskService->all(['id', 'name']),
-            'managers'     => $this->employeeService->getEmployeeOptions(),
+            'departments'     => $this->departmentService->all(['id', 'name']),
+            'designations'    => $this->deskService->all(['id', 'name']),
+            'managers'        => $this->employeeService->getEmployeeOptions(),
+            'employeeTypes'   => EmployeeTypeEnum::options(),
+            'employeeStatuses' => EmployeeStatusEnum::options(),
         ]);
     }
 
@@ -43,10 +47,12 @@ class EmployeeController extends Controller
         $employee->load(['department', 'designation', 'manager', 'contacts', 'documents', 'education', 'experience']);
 
         return inertia('employee/employees/show', [
-            'employee'     => $employee,
-            'departments'  => $this->departmentService->all(['id', 'name']),
-            'designations' => $this->deskService->all(['id', 'name']),
-            'managers'     => $this->employeeService->getEmployeeOptions(),
+            'employee'         => $employee,
+            'departments'      => $this->departmentService->all(['id', 'name']),
+            'designations'     => $this->deskService->all(['id', 'name']),
+            'managers'         => $this->employeeService->getEmployeeOptions(),
+            'employeeTypes'    => EmployeeTypeEnum::options(),
+            'employeeStatuses' => EmployeeStatusEnum::options(),
         ]);
     }
 

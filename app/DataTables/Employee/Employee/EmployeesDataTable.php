@@ -19,7 +19,6 @@ class EmployeesDataTable extends BaseDataTable
             ->addColumn('department', fn (Employee $e) => $e->department?->name ?? '')
             ->addColumn('designation', fn (Employee $e) => $e->designation?->name ?? '')
             ->editColumn('hire_date', fn (Employee $e) => $e->hire_date?->format('Y-m-d') ?? '')
-            ->editColumn('status', fn (Employee $e) => $e->status ? 'Active' : 'Inactive')
             ->editColumn('created_at', fn (Employee $e) => $e->created_at->format('Y-m-d H:i:s'))
             ->setRowId('id');
     }
@@ -27,7 +26,7 @@ class EmployeesDataTable extends BaseDataTable
     public function query(Employee $model): QueryBuilder
     {
         return $model->with(['department', 'designation'])
-            ->select(['id', 'employee_code', 'full_name', 'first_name', 'last_name', 'email', 'phone', 'department_id', 'designation_id', 'employment_status', 'hire_date', 'status', 'created_at']);
+            ->select(['id', 'employee_code', 'full_name', 'first_name', 'last_name', 'email', 'phone', 'department_id', 'designation_id', 'employment_status', 'hire_date', 'created_at']);
     }
 
     public function getColumns(): array

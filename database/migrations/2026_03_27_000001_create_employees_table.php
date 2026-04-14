@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\Employee\EmployeeStatusEnum;
+use App\Enums\Employee\EmployeeTypeEnum;
 use App\Helpers\MigrationHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -30,9 +32,9 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('city')->nullable();
             $table->string('country')->nullable();
-            $table->boolean('status')->default(true);
+            $table->integer('employee_type')->default(EmployeeTypeEnum::Permanent->value);
+            $table->integer('employee_status')->default(EmployeeStatusEnum::OnProbation->value);
             MigrationHelper::commonFields($table);
-
         });
     }
 

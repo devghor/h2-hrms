@@ -17,11 +17,14 @@ import { toast } from 'sonner';
 const breadcrumbs: BreadcrumbItem[] = [breadcrumbItems.dashboard, breadcrumbItems.employeeEmployees];
 
 type Option = { id: number; name: string };
+type EnumOption = { value: number; label: string };
 
 interface Props {
     departments: Option[];
     designations: Option[];
     managers: Option[];
+    employeeTypes: EnumOption[];
+    employeeStatuses: EnumOption[];
 }
 
 const defaultForm = {
@@ -34,17 +37,17 @@ const defaultForm = {
     date_of_birth: '',
     gender: '',
     hire_date: '',
-    employment_status: 'Active',
+    employee_type: 1,
+    employee_status: 1,
     department_id: '',
     designation_id: '',
     manager_id: '',
     address: '',
     city: '',
     country: '',
-    status: true,
 };
 
-export default function Index({ departments, designations, managers }: Props) {
+export default function Index({ departments, designations, managers, employeeTypes, employeeStatuses }: Props) {
     const tableRef = useRef<{ refetch: () => void }>(null);
     const [open, setOpen] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
@@ -60,7 +63,8 @@ export default function Index({ departments, designations, managers }: Props) {
         { accessorKey: 'phone', header: 'Phone', sortable: true },
         { accessorKey: 'department', header: 'Department', sortable: true },
         { accessorKey: 'designation', header: 'Designation', sortable: true },
-        { accessorKey: 'employment_status', header: 'Status', sortable: true },
+        { accessorKey: 'employee_type', header: 'Type', sortable: true },
+        { accessorKey: 'employee_status', header: 'Status', sortable: true },
         { accessorKey: 'hire_date', header: 'Hire Date', sortable: true },
         {
             accessorKey: 'actions',
@@ -101,14 +105,14 @@ export default function Index({ departments, designations, managers }: Props) {
             date_of_birth: row.date_of_birth ?? '',
             gender: row.gender ?? '',
             hire_date: row.hire_date ?? '',
-            employment_status: row.employment_status ?? 'Active',
+            employee_type: row.employee_type ?? 1,
+            employee_status: row.employee_status ?? 1,
             department_id: row.department_id ? String(row.department_id) : '',
             designation_id: row.designation_id ? String(row.designation_id) : '',
             manager_id: row.manager_id ? String(row.manager_id) : '',
             address: row.address ?? '',
             city: row.city ?? '',
             country: row.country ?? '',
-            status: row.status ?? true,
         });
         setIsEdit(true);
         setOpen(true);
@@ -157,14 +161,14 @@ export default function Index({ departments, designations, managers }: Props) {
             date_of_birth: form.date_of_birth || null,
             gender: form.gender || null,
             hire_date: form.hire_date || null,
-            employment_status: form.employment_status,
+            employee_type: form.employee_type,
+            employee_status: form.employee_status,
             department_id: form.department_id || null,
             designation_id: form.designation_id || null,
             manager_id: form.manager_id || null,
             address: form.address || null,
             city: form.city || null,
             country: form.country || null,
-            status: form.status,
         };
 
         const options = {
@@ -262,23 +266,45 @@ export default function Index({ departments, designations, managers }: Props) {
                         {formErrors.hire_date && <p className="text-sm text-red-500">{formErrors.hire_date}</p>}
                     </div>
                     <div>
-                        <Label>Employment Status</Label>
+                        <Label>Employee Type</Label>
                         <Select
-                            value={form.employment_status}
-                            onValueChange={(v) => handleSelect('employment_status', v)}
+                            value={String(form.employee_type)}
+                            onValueChange={(v) => setForm((prev) => ({ ...prev, employee_type: Number(v) }))}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {employeeTypes.map((t) => (
+                                    <SelectItem key={t.value} value={String(t.value)}>
+                                        {t.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {formErrors.employee_type && (
+                            <p className="text-sm text-red-500">{formErrors.employee_type}</p>
+                        )}
+                    </div>
+                    <div>
+                        <Label>Employee Status</Label>
+                        <Select
+                            value={String(form.employee_status)}
+                            onValueChange={(v) => setForm((prev) => ({ ...prev, employee_status: Number(v) }))}
                         >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Active">Active</SelectItem>
-                                <SelectItem value="Inactive">Inactive</SelectItem>
-                                <SelectItem value="On Leave">On Leave</SelectItem>
-                                <SelectItem value="Terminated">Terminated</SelectItem>
+                                {employeeStatuses.map((s) => (
+                                    <SelectItem key={s.value} value={String(s.value)}>
+                                        {s.label}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
-                        {formErrors.employment_status && (
-                            <p className="text-sm text-red-500">{formErrors.employment_status}</p>
+                        {formErrors.employee_status && (
+                            <p className="text-sm text-red-500">{formErrors.employee_status}</p>
                         )}
                     </div>
                     <div>

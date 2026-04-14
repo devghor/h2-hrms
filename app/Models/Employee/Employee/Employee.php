@@ -8,6 +8,8 @@ use App\Models\Employee\EmployeeContact\EmployeeContact;
 use App\Models\Employee\EmployeeDocument\EmployeeDocument;
 use App\Models\Employee\EmployeeEducation\EmployeeEducation;
 use App\Models\Employee\EmployeeExperience\EmployeeExperience;
+use App\Enums\Employee\EmployeeStatusEnum;
+use App\Enums\Employee\EmployeeTypeEnum;
 use App\Traits\HasUlid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,22 +33,23 @@ class Employee extends Model
         'date_of_birth',
         'gender',
         'hire_date',
-        'employment_status',
+        'employee_type',
+        'employee_status',
         'department_id',
         'designation_id',
         'manager_user_id',
         'address',
         'city',
         'country',
-        'status',
         'created_by',
         'updated_by',
     ];
 
     protected $casts = [
-        'date_of_birth' => 'date',
-        'hire_date' => 'date',
-        'status' => 'boolean',
+        'date_of_birth'   => 'date',
+        'hire_date'       => 'date',
+        'employee_type'   => EmployeeTypeEnum::class,
+        'employee_status' => EmployeeStatusEnum::class,
     ];
 
     public function department(): BelongsTo
