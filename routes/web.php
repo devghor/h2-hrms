@@ -5,6 +5,7 @@ use App\Http\Controllers\Configuration\Company\CompanyController;
 use App\Http\Controllers\Configuration\Department\DepartmentController;
 use App\Http\Controllers\Configuration\Desk\DeskController;
 use App\Http\Controllers\Configuration\Unit\UnitController;
+use App\Http\Controllers\Configuration\Designation\DesignationController;
 use App\Http\Controllers\Configuration\Division\DivisionController;
 use App\Http\Controllers\Employee\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeContact\EmployeeContactController;
@@ -58,6 +59,8 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
             Route::resource('companies', CompanyController::class);
             Route::delete('divisions/bulk-delete', [DivisionController::class, 'bulkDelete'])->name('divisions.bulk-delete');
             Route::resource('divisions', DivisionController::class);
+            Route::delete('designations/bulk-delete', [DesignationController::class, 'bulkDelete'])->name('designations.bulk-delete');
+            Route::resource('designations', DesignationController::class);
             Route::delete('departments/bulk-delete', [DepartmentController::class, 'bulkDelete'])->name('departments.bulk-delete');
             Route::resource('departments', DepartmentController::class);
             Route::delete('units/bulk-delete', [UnitController::class, 'bulkDelete'])->name('units.bulk-delete');
