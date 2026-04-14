@@ -1,21 +1,22 @@
-# salary_heads fields
-
+# payroll_salary_heads
 - name
 - code
-- is_linked_basic
-- percentage_of_basic_salary
-- transaction_type [Deduction, Earning]
-- transaction_mode [Cash, Bank]
-- gl_account_prefix
-- gl_account_prefix_type [Dynamic, Static]
-- salary_head_type [Summarize, Sortable, Custom Generate, LFA, Festival]
+- is_basic_linked
+- basic_ratio
+- mode [cash, bank]
+- gl_account_code
+- gl_prefix_type [dynamic, static]
+- identification_type [basic, lfa, pf_employee, pf_employer, pf_employer_deduction, other]
+- category [gross, benefit, deduction, adjustment]
+- position
 - is_variable
 - is_taxable
-- tax_amount_type [Percentage, Fixed, Not Applicable]
-- amount_or_rate
+- tax_calculation_type [percentage, fixed, none]
+- tax_value
 - is_active
 
-# salary_structures fields
+
+# payroll_salary_structures
 
 - designation
 - basic
@@ -28,6 +29,7 @@
 - hospitalization_insurance
 - effective_date
 - is_active
+
 
 
 - Probation employee not getting any provident fund
@@ -57,4 +59,12 @@
 - Month
 - Type [Mothly Slary, Special Batch ]
 - Remark
-- Status [Generated, Sent From Approval, Revert From Approval, Disbursed]
+- Status [Generated = 0, Processed = 2, SentForApproval = 3, RevertFromApproval = 4, SentForDisbursement = 5, Disbursed =6]
+
+**Rules**
+- Batch only updated when status Generated, Processed, Revert From Approval
+- Special batch can not be generated, it will be uploaded form excel
+- Slary calculation differerntly for New Joiner, Promotion Calculation, Increment, Confirmation, Last Working Day
+- Salary Head Transaction type Debit = Gross
+- Salary Head Transaction type Credit = Deduction
+- Net pay = Gross - Deduction
