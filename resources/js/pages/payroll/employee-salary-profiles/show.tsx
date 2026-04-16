@@ -37,6 +37,7 @@ interface ActiveProfile {
     id: number;
     basic_amount: string;
     gross_amount: string;
+    deduction_amount: string;
     net_amount: string;
     items: {
         payroll_salary_head_id: number;
@@ -63,7 +64,7 @@ const DEDUCTION_CATEGORIES = ['deduction'];
 function calcTotals(items: SalaryProfileItem[], salaryHeads: SalaryHead[]) {
     let basicAmount = 0;
     let grossAmount = 0;
-    let netAmount = 0;
+    let deductionAmount = 0;
 
     items.forEach((item) => {
         const head = salaryHeads.find((h) => h.id === item.payroll_salary_head_id);
@@ -78,13 +79,13 @@ function calcTotals(items: SalaryProfileItem[], salaryHeads: SalaryHead[]) {
             grossAmount += amount;
         }
         if (DEDUCTION_CATEGORIES.includes(cat)) {
-            netAmount -= amount;
+            deductionAmount += amount;
         }
     });
 
-    netAmount = grossAmount + netAmount;
+    const netAmount = grossAmount - deductionAmount;
 
-    return { basicAmount, grossAmount, netAmount };
+    return { basicAmount, grossAmount, deductionAmount, netAmount };
 }
 
 function getCategoryLabel(category: string | { value: string; label?: string }): string {
@@ -173,6 +174,7 @@ export default function Show({ employee, salaryHeads, activeProfile, salaryStruc
             user_id: employee.user_id,
             basic_amount: totals.basicAmount.toFixed(2),
             gross_amount: totals.grossAmount.toFixed(2),
+            deduction_amount: totals.deductionAmount.toFixed(2),
             net_amount: totals.netAmount.toFixed(2),
             items: items.map((item) => ({
                 payroll_salary_head_id: item.payroll_salary_head_id,
@@ -291,7 +293,7 @@ export default function Show({ employee, salaryHeads, activeProfile, salaryStruc
                 {/* Totals Summary */}
                 <div className="rounded-lg border bg-card p-4">
                     <h2 className="mb-3 text-sm font-semibold tracking-wide text-muted-foreground uppercase">Summary</h2>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                         <div className="rounded-lg bg-muted/40 p-3 text-center">
                             <p className="text-xs text-muted-foreground">Basic Amount</p>
                             <p className="text-lg font-semibold">{totals.basicAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
@@ -302,6 +304,12 @@ export default function Show({ employee, salaryHeads, activeProfile, salaryStruc
                                 {totals.grossAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                             </p>
                         </div>
+                        <div className="rounded-lg bg-red-50 p-3 text-center">
+                            <p className="text-xs text-red-600">Deduction Amount</p>
+                            <p className="text-lg font-semibold text-red-700">
+                                {totals.deductionAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            </p>
+                        </div>
                         <div className="rounded-lg bg-blue-50 p-3 text-center">
                             <p className="text-xs text-blue-600">Net Amount</p>
                             <p className="text-lg font-semibold text-blue-700">
@@ -309,9 +317,9 @@ export default function Show({ employee, salaryHeads, activeProfile, salaryStruc
                             </p>
                         </div>
                     </div>
-                    {(formErrors['basic_amount'] || formErrors['gross_amount'] || formErrors['net_amount']) && (
+                    {(formErrors['basic_amount'] || formErrors['gross_amount'] || formErrors['deduction_amount'] || formErrors['net_amount']) && (
                         <p className="mt-2 text-sm text-red-500">
-                            {formErrors['basic_amount'] || formErrors['gross_amount'] || formErrors['net_amount']}
+                            {formErrors['basic_amount'] || formErrors['gross_amount'] || formErrors['deduction_amount'] || formErrors['net_amount']}
                         </p>
                     )}
                 </div>

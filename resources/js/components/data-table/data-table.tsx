@@ -97,7 +97,9 @@ export interface ColumnDef {
     /** Mark column as searchable — also renders a filter input in the filter panel */
     searchable?: boolean;
     /** Override filter input type for this column. Defaults to 'text'. */
-    filterType?: 'text' | 'date';
+    filterType?: 'text' | 'date' | 'select';
+    /** Options for filterType 'select'. Each entry has value + label. */
+    filterOptions?: { value: string; label: string }[];
     visible?: boolean;
     /** Set false to exclude this column from exports. Defaults to true. */
     exportable?: boolean;
@@ -114,9 +116,13 @@ interface DataTableProps {
     exportTitle?: string;
     /** Called whenever the row selection changes, with the array of selected IDs. */
     onSelectionChange?: (ids: (string | number)[]) => void;
+    /** Extra query params merged into every DataTable request (e.g. { designation_id: 5 }). */
+    extraParams?: Record<string, any>;
+    /** Extra filter controls rendered inside the filter panel alongside column filters. */
+    extraFilters?: React.ReactNode;
 }
 
-const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions, tableId, exportTitle = 'export', onSelectionChange }: DataTableProps, ref) {
+const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions, tableId, exportTitle = 'export', onSelectionChange, extraParams, extraFilters }: DataTableProps, ref) {
     const encodeUrlKey = (url: string) => encodeURIComponent(url);
     const keySuffix = tableId ?? encodeUrlKey(dataUrl);
 
@@ -166,6 +172,10 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<any[]>([]);
 
+    // Keep a ref so fetchData always reads the latest extraParams without being a dep
+    const extraParamsRef = useRef(extraParams ?? {});
+    useEffect(() => { extraParamsRef.current = extraParams ?? {}; });
+
     useEffect(() => safeSet(ORDER_KEY, order), [order]);
     useEffect(() => safeSet(LENGTH_KEY, length), [length]);
     useEffect(() => safeSet(START_KEY, start), [start]);
@@ -188,6 +198,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                         orderable: col.sortable !== false,
                         search: { value: columnFilters[col.accessorKey] ?? '', regex: false },
                     })),
+                    ...extraParamsRef.current,
                 },
             });
 
@@ -222,6 +233,11 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [columnFilters]);
+
+    // Refetch when extraParams change (e.g. designation filter from parent)
+    const extraParamsStr = JSON.stringify(extraParams ?? {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => { setStart(0); fetchData(0); }, [extraParamsStr]);
 
     useEffect(() => {
         fetchData();
@@ -262,6 +278,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
 
     const filterableColumns = columns.filter((col) => col.searchable === true);
     const activeFilterCount = Object.values(columnFilters).filter(Boolean).length;
+    const hasFilters = filterableColumns.length > 0 || !!extraFilters;
 
     const clearAllFilters = () => setColumnFilters({});
 
@@ -310,7 +327,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     {/* Filter toggle button */}
-                    {filterableColumns.length > 0 && (
+                    {hasFilters && (
                         <Button
                             variant={showFilters || activeFilterCount > 0 ? 'default' : 'outline'}
                             size="sm"

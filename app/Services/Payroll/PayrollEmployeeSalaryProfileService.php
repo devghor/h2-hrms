@@ -16,16 +16,17 @@ class PayrollEmployeeSalaryProfileService extends CoreService
         return PayrollEmployeeSalaryProfile::class;
     }
 
-    public function createProfile(int $userId, array $items, float $basicAmount, float $grossAmount, float $netAmount): PayrollEmployeeSalaryProfile
+    public function createProfile(int $userId, array $items, float $basicAmount, float $grossAmount, float $deductionAmount, float $netAmount): PayrollEmployeeSalaryProfile
     {
         PayrollEmployeeSalaryProfile::where('user_id', $userId)->update(['is_active' => false]);
 
         $profile = $this->model->create([
-            'user_id'      => $userId,
-            'basic_amount' => $basicAmount,
-            'gross_amount' => $grossAmount,
-            'net_amount'   => $netAmount,
-            'is_active'    => true,
+            'user_id'          => $userId,
+            'basic_amount'     => $basicAmount,
+            'gross_amount'     => $grossAmount,
+            'deduction_amount' => $deductionAmount,
+            'net_amount'       => $netAmount,
+            'is_active'        => true,
         ]);
 
         $profile->items()->createMany($items);

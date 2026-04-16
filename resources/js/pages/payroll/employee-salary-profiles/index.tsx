@@ -18,6 +18,7 @@ export default function Index() {
         { accessorKey: 'designation_name', header: 'Designation', sortable: false },
         { accessorKey: 'basic_amount', header: 'Basic', sortable: true },
         { accessorKey: 'gross_amount', header: 'Gross', sortable: true },
+        { accessorKey: 'deduction_amount', header: 'Deduction', sortable: true },
         { accessorKey: 'net_amount', header: 'Net', sortable: true },
         {
             accessorKey: 'employee_status',

@@ -32,6 +32,7 @@ class PayrollEmployeeSalaryProfilesDataTable extends BaseDataTable
                 designations.name as designation_name,
                 COALESCE(profiles.basic_amount, 0) as basic_amount,
                 COALESCE(profiles.gross_amount, 0) as gross_amount,
+                COALESCE(profiles.deduction_amount, 0) as deduction_amount,
                 COALESCE(profiles.net_amount, 0) as net_amount,
                 employees.employee_status,
                 employees.created_at
@@ -52,6 +53,7 @@ class PayrollEmployeeSalaryProfilesDataTable extends BaseDataTable
             Column::computed('designation_name')->title('Designation'),
             Column::make('basic_amount')->title('Basic'),
             Column::make('gross_amount')->title('Gross'),
+            Column::make('deduction_amount')->title('Deduction'),
             Column::make('net_amount')->title('Net'),
             Column::make('employee_status')->title('Employee Status'),
             Column::make('created_at')->title('Joined'),

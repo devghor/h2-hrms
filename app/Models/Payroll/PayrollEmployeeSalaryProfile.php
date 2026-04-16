@@ -19,6 +19,7 @@ class PayrollEmployeeSalaryProfile extends Model
         'user_id',
         'basic_amount',
         'gross_amount',
+        'deduction_amount',
         'net_amount',
         'is_active',
         'created_by',
@@ -26,10 +27,11 @@ class PayrollEmployeeSalaryProfile extends Model
     ];
 
     protected $casts = [
-        'is_active'    => 'boolean',
-        'basic_amount' => 'decimal:2',
-        'gross_amount' => 'decimal:2',
-        'net_amount'   => 'decimal:2',
+        'is_active'        => 'boolean',
+        'basic_amount'     => 'decimal:2',
+        'gross_amount'     => 'decimal:2',
+        'deduction_amount' => 'decimal:2',
+        'net_amount'       => 'decimal:2',
     ];
 
     public function items(): HasMany

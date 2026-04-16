@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->decimal('basic_amount', 15, 2)->default(0);
             $table->decimal('gross_amount', 15, 2)->default(0);
+            $table->decimal('deduction_amount', 15, 2)->default(0);
             $table->decimal('net_amount', 15, 2)->default(0);
             $table->boolean('is_active')->default(true);
             MigrationHelper::commonFields($table);

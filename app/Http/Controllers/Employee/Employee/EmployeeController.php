@@ -34,6 +34,7 @@ class EmployeeController extends Controller
 
     public function create() {}
 
+
     public function store(StoreEmployeeRequest $request)
     {
         $this->employeeService->create($request->validated());

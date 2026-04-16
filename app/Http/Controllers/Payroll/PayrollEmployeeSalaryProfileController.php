@@ -40,6 +40,7 @@ class PayrollEmployeeSalaryProfileController extends Controller
             items: $validated['items'],
             basicAmount: (float) $validated['basic_amount'],
             grossAmount: (float) $validated['gross_amount'],
+            deductionAmount: (float) $validated['deduction_amount'],
             netAmount: (float) $validated['net_amount'],
         );
 

@@ -17,6 +17,7 @@ class StorePayrollEmployeeSalaryProfileRequest extends FormRequest
             'user_id'                          => ['required', 'integer', 'exists:users,id'],
             'basic_amount'                     => ['required', 'numeric', 'min:0'],
             'gross_amount'                     => ['required', 'numeric', 'min:0'],
+            'deduction_amount'                 => ['required', 'numeric', 'min:0'],
             'net_amount'                       => ['required', 'numeric', 'min:0'],
             'items'                            => ['required', 'array'],
             'items.*.payroll_salary_head_id'   => ['required', 'integer', 'exists:payroll_salary_heads,id'],
