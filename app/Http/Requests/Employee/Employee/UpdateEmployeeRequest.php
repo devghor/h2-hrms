@@ -29,7 +29,7 @@ class UpdateEmployeeRequest extends FormRequest
             'employee_type'   => ['nullable', new Enum(EmployeeTypeEnum::class)],
             'employee_status' => ['nullable', new Enum(EmployeeStatusEnum::class)],
             'department_id'   => 'nullable|integer|exists:departments,id',
-            'designation_id'    => 'nullable|integer|exists:desks,id',
+            'designation_id'    => 'nullable|integer|exists:designations,id',
             'manager_user_id'   => 'nullable|integer|exists:users,id',
             'address'           => 'nullable|string',
             'city'              => 'nullable|string|max:100',

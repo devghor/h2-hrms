@@ -12,6 +12,7 @@ use App\Http\Controllers\Employee\EmployeeContact\EmployeeContactController;
 use App\Http\Controllers\Employee\EmployeeDocument\EmployeeDocumentController;
 use App\Http\Controllers\Employee\EmployeeEducation\EmployeeEducationController;
 use App\Http\Controllers\Employee\EmployeeExperience\EmployeeExperienceController;
+use App\Http\Controllers\Payroll\PayrollEmployeeSalaryProfileController;
 use App\Http\Controllers\Payroll\PayrollSalaryHeadController;
 use App\Http\Controllers\Payroll\PayrollSalaryStructureController;
 use App\Http\Controllers\Uam\Permission\PermissionController;
@@ -115,6 +116,13 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
                 ->name('salary-structures.bulk-delete');
             Route::resource('salary-structures', PayrollSalaryStructureController::class)
                 ->except(['create', 'edit']);
+
+            Route::get('employee-salary-profiles', [PayrollEmployeeSalaryProfileController::class, 'index'])
+                ->name('employee-salary-profiles.index');
+            Route::get('employee-salary-profiles/{userId}', [PayrollEmployeeSalaryProfileController::class, 'show'])
+                ->name('employee-salary-profiles.show');
+            Route::post('employee-salary-profiles', [PayrollEmployeeSalaryProfileController::class, 'store'])
+                ->name('employee-salary-profiles.store');
         });
 });
 

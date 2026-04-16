@@ -66,7 +66,8 @@ class HandleInertiaRequests extends Middleware
                     'READ_CONFIGURATION_DESIGNATION',
                     'READ_PAYROLL',
                     'READ_PAYROLL_SALARY_HEAD',
-                    'READ_PAYROLL_SALARY_STRUCTURE'
+                    'READ_PAYROLL_SALARY_STRUCTURE',
+                    'READ_PAYROLL_EMPLOYEE_SALARY_PROFILE',
                 ],
                 'current_company' => Company::find(session(config('tenancy.current_company_session_key'))),
                 'companies' => $request->user() ? $request->user()->companies : [],

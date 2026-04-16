@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\Employee\Employee\UpdateEmployeeRequest;
 use App\Services\Configuration\Department\DepartmentService;
-use App\Services\Configuration\Desk\DeskService;
+use App\Services\Configuration\Designation\DesignationService;
 use App\Services\Employee\Employee\EmployeeService;
 use Illuminate\Http\Request;
 
@@ -18,14 +18,14 @@ class EmployeeController extends Controller
     public function __construct(
         private EmployeeService $employeeService,
         private DepartmentService $departmentService,
-        private DeskService $deskService,
+        private DesignationService $designationService,
     ) {}
 
     public function index(EmployeesDataTable $dataTable)
     {
         return $dataTable->renderInertia('employee/employees/index', [
             'departments'     => $this->departmentService->all(['id', 'name']),
-            'designations'    => $this->deskService->all(['id', 'name']),
+            'designations'    => $this->designationService->all(['id', 'name']),
             'managers'        => $this->employeeService->getEmployeeOptions(),
             'employeeTypes'   => EmployeeTypeEnum::options(),
             'employeeStatuses' => EmployeeStatusEnum::options(),
@@ -49,7 +49,7 @@ class EmployeeController extends Controller
         return inertia('employee/employees/show', [
             'employee'         => $employee,
             'departments'      => $this->departmentService->all(['id', 'name']),
-            'designations'     => $this->deskService->all(['id', 'name']),
+            'designations'     => $this->designationService->all(['id', 'name']),
             'managers'         => $this->employeeService->getEmployeeOptions(),
             'employeeTypes'    => EmployeeTypeEnum::options(),
             'employeeStatuses' => EmployeeStatusEnum::options(),

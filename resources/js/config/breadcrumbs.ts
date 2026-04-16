@@ -13,4 +13,5 @@ export const breadcrumbItems = {
     employeeEmployees: { title: 'Employees', href: route('employee.employees.index') },
     payrollSalaryHeads: { title: 'Salary Heads', href: route('payroll.salary-heads.index') },
     payrollSalaryStructures: { title: 'Salary Structures', href: route('payroll.salary-structures.index') },
+    payrollEmployeeSalaryProfiles: { title: 'Employee Salary Profiles', href: route('payroll.employee-salary-profiles.index') },
 };

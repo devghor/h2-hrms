@@ -3,7 +3,7 @@
 namespace App\Models\Employee\Employee;
 
 use App\Models\Configuration\Department\Department;
-use App\Models\Configuration\Desk\Desk;
+use App\Models\Configuration\Designation\Designation;
 use App\Models\Employee\EmployeeContact\EmployeeContact;
 use App\Models\Employee\EmployeeDocument\EmployeeDocument;
 use App\Models\Employee\EmployeeEducation\EmployeeEducation;
@@ -59,7 +59,7 @@ class Employee extends Model
 
     public function designation(): BelongsTo
     {
-        return $this->belongsTo(Desk::class, 'designation_id');
+        return $this->belongsTo(Designation::class, 'designation_id');
     }
 
     public function manager(): BelongsTo
