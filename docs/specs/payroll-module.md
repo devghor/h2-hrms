@@ -75,3 +75,20 @@ Enum, Traits should in folder like module prefix
 - Salary Head Transaction type Debit = Gross
 - Salary Head Transaction type Credit = Deduction
 - Net pay = Gross - Deduction
+
+
+# payroll_employee_salary_profiles
+- id
+- user_id
+- company_id
+- basic_amount
+- gross_amount
+- net_amount
+- is_active
+
+# payroll_employee_salary_profile_items
+- id
+- payroll_employee_salary_profile_id
+- company_id
+- payroll_salary_head_id
+- amount
