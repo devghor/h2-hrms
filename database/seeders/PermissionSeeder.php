@@ -83,6 +83,22 @@ class PermissionSeeder extends Seeder
             ['module' => 'Configuration', 'group' => 'Configuration > Designation', 'name' => 'ReadConfigurationDesignation', 'display_name' => self::KEY_READ],
             ['module' => 'Configuration', 'group' => 'Configuration > Designation', 'name' => 'UpdateConfigurationDesignation', 'display_name' => self::KEY_UPDATE],
             ['module' => 'Configuration', 'group' => 'Configuration > Designation', 'name' => 'DeleteConfigurationDesignation', 'display_name' => self::KEY_DELETE],
+
+            /**
+             * Payroll Module
+             */
+
+            // Salary Head
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Head', 'name' => 'CreatePayrollSalaryHead', 'display_name' => self::KEY_CREATE],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Head', 'name' => 'ReadPayrollSalaryHead', 'display_name' => self::KEY_READ],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Head', 'name' => 'UpdatePayrollSalaryHead', 'display_name' => self::KEY_UPDATE],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Head', 'name' => 'DeletePayrollSalaryHead', 'display_name' => self::KEY_DELETE],
+
+            // Salary Structure
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Structure', 'name' => 'CreatePayrollSalaryStructure', 'display_name' => self::KEY_CREATE],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Structure', 'name' => 'ReadPayrollSalaryStructure', 'display_name' => self::KEY_READ],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Structure', 'name' => 'UpdatePayrollSalaryStructure', 'display_name' => self::KEY_UPDATE],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Structure', 'name' => 'DeletePayrollSalaryStructure', 'display_name' => self::KEY_DELETE],
         ];
 
 

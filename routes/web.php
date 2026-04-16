@@ -13,6 +13,7 @@ use App\Http\Controllers\Employee\EmployeeDocument\EmployeeDocumentController;
 use App\Http\Controllers\Employee\EmployeeEducation\EmployeeEducationController;
 use App\Http\Controllers\Employee\EmployeeExperience\EmployeeExperienceController;
 use App\Http\Controllers\Payroll\PayrollSalaryHeadController;
+use App\Http\Controllers\Payroll\PayrollSalaryStructureController;
 use App\Http\Controllers\Uam\Permission\PermissionController;
 use App\Http\Controllers\Uam\Role\RoleController;
 use App\Http\Controllers\Uam\User\UserController;
@@ -109,6 +110,10 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
             Route::delete('salary-heads/bulk-delete', [PayrollSalaryHeadController::class, 'bulkDelete'])
                 ->name('salary-heads.bulk-delete');
             Route::resource('salary-heads', PayrollSalaryHeadController::class)
+                ->except(['create', 'edit']);
+            Route::delete('salary-structures/bulk-delete', [PayrollSalaryStructureController::class, 'bulkDelete'])
+                ->name('salary-structures.bulk-delete');
+            Route::resource('salary-structures', PayrollSalaryStructureController::class)
                 ->except(['create', 'edit']);
         });
 });
