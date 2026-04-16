@@ -4,7 +4,7 @@ import { breadcrumbItems } from '@/config/breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { router } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 interface Employee {
@@ -69,7 +69,7 @@ function calcTotals(items: SalaryProfileItem[], salaryHeads: SalaryHead[]) {
         const head = salaryHeads.find((h) => h.id === item.payroll_salary_head_id);
         if (!head) return;
         const amount = parseFloat(item.amount) || 0;
-        const cat = typeof head.category === 'string' ? head.category : (head.category as any)?.value ?? '';
+        const cat = typeof head.category === 'string' ? head.category : ((head.category as any)?.value ?? '');
 
         if (head.identification_type === 'basic' || (head.identification_type as any)?.value === 'basic') {
             basicAmount = amount;
@@ -179,7 +179,7 @@ export default function Show({ employee, salaryHeads, activeProfile, salaryStruc
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Employee Info */}
                 <div className="rounded-lg border bg-card p-4">
-                    <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">Employee Information</h2>
+                    <h2 className="mb-3 text-sm font-semibold tracking-wide text-muted-foreground uppercase">Employee Information</h2>
                     <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                         <div>
                             <p className="text-xs text-muted-foreground">Name</p>
@@ -204,7 +204,7 @@ export default function Show({ employee, salaryHeads, activeProfile, salaryStruc
                 <div className="rounded-lg border bg-card">
                     <div className="border-b px-4 py-3">
                         <h2 className="text-sm font-semibold">Salary Head Amounts</h2>
-                        <p className="text-xs text-muted-foreground mt-0.5">
+                        <p className="mt-0.5 text-xs text-muted-foreground">
                             Basic-linked heads are pre-calculated from the designation structure. Adjust amounts as needed.
                         </p>
                     </div>
@@ -217,7 +217,7 @@ export default function Show({ employee, salaryHeads, activeProfile, salaryStruc
                                     <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Salary Head</th>
                                     <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Code</th>
                                     <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Category</th>
-                                    <th className="px-4 py-2.5 text-right font-medium text-muted-foreground w-44">Amount</th>
+                                    <th className="w-44 px-4 py-2.5 text-right font-medium text-muted-foreground">Amount</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y">
@@ -248,13 +248,11 @@ export default function Show({ employee, salaryHeads, activeProfile, salaryStruc
                                                     type="number"
                                                     step="0.01"
                                                     min="0"
-                                                    className="h-8 w-36 text-right ml-auto"
+                                                    className="ml-auto h-8 w-36 text-right"
                                                     value={item?.amount ?? '0.00'}
                                                     onChange={(e) => handleAmountChange(head.id, e.target.value)}
                                                 />
-                                                {formErrors[errKey] && (
-                                                    <p className="mt-0.5 text-xs text-red-500">{formErrors[errKey]}</p>
-                                                )}
+                                                {formErrors[errKey] && <p className="mt-0.5 text-xs text-red-500">{formErrors[errKey]}</p>}
                                             </td>
                                         </tr>
                                     );
@@ -266,7 +264,7 @@ export default function Show({ employee, salaryHeads, activeProfile, salaryStruc
 
                 {/* Totals Summary */}
                 <div className="rounded-lg border bg-card p-4">
-                    <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">Summary</h2>
+                    <h2 className="mb-3 text-sm font-semibold tracking-wide text-muted-foreground uppercase">Summary</h2>
                     <div className="grid grid-cols-3 gap-4">
                         <div className="rounded-lg bg-muted/40 p-3 text-center">
                             <p className="text-xs text-muted-foreground">Basic Amount</p>
