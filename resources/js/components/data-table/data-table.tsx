@@ -302,6 +302,7 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
                         orderable: col.sortable !== false,
                         search: { value: columnFilters[col.accessorKey] ?? '', regex: false },
                     })),
+                    ...extraParamsRef.current,
                 },
                 responseType: 'blob',
             });
@@ -408,42 +409,67 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
             </div>
 
             {/* Filter panel */}
-            {showFilters && filterableColumns.length > 0 && (
+            {showFilters && hasFilters && (
                 <div className="flex flex-wrap gap-2 rounded-md border bg-muted/40 p-2">
                     {filterableColumns.map((col) => (
                         <div key={col.accessorKey} className="flex min-w-[140px] flex-1 flex-col gap-1">
                             <label className="text-xs font-medium text-muted-foreground">{col.header}</label>
-                            <div className="relative">
-                                <Input
-                                    type={col.filterType === 'date' ? 'date' : 'text'}
-                                    placeholder={col.filterType === 'date' ? '' : `Search ${col.header?.toLowerCase()}…`}
+                            {col.filterType === 'select' ? (
+                                <Select
                                     value={columnFilters[col.accessorKey] ?? ''}
-                                    onChange={(e) =>
+                                    onValueChange={(v) =>
                                         setColumnFilters((prev) => ({
                                             ...prev,
-                                            [col.accessorKey]: e.target.value,
+                                            [col.accessorKey]: v === '__all__' ? '' : v,
                                         }))
                                     }
-                                    className="h-8 pr-7 text-sm"
-                                />
-                                {columnFilters[col.accessorKey] && (
-                                    <button
-                                        type="button"
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                        onClick={() =>
-                                            setColumnFilters((prev) => {
-                                                const next = { ...prev };
-                                                delete next[col.accessorKey];
-                                                return next;
-                                            })
+                                >
+                                    <SelectTrigger className="h-8 text-sm">
+                                        <SelectValue placeholder={`All ${col.header?.toLowerCase()}…`} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="__all__">All</SelectItem>
+                                        {col.filterOptions?.map((opt) => (
+                                            <SelectItem key={opt.value} value={opt.value}>
+                                                {opt.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            ) : (
+                                <div className="relative">
+                                    <Input
+                                        type={col.filterType === 'date' ? 'date' : 'text'}
+                                        placeholder={col.filterType === 'date' ? '' : `Search ${col.header?.toLowerCase()}…`}
+                                        value={columnFilters[col.accessorKey] ?? ''}
+                                        onChange={(e) =>
+                                            setColumnFilters((prev) => ({
+                                                ...prev,
+                                                [col.accessorKey]: e.target.value,
+                                            }))
                                         }
-                                    >
-                                        <X className="h-3.5 w-3.5" />
-                                    </button>
-                                )}
-                            </div>
+                                        className="h-8 pr-7 text-sm"
+                                    />
+                                    {columnFilters[col.accessorKey] && (
+                                        <button
+                                            type="button"
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                            onClick={() =>
+                                                setColumnFilters((prev) => {
+                                                    const next = { ...prev };
+                                                    delete next[col.accessorKey];
+                                                    return next;
+                                                })
+                                            }
+                                        >
+                                            <X className="h-3.5 w-3.5" />
+                                        </button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     ))}
+                    {extraFilters}
                 </div>
             )}
 
