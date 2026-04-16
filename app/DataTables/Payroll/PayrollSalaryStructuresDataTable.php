@@ -25,7 +25,7 @@ class PayrollSalaryStructuresDataTable extends BaseDataTable
 
     public function query(PayrollSalaryStructure $model): QueryBuilder
     {
-        return $model->with('designation')->select([
+        $query = $model->with('designation')->select([
             'id',
             'designation_id',
             'basic',
@@ -34,6 +34,24 @@ class PayrollSalaryStructuresDataTable extends BaseDataTable
             'is_active',
             'created_at',
         ]);
+
+        if ($designationId = request('designation_id')) {
+            $query->where('designation_id', $designationId);
+        }
+
+        if (($status = request('status_filter')) !== null && $status !== '') {
+            $query->where('is_active', (bool) (int) $status);
+        }
+
+        if ($from = request('created_at_from')) {
+            $query->whereDate('created_at', '>=', $from);
+        }
+
+        if ($to = request('created_at_to')) {
+            $query->whereDate('created_at', '<=', $to);
+        }
+
+        return $query;
     }
 
     public function getColumns(): array

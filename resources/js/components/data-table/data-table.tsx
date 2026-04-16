@@ -120,9 +120,13 @@ interface DataTableProps {
     extraParams?: Record<string, any>;
     /** Extra filter controls rendered inside the filter panel alongside column filters. */
     extraFilters?: React.ReactNode;
+    /** Number of active extra filters (from the parent). Adds to the filter badge count and shows the Clear button. */
+    extraFilterCount?: number;
+    /** Called when the user clicks Clear — parent should reset its extra filter state. */
+    onClearExtraFilters?: () => void;
 }
 
-const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions, tableId, exportTitle = 'export', onSelectionChange, extraParams, extraFilters }: DataTableProps, ref) {
+const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions, tableId, exportTitle = 'export', onSelectionChange, extraParams, extraFilters, extraFilterCount = 0, onClearExtraFilters }: DataTableProps, ref) {
     const encodeUrlKey = (url: string) => encodeURIComponent(url);
     const keySuffix = tableId ?? encodeUrlKey(dataUrl);
 
@@ -277,10 +281,14 @@ const DataTable = forwardRef(function DataTable({ columns, dataUrl, extraActions
     const someSelected = selectedRows.size > 0 && !allSelected;
 
     const filterableColumns = columns.filter((col) => col.searchable === true);
-    const activeFilterCount = Object.values(columnFilters).filter(Boolean).length;
+    const columnFilterCount = Object.values(columnFilters).filter(Boolean).length;
+    const activeFilterCount = columnFilterCount + extraFilterCount;
     const hasFilters = filterableColumns.length > 0 || !!extraFilters;
 
-    const clearAllFilters = () => setColumnFilters({});
+    const clearAllFilters = () => {
+        setColumnFilters({});
+        onClearExtraFilters?.();
+    };
 
     // ── Export (via Yajra DataTable backend) ───────────────────────────────
     const [exportLoading, setExportLoading] = useState(false);
