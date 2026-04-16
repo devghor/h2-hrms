@@ -15,6 +15,7 @@ type Option = { id: number; name: string };
 
 interface Employee {
     id: number;
+    user_id: number;
     ulid: string;
     employee_code: string | null;
     first_name: string;
@@ -118,7 +119,7 @@ export default function Show({ employee, departments, designations, managers }: 
     // ── Contacts ───────────────────────────────────────────────────────────────
     const handleContactSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const data = { employee_id: employee.id, contact_name: contactForm.contact_name, relationship: contactForm.relationship || null, phone: contactForm.phone || null };
+        const data = { user_id: employee.user_id, contact_name: contactForm.contact_name, relationship: contactForm.relationship || null, phone: contactForm.phone || null };
         const opts = { onSuccess: () => { setContactOpen(false); router.reload({ only: ['employee'] }); }, onError: (err: any) => setContactErrors(err) };
         if (contactEdit && contactForm.id) {
             router.put(route('employee.employee-contacts.update', contactForm.id), { contact_name: contactForm.contact_name, relationship: contactForm.relationship || null, phone: contactForm.phone || null }, opts);
@@ -136,7 +137,7 @@ export default function Show({ employee, departments, designations, managers }: 
     // ── Documents ──────────────────────────────────────────────────────────────
     const handleDocSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const data = { employee_id: employee.id, document_name: docForm.document_name, document_type: docForm.document_type || null, file_path: docForm.file_path || null };
+        const data = { user_id: employee.user_id, document_name: docForm.document_name, document_type: docForm.document_type || null, file_path: docForm.file_path || null };
         const opts = { onSuccess: () => { setDocOpen(false); router.reload({ only: ['employee'] }); }, onError: (err: any) => setDocErrors(err) };
         if (docEdit && docForm.id) {
             router.put(route('employee.employee-documents.update', docForm.id), { document_name: docForm.document_name, document_type: docForm.document_type || null, file_path: docForm.file_path || null }, opts);
@@ -154,7 +155,7 @@ export default function Show({ employee, departments, designations, managers }: 
     // ── Education ──────────────────────────────────────────────────────────────
     const handleEduSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const data = { employee_id: employee.id, degree: eduForm.degree, institution: eduForm.institution || null, year_of_passing: eduForm.year_of_passing ? Number(eduForm.year_of_passing) : null };
+        const data = { user_id: employee.user_id, degree: eduForm.degree, institution: eduForm.institution || null, year_of_passing: eduForm.year_of_passing ? Number(eduForm.year_of_passing) : null };
         const opts = { onSuccess: () => { setEduOpen(false); router.reload({ only: ['employee'] }); }, onError: (err: any) => setEduErrors(err) };
         if (eduEdit && eduForm.id) {
             router.put(route('employee.employee-education.update', eduForm.id), { degree: eduForm.degree, institution: eduForm.institution || null, year_of_passing: eduForm.year_of_passing ? Number(eduForm.year_of_passing) : null }, opts);
@@ -172,7 +173,7 @@ export default function Show({ employee, departments, designations, managers }: 
     // ── Experience ─────────────────────────────────────────────────────────────
     const handleExpSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const data = { employee_id: employee.id, company_name: expForm.company_name, designation: expForm.designation || null, start_date: expForm.start_date || null, end_date: expForm.end_date || null, responsibilities: expForm.responsibilities || null };
+        const data = { user_id: employee.user_id, company_name: expForm.company_name, designation: expForm.designation || null, start_date: expForm.start_date || null, end_date: expForm.end_date || null, responsibilities: expForm.responsibilities || null };
         const opts = { onSuccess: () => { setExpOpen(false); router.reload({ only: ['employee'] }); }, onError: (err: any) => setExpErrors(err) };
         if (expEdit && expForm.id) {
             router.put(route('employee.employee-experience.update', expForm.id), { company_name: expForm.company_name, designation: expForm.designation || null, start_date: expForm.start_date || null, end_date: expForm.end_date || null, responsibilities: expForm.responsibilities || null }, opts);
