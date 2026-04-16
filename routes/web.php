@@ -12,6 +12,7 @@ use App\Http\Controllers\Employee\EmployeeContact\EmployeeContactController;
 use App\Http\Controllers\Employee\EmployeeDocument\EmployeeDocumentController;
 use App\Http\Controllers\Employee\EmployeeEducation\EmployeeEducationController;
 use App\Http\Controllers\Employee\EmployeeExperience\EmployeeExperienceController;
+use App\Http\Controllers\Payroll\PayrollSalaryHeadController;
 use App\Http\Controllers\Uam\Permission\PermissionController;
 use App\Http\Controllers\Uam\Role\RoleController;
 use App\Http\Controllers\Uam\User\UserController;
@@ -66,6 +67,7 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
             Route::delete('units/bulk-delete', [UnitController::class, 'bulkDelete'])->name('units.bulk-delete');
             Route::resource('units', UnitController::class);
         });
+
     /**
      * Employee Module
      * This module handles employee management and related HR sub-entities.
@@ -96,6 +98,18 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
             Route::post('employee-experience', [EmployeeExperienceController::class, 'store'])->name('employee-experience.store');
             Route::put('employee-experience/{experience}', [EmployeeExperienceController::class, 'update'])->name('employee-experience.update');
             Route::delete('employee-experience/{experience}', [EmployeeExperienceController::class, 'destroy'])->name('employee-experience.destroy');
+        });
+
+    /**
+     * Payroll Module
+     */
+    Route::name('payroll.')
+        ->prefix('payroll')
+        ->group(function (): void {
+            Route::delete('salary-heads/bulk-delete', [PayrollSalaryHeadController::class, 'bulkDelete'])
+                ->name('salary-heads.bulk-delete');
+            Route::resource('salary-heads', PayrollSalaryHeadController::class)
+                ->except(['create', 'edit', 'show']);
         });
 });
 

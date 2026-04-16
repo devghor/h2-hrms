@@ -1,3 +1,10 @@
+Module Prefix: Payroll
+
+Model, Controller, DataTable, Service file name should have module prefix also folder name will be Module Prefix folder
+
+Enum, Traits should in folder like module prefix
+
+
 # payroll_salary_heads
 - name
 - code

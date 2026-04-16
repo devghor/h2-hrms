@@ -1,4 +1,4 @@
-import { Briefcase, Building, Building2, IdCard, Key, Landmark, LayoutDashboard, Lock, MonitorCog, UserRound, Users } from 'lucide-react';
+import { Briefcase, Building, Building2, DollarSign, IdCard, Key, Landmark, LayoutDashboard, Lock, MonitorCog, UserRound, Users } from 'lucide-react';
 
 type BaseNavItem = {
     title: string;
@@ -124,6 +124,18 @@ export const sidebarData: SidebarData = {
                     url: '/employee/employees',
                     icon: UserRound,
                     can: 'READ_EMPLOYEE_EMPLOYEE',
+                },
+            ],
+        },
+        {
+            title: 'Payroll',
+            can: 'READ_PAYROLL',
+            items: [
+                {
+                    title: 'Salary Heads',
+                    url: '/payroll/salary-heads',
+                    icon: DollarSign,
+                    can: 'READ_PAYROLL_SALARY_HEAD',
                 },
             ],
         },
