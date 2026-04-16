@@ -2,6 +2,7 @@
 
 namespace App\Services\Payroll;
 
+use App\Enums\Payroll\SalaryHeadCategoryEnum;
 use App\Models\Employee\Employee\Employee;
 use App\Models\Payroll\PayrollEmployeeSalaryProfile;
 use App\Models\Payroll\PayrollSalaryHead;
@@ -46,12 +47,13 @@ class PayrollEmployeeSalaryProfileService extends CoreService
 
         $salaryStructure = $employee->designation_id
             ? PayrollSalaryStructure::where('designation_id', $employee->designation_id)
-                ->where('is_active', true)
-                ->latest()
-                ->first()
+            ->where('is_active', true)
+            ->latest()
+            ->first()
             : null;
 
         $salaryHeads = PayrollSalaryHead::where('is_active', true)
+            ->whereIn('category', [SalaryHeadCategoryEnum::Gross->value, SalaryHeadCategoryEnum::Deduction->value])
             ->orderBy('position')
             ->orderBy('id')
             ->get();
