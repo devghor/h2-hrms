@@ -83,27 +83,29 @@ export default function Index({ modes, glPrefixTypes, identificationTypes, categ
     };
 
     const handleEdit = (row: any) => {
-        setForm({
-            id: row.id,
-            name: row.name ?? '',
-            code: row.code ?? '',
-            is_basic_linked: !!row.is_basic_linked,
-            basic_ratio: row.basic_ratio ?? '',
-            mode: row.mode ?? 'cash',
-            gl_account_code: row.gl_account_code ?? '',
-            gl_prefix_type: row.gl_prefix_type ?? 'dynamic',
-            identification_type: row.identification_type ?? 'other',
-            category: row.category ?? 'gross',
-            position: row.position ?? '',
-            is_variable: !!row.is_variable,
-            is_taxable: !!row.is_taxable,
-            tax_calculation_type: row.tax_calculation_type ?? 'none',
-            tax_value: row.tax_value ?? '',
-            is_active: row.is_active !== undefined ? !!row.is_active : true,
+        axios.get(route('payroll.salary-heads.show', row.id)).then(({ data }) => {
+            setForm({
+                id: data.id,
+                name: data.name ?? '',
+                code: data.code ?? '',
+                is_basic_linked: !!data.is_basic_linked,
+                basic_ratio: data.basic_ratio ?? '',
+                mode: data.mode ?? 'cash',
+                gl_account_code: data.gl_account_code ?? '',
+                gl_prefix_type: data.gl_prefix_type ?? 'dynamic',
+                identification_type: data.identification_type ?? 'other',
+                category: data.category ?? 'gross',
+                position: data.position ?? '',
+                is_variable: !!data.is_variable,
+                is_taxable: !!data.is_taxable,
+                tax_calculation_type: data.tax_calculation_type ?? 'none',
+                tax_value: data.tax_value ?? '',
+                is_active: data.is_active !== undefined ? !!data.is_active : true,
+            });
+            setIsEdit(true);
+            setOpen(true);
+            setFormErrors({});
         });
-        setIsEdit(true);
-        setOpen(true);
-        setFormErrors({});
     };
 
     const handleClose = () => {
@@ -113,7 +115,10 @@ export default function Index({ modes, glPrefixTypes, identificationTypes, categ
 
     const handleDelete = (id: number) => {
         router.delete(route('payroll.salary-heads.destroy', id), {
-            onSuccess: () => tableRef.current?.refetch(),
+            onSuccess: () => {
+                toast.success('Salary head deleted successfully.');
+                tableRef.current?.refetch();
+            },
         });
     };
 
@@ -161,18 +166,24 @@ export default function Index({ modes, glPrefixTypes, identificationTypes, categ
             is_active: form.is_active,
         };
 
-        const options = {
-            onSuccess: () => {
-                handleClose();
-                tableRef.current?.refetch();
-            },
-            onError: (errors: Record<string, string>) => setFormErrors(errors),
-        };
-
         if (isEdit && form.id) {
-            router.put(route('payroll.salary-heads.update', form.id), data, options);
+            router.put(route('payroll.salary-heads.update', form.id), data, {
+                onSuccess: () => {
+                    toast.success('Salary head updated successfully.');
+                    handleClose();
+                    tableRef.current?.refetch();
+                },
+                onError: (errors: Record<string, string>) => setFormErrors(errors),
+            });
         } else {
-            router.post(route('payroll.salary-heads.store'), data, options);
+            router.post(route('payroll.salary-heads.store'), data, {
+                onSuccess: () => {
+                    toast.success('Salary head created successfully.');
+                    handleClose();
+                    tableRef.current?.refetch();
+                },
+                onError: (errors: Record<string, string>) => setFormErrors(errors),
+            });
         }
     };
 

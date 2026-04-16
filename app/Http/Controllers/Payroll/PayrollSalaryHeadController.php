@@ -29,6 +29,11 @@ class PayrollSalaryHeadController extends Controller
         ]);
     }
 
+    public function show(string $id)
+    {
+        return response()->json($this->payrollSalaryHeadService->find($id));
+    }
+
     public function store(StorePayrollSalaryHeadRequest $request)
     {
         $this->payrollSalaryHeadService->create($request->validated());

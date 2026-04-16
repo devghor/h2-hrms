@@ -109,7 +109,7 @@ Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(
             Route::delete('salary-heads/bulk-delete', [PayrollSalaryHeadController::class, 'bulkDelete'])
                 ->name('salary-heads.bulk-delete');
             Route::resource('salary-heads', PayrollSalaryHeadController::class)
-                ->except(['create', 'edit', 'show']);
+                ->except(['create', 'edit']);
         });
 });
 
