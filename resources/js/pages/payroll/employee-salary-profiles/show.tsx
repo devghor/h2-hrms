@@ -117,11 +117,18 @@ export default function Show({ employee, salaryHeads, activeProfile, salaryStruc
         { title: employeeName, href: route('payroll.employee-salary-profiles.show', employee.user_id) },
     ];
 
+    const isBasicIdentType = (head: SalaryHead) =>
+        head.identification_type === 'basic' || (head.identification_type as any)?.value === 'basic';
+
     const buildInitialItems = (): SalaryProfileItem[] => {
         return salaryHeads.map((head) => {
             const existing = activeProfile?.items.find((i) => i.payroll_salary_head_id === head.id);
             if (existing) {
                 return { payroll_salary_head_id: head.id, amount: existing.amount };
+            }
+            // No active profile: seed basic head from salary structure
+            if (!activeProfile && isBasicIdentType(head) && salaryStructure?.basic) {
+                return { payroll_salary_head_id: head.id, amount: parseFloat(salaryStructure.basic).toFixed(2) };
             }
             if (head.is_basic_linked && head.basic_ratio && salaryStructure?.basic) {
                 const computed = (parseFloat(head.basic_ratio) * parseFloat(salaryStructure.basic)) / 100;
@@ -137,7 +144,26 @@ export default function Show({ employee, salaryHeads, activeProfile, salaryStruc
     const totals = calcTotals(items, salaryHeads);
 
     const handleAmountChange = (headId: number, value: string) => {
-        setItems((prev) => prev.map((item) => (item.payroll_salary_head_id === headId ? { ...item, amount: value } : item)));
+        const changedHead = salaryHeads.find((h) => h.id === headId);
+        const changingBasic = changedHead && isBasicIdentType(changedHead);
+
+        setItems((prev) =>
+            prev.map((item) => {
+                if (item.payroll_salary_head_id === headId) {
+                    return { ...item, amount: value };
+                }
+                // Recalculate basic-linked heads in real time when basic changes
+                if (changingBasic) {
+                    const head = salaryHeads.find((h) => h.id === item.payroll_salary_head_id);
+                    if (head?.is_basic_linked && head.basic_ratio) {
+                        const newBasic = parseFloat(value) || 0;
+                        const computed = (parseFloat(head.basic_ratio) * newBasic) / 100;
+                        return { ...item, amount: computed.toFixed(2) };
+                    }
+                }
+                return item;
+            }),
+        );
     };
 
     const handleSubmit = (e: React.FormEvent) => {
