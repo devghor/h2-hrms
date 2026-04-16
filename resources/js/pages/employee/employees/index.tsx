@@ -187,11 +187,7 @@ export default function Index({ departments, designations, managers, employeeTyp
     };
 
     return (
-        <AppLayout
-            title="Employees"
-            breadcrumbs={breadcrumbs}
-            actions={<Button onClick={handleOpenAdd}>Add Employee</Button>}
-        >
+        <AppLayout title="Employees" breadcrumbs={breadcrumbs} actions={<Button onClick={handleOpenAdd}>Add Employee</Button>}>
             <DataTable
                 ref={tableRef}
                 columns={columns}
@@ -204,9 +200,7 @@ export default function Index({ departments, designations, managers, employeeTyp
                 open={open}
                 onOpenChange={setOpen}
                 title={isEdit ? 'Edit Employee' : 'Add Employee'}
-                description={
-                    isEdit ? 'Update the employee details.' : 'Fill in the details to create a new employee.'
-                }
+                description={isEdit ? 'Update the employee details.' : 'Fill in the details to create a new employee.'}
                 onSubmit={handleSubmit}
                 onCancel={handleClose}
                 submitLabel={isEdit ? 'Update' : 'Create'}
@@ -225,9 +219,7 @@ export default function Index({ departments, designations, managers, employeeTyp
                     <div>
                         <Label>Employee Code</Label>
                         <Input name="employee_code" value={form.employee_code} onChange={handleChange} />
-                        {formErrors.employee_code && (
-                            <p className="text-sm text-red-500">{formErrors.employee_code}</p>
-                        )}
+                        {formErrors.employee_code && <p className="text-sm text-red-500">{formErrors.employee_code}</p>}
                     </div>
                     <div>
                         <Label>Email {!isEdit && '*'}</Label>
@@ -242,9 +234,7 @@ export default function Index({ departments, designations, managers, employeeTyp
                     <div>
                         <Label>Date of Birth</Label>
                         <Input name="date_of_birth" type="date" value={form.date_of_birth} onChange={handleChange} />
-                        {formErrors.date_of_birth && (
-                            <p className="text-sm text-red-500">{formErrors.date_of_birth}</p>
-                        )}
+                        {formErrors.date_of_birth && <p className="text-sm text-red-500">{formErrors.date_of_birth}</p>}
                     </div>
                     <div>
                         <Label>Gender</Label>
@@ -267,10 +257,7 @@ export default function Index({ departments, designations, managers, employeeTyp
                     </div>
                     <div>
                         <Label>Employee Type</Label>
-                        <Select
-                            value={String(form.employee_type)}
-                            onValueChange={(v) => setForm((prev) => ({ ...prev, employee_type: Number(v) }))}
-                        >
+                        <Select value={String(form.employee_type)} onValueChange={(v) => setForm((prev) => ({ ...prev, employee_type: Number(v) }))}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select type" />
                             </SelectTrigger>
@@ -282,9 +269,7 @@ export default function Index({ departments, designations, managers, employeeTyp
                                 ))}
                             </SelectContent>
                         </Select>
-                        {formErrors.employee_type && (
-                            <p className="text-sm text-red-500">{formErrors.employee_type}</p>
-                        )}
+                        {formErrors.employee_type && <p className="text-sm text-red-500">{formErrors.employee_type}</p>}
                     </div>
                     <div>
                         <Label>Employee Status</Label>
@@ -303,9 +288,7 @@ export default function Index({ departments, designations, managers, employeeTyp
                                 ))}
                             </SelectContent>
                         </Select>
-                        {formErrors.employee_status && (
-                            <p className="text-sm text-red-500">{formErrors.employee_status}</p>
-                        )}
+                        {formErrors.employee_status && <p className="text-sm text-red-500">{formErrors.employee_status}</p>}
                     </div>
                     <div>
                         <Label>Department</Label>
@@ -321,9 +304,7 @@ export default function Index({ departments, designations, managers, employeeTyp
                                 ))}
                             </SelectContent>
                         </Select>
-                        {formErrors.department_id && (
-                            <p className="text-sm text-red-500">{formErrors.department_id}</p>
-                        )}
+                        {formErrors.department_id && <p className="text-sm text-red-500">{formErrors.department_id}</p>}
                     </div>
                     <div>
                         <Label>Designation</Label>
@@ -339,9 +320,7 @@ export default function Index({ departments, designations, managers, employeeTyp
                                 ))}
                             </SelectContent>
                         </Select>
-                        {formErrors.designation_id && (
-                            <p className="text-sm text-red-500">{formErrors.designation_id}</p>
-                        )}
+                        {formErrors.designation_id && <p className="text-sm text-red-500">{formErrors.designation_id}</p>}
                     </div>
                     <div>
                         <Label>Manager</Label>

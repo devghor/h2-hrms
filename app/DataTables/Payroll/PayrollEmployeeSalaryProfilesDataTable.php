@@ -16,7 +16,7 @@ class PayrollEmployeeSalaryProfilesDataTable extends BaseDataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->editColumn('is_active', fn (Employee $e) => $e->is_active ? 'Active' : 'Inactive')
+            ->editColumn('employee_status', fn (Employee $e) => $e->employee_status?->label() ?? '—')
             ->editColumn('created_at', fn (Employee $e) => $e->created_at->format('Y-m-d H:i:s'))
             ->setRowId('user_id');
     }
@@ -33,7 +33,7 @@ class PayrollEmployeeSalaryProfilesDataTable extends BaseDataTable
                 COALESCE(profiles.basic_amount, 0) as basic_amount,
                 COALESCE(profiles.gross_amount, 0) as gross_amount,
                 COALESCE(profiles.net_amount, 0) as net_amount,
-                CASE WHEN profiles.id IS NOT NULL THEN 1 ELSE 0 END as is_active,
+                employees.employee_status,
                 employees.created_at
             ')
             ->leftJoin('designations', 'designations.id', '=', 'employees.designation_id')
@@ -53,7 +53,7 @@ class PayrollEmployeeSalaryProfilesDataTable extends BaseDataTable
             Column::make('basic_amount')->title('Basic'),
             Column::make('gross_amount')->title('Gross'),
             Column::make('net_amount')->title('Net'),
-            Column::computed('is_active')->title('Profile Status'),
+            Column::make('employee_status')->title('Employee Status'),
             Column::make('created_at')->title('Joined'),
         ];
     }

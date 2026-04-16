@@ -20,18 +20,27 @@ export default function Index() {
         { accessorKey: 'gross_amount', header: 'Gross', sortable: true },
         { accessorKey: 'net_amount', header: 'Net', sortable: true },
         {
-            accessorKey: 'is_active',
-            header: 'Profile Status',
+            accessorKey: 'employee_status',
+            header: 'Employee Status',
             sortable: false,
-            cell: ({ row }: any) => (
-                <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                        row.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
-                    }`}
-                >
-                    {row.is_active ? 'Profile Set' : 'Not Set'}
-                </span>
-            ),
+            cell: ({ row }: any) => {
+                const status: string = row.employee_status ?? '—';
+                const colorMap: Record<string, string> = {
+                    'Confirmed': 'bg-green-100 text-green-800',
+                    'On Probation': 'bg-yellow-100 text-yellow-800',
+                    'Suspended': 'bg-red-100 text-red-800',
+                    'Released': 'bg-gray-100 text-gray-600',
+                    'Discharged': 'bg-gray-100 text-gray-600',
+                    'Dismissed': 'bg-red-100 text-red-700',
+                    'Retired': 'bg-blue-100 text-blue-700',
+                };
+                const cls = colorMap[status] ?? 'bg-gray-100 text-gray-600';
+                return (
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${cls}`}>
+                        {status}
+                    </span>
+                );
+            },
         },
         {
             accessorKey: 'actions',
