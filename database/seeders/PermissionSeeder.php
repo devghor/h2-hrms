@@ -2,17 +2,19 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Uam\PermissionEnum;
 use App\Models\Uam\Permission;
-use App\Models\Uam\PermissionGroup;
 use Illuminate\Database\Seeder;
 
 class PermissionSeeder extends Seeder
 {
 
-    const KEY_CREATE = 'Create';
-    const KEY_READ = 'Read';
-    const KEY_UPDATE = 'Update';
-    const KEY_DELETE = 'Delete';
+    const DISPLAY_ANME_SUPER_ADMIN = 'Super Admin';
+    const DISPLAY_ANME_COMPANY_ADMIN = 'Company Admin';
+    const DISPLAY_ANME_CREATE = 'Create';
+    const DISPLAY_ANME_READ = 'Read';
+    const DISPLAY_ANME_UPDATE = 'Update';
+    const DISPLAY_ANME_DELETE = 'Delete';
 
     /**
      * Run the database seeds.
@@ -22,83 +24,88 @@ class PermissionSeeder extends Seeder
 
         $permissions = [
             /**
+             * UnGrouped Permissions
+             */
+            ['module' => '', 'group' => '', 'name' => PermissionEnum::SuperAdmin->value, 'display_name' => self::DISPLAY_ANME_SUPER_ADMIN],
+            ['module' => '', 'group' => '', 'name' => PermissionEnum::CompanyAdmin->value, 'display_name' => self::DISPLAY_ANME_COMPANY_ADMIN],
+
+            /**
              * General Module
              */
-
             // Dashboard
-            ['module' => 'General', 'group' => 'General > Dashboard', 'name' => 'ReadGeneralDashboard', 'display_name' => self::KEY_READ],
+            ['module' => 'General', 'group' => 'General > Dashboard', 'name' => 'ReadGeneralDashboard', 'display_name' => self::DISPLAY_ANME_READ],
 
             /**
              * Uam Module
              */
 
             // User
-            ['module' => 'Uam', 'group' => 'Uam > User', 'name' => 'CreateUamUser', 'display_name' => self::KEY_CREATE],
-            ['module' => 'Uam', 'group' => 'Uam > User', 'name' => 'ReadUamUser', 'display_name' => self::KEY_READ],
-            ['module' => 'Uam', 'group' => 'Uam > User', 'name' => 'UpdateUamUser', 'display_name' => self::KEY_UPDATE],
-            ['module' => 'Uam', 'group' => 'Uam > User', 'name' => 'DeleteUamUser', 'display_name' => self::KEY_DELETE],
+            ['module' => 'Uam', 'group' => 'Uam > User', 'name' => 'CreateUamUser', 'display_name' => self::DISPLAY_ANME_CREATE],
+            ['module' => 'Uam', 'group' => 'Uam > User', 'name' => 'ReadUamUser', 'display_name' => self::DISPLAY_ANME_READ],
+            ['module' => 'Uam', 'group' => 'Uam > User', 'name' => 'UpdateUamUser', 'display_name' => self::DISPLAY_ANME_UPDATE],
+            ['module' => 'Uam', 'group' => 'Uam > User', 'name' => 'DeleteUamUser', 'display_name' => self::DISPLAY_ANME_DELETE],
 
             // Role
-            ['module' => 'Uam', 'group' => 'Uam > Role', 'name' => 'CreateUamRole', 'display_name' => self::KEY_CREATE],
-            ['module' => 'Uam', 'group' => 'Uam > Role', 'name' => 'ReadUamRole', 'display_name' => self::KEY_READ],
-            ['module' => 'Uam', 'group' => 'Uam > Role', 'name' => 'UpdateUamRole', 'display_name' => self::KEY_UPDATE],
-            ['module' => 'Uam', 'group' => 'Uam > Role', 'name' => 'DeleteUamRole', 'display_name' => self::KEY_DELETE],
+            ['module' => 'Uam', 'group' => 'Uam > Role', 'name' => 'CreateUamRole', 'display_name' => self::DISPLAY_ANME_CREATE],
+            ['module' => 'Uam', 'group' => 'Uam > Role', 'name' => 'ReadUamRole', 'display_name' => self::DISPLAY_ANME_READ],
+            ['module' => 'Uam', 'group' => 'Uam > Role', 'name' => 'UpdateUamRole', 'display_name' => self::DISPLAY_ANME_UPDATE],
+            ['module' => 'Uam', 'group' => 'Uam > Role', 'name' => 'DeleteUamRole', 'display_name' => self::DISPLAY_ANME_DELETE],
 
             // Permission
-            ['module' => 'Uam', 'group' => 'Uam > Permission', 'name' => 'CreateUamPermission', 'display_name' => self::KEY_CREATE],
-            ['module' => 'Uam', 'group' => 'Uam > Permission', 'name' => 'ReadUamPermission', 'display_name' => self::KEY_READ],
-            ['module' => 'Uam', 'group' => 'Uam > Permission', 'name' => 'UpdateUamPermission', 'display_name' => self::KEY_UPDATE],
-            ['module' => 'Uam', 'group' => 'Uam > Permission', 'name' => 'DeleteUamPermission', 'display_name' => self::KEY_DELETE],
+            ['module' => 'Uam', 'group' => 'Uam > Permission', 'name' => 'CreateUamPermission', 'display_name' => self::DISPLAY_ANME_CREATE],
+            ['module' => 'Uam', 'group' => 'Uam > Permission', 'name' => 'ReadUamPermission', 'display_name' => self::DISPLAY_ANME_READ],
+            ['module' => 'Uam', 'group' => 'Uam > Permission', 'name' => 'UpdateUamPermission', 'display_name' => self::DISPLAY_ANME_UPDATE],
+            ['module' => 'Uam', 'group' => 'Uam > Permission', 'name' => 'DeleteUamPermission', 'display_name' => self::DISPLAY_ANME_DELETE],
 
             /**
              * Configuration Module
              */
 
             // Company
-            ['module' => 'Configuration', 'group' => 'Configuration > Company', 'name' => 'CreateConfigurationCompany', 'display_name' => self::KEY_CREATE],
-            ['module' => 'Configuration', 'group' => 'Configuration > Company', 'name' => 'ReadConfigurationCompany', 'display_name' => self::KEY_READ],
-            ['module' => 'Configuration', 'group' => 'Configuration > Company', 'name' => 'UpdateConfigurationCompany', 'display_name' => self::KEY_UPDATE],
-            ['module' => 'Configuration', 'group' => 'Configuration > Company', 'name' => 'DeleteConfigurationCompany', 'display_name' => self::KEY_DELETE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Company', 'name' => 'CreateConfigurationCompany', 'display_name' => self::DISPLAY_ANME_CREATE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Company', 'name' => 'ReadConfigurationCompany', 'display_name' => self::DISPLAY_ANME_READ],
+            ['module' => 'Configuration', 'group' => 'Configuration > Company', 'name' => 'UpdateConfigurationCompany', 'display_name' => self::DISPLAY_ANME_UPDATE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Company', 'name' => 'DeleteConfigurationCompany', 'display_name' => self::DISPLAY_ANME_DELETE],
 
             // Branch
-            ['module' => 'Configuration', 'group' => 'Configuration > Branch', 'name' => 'CreateConfigurationBranch', 'display_name' => self::KEY_CREATE],
-            ['module' => 'Configuration', 'group' => 'Configuration > Branch', 'name' => 'ReadConfigurationBranch', 'display_name' => self::KEY_READ],
-            ['module' => 'Configuration', 'group' => 'Configuration > Branch', 'name' => 'UpdateConfigurationBranch', 'display_name' => self::KEY_UPDATE],
-            ['module' => 'Configuration', 'group' => 'Configuration > Branch', 'name' => 'DeleteConfigurationBranch', 'display_name' => self::KEY_DELETE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Branch', 'name' => 'CreateConfigurationBranch', 'display_name' => self::DISPLAY_ANME_CREATE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Branch', 'name' => 'ReadConfigurationBranch', 'display_name' => self::DISPLAY_ANME_READ],
+            ['module' => 'Configuration', 'group' => 'Configuration > Branch', 'name' => 'UpdateConfigurationBranch', 'display_name' => self::DISPLAY_ANME_UPDATE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Branch', 'name' => 'DeleteConfigurationBranch', 'display_name' => self::DISPLAY_ANME_DELETE],
 
             // Division
-            ['module' => 'Configuration', 'group' => 'Configuration > Division', 'name' => 'CreateConfigurationDivision', 'display_name' => self::KEY_CREATE],
-            ['module' => 'Configuration', 'group' => 'Configuration > Division', 'name' => 'ReadConfigurationDivision', 'display_name' => self::KEY_READ],
-            ['module' => 'Configuration', 'group' => 'Configuration > Division', 'name' => 'UpdateConfigurationDivision', 'display_name' => self::KEY_UPDATE],
-            ['module' => 'Configuration', 'group' => 'Configuration > Division', 'name' => 'DeleteConfigurationDivision', 'display_name' => self::KEY_DELETE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Division', 'name' => 'CreateConfigurationDivision', 'display_name' => self::DISPLAY_ANME_CREATE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Division', 'name' => 'ReadConfigurationDivision', 'display_name' => self::DISPLAY_ANME_READ],
+            ['module' => 'Configuration', 'group' => 'Configuration > Division', 'name' => 'UpdateConfigurationDivision', 'display_name' => self::DISPLAY_ANME_UPDATE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Division', 'name' => 'DeleteConfigurationDivision', 'display_name' => self::DISPLAY_ANME_DELETE],
 
             // Department
-            ['module' => 'Configuration', 'group' => 'Configuration > Department', 'name' => 'CreateConfigurationDepartment', 'display_name' => self::KEY_CREATE],
-            ['module' => 'Configuration', 'group' => 'Configuration > Department', 'name' => 'ReadConfigurationDepartment', 'display_name' => self::KEY_READ],
-            ['module' => 'Configuration', 'group' => 'Configuration > Department', 'name' => 'UpdateConfigurationDepartment', 'display_name' => self::KEY_UPDATE],
-            ['module' => 'Configuration', 'group' => 'Configuration > Department', 'name' => 'DeleteConfigurationDepartment', 'display_name' => self::KEY_DELETE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Department', 'name' => 'CreateConfigurationDepartment', 'display_name' => self::DISPLAY_ANME_CREATE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Department', 'name' => 'ReadConfigurationDepartment', 'display_name' => self::DISPLAY_ANME_READ],
+            ['module' => 'Configuration', 'group' => 'Configuration > Department', 'name' => 'UpdateConfigurationDepartment', 'display_name' => self::DISPLAY_ANME_UPDATE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Department', 'name' => 'DeleteConfigurationDepartment', 'display_name' => self::DISPLAY_ANME_DELETE],
 
             // Designation
-            ['module' => 'Configuration', 'group' => 'Configuration > Designation', 'name' => 'CreateConfigurationDesignation', 'display_name' => self::KEY_CREATE],
-            ['module' => 'Configuration', 'group' => 'Configuration > Designation', 'name' => 'ReadConfigurationDesignation', 'display_name' => self::KEY_READ],
-            ['module' => 'Configuration', 'group' => 'Configuration > Designation', 'name' => 'UpdateConfigurationDesignation', 'display_name' => self::KEY_UPDATE],
-            ['module' => 'Configuration', 'group' => 'Configuration > Designation', 'name' => 'DeleteConfigurationDesignation', 'display_name' => self::KEY_DELETE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Designation', 'name' => 'CreateConfigurationDesignation', 'display_name' => self::DISPLAY_ANME_CREATE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Designation', 'name' => 'ReadConfigurationDesignation', 'display_name' => self::DISPLAY_ANME_READ],
+            ['module' => 'Configuration', 'group' => 'Configuration > Designation', 'name' => 'UpdateConfigurationDesignation', 'display_name' => self::DISPLAY_ANME_UPDATE],
+            ['module' => 'Configuration', 'group' => 'Configuration > Designation', 'name' => 'DeleteConfigurationDesignation', 'display_name' => self::DISPLAY_ANME_DELETE],
 
             /**
              * Payroll Module
              */
 
             // Salary Head
-            ['module' => 'Payroll', 'group' => 'Payroll > Salary Head', 'name' => 'CreatePayrollSalaryHead', 'display_name' => self::KEY_CREATE],
-            ['module' => 'Payroll', 'group' => 'Payroll > Salary Head', 'name' => 'ReadPayrollSalaryHead', 'display_name' => self::KEY_READ],
-            ['module' => 'Payroll', 'group' => 'Payroll > Salary Head', 'name' => 'UpdatePayrollSalaryHead', 'display_name' => self::KEY_UPDATE],
-            ['module' => 'Payroll', 'group' => 'Payroll > Salary Head', 'name' => 'DeletePayrollSalaryHead', 'display_name' => self::KEY_DELETE],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Head', 'name' => 'CreatePayrollSalaryHead', 'display_name' => self::DISPLAY_ANME_CREATE],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Head', 'name' => 'ReadPayrollSalaryHead', 'display_name' => self::DISPLAY_ANME_READ],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Head', 'name' => 'UpdatePayrollSalaryHead', 'display_name' => self::DISPLAY_ANME_UPDATE],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Head', 'name' => 'DeletePayrollSalaryHead', 'display_name' => self::DISPLAY_ANME_DELETE],
 
             // Salary Structure
-            ['module' => 'Payroll', 'group' => 'Payroll > Salary Structure', 'name' => 'CreatePayrollSalaryStructure', 'display_name' => self::KEY_CREATE],
-            ['module' => 'Payroll', 'group' => 'Payroll > Salary Structure', 'name' => 'ReadPayrollSalaryStructure', 'display_name' => self::KEY_READ],
-            ['module' => 'Payroll', 'group' => 'Payroll > Salary Structure', 'name' => 'UpdatePayrollSalaryStructure', 'display_name' => self::KEY_UPDATE],
-            ['module' => 'Payroll', 'group' => 'Payroll > Salary Structure', 'name' => 'DeletePayrollSalaryStructure', 'display_name' => self::KEY_DELETE],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Structure', 'name' => 'CreatePayrollSalaryStructure', 'display_name' => self::DISPLAY_ANME_CREATE],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Structure', 'name' => 'ReadPayrollSalaryStructure', 'display_name' => self::DISPLAY_ANME_READ],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Structure', 'name' => 'UpdatePayrollSalaryStructure', 'display_name' => self::DISPLAY_ANME_UPDATE],
+            ['module' => 'Payroll', 'group' => 'Payroll > Salary Structure', 'name' => 'DeletePayrollSalaryStructure', 'display_name' => self::DISPLAY_ANME_DELETE],
         ];
 
 

@@ -4,106 +4,51 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Stack
 
-**Laravel 12 + React 19 + Inertia.js 2** monolith with server-side rendering (SSR).
+**Laravel 12 + React 19 + Inertia.js 2** monolith with SSR.
 
 - **Backend**: Laravel 12, Yajra DataTables, Spatie Permission, Stancl Tenancy
-- **Frontend**: React 19, TypeScript 5, Tailwind CSS 4, Shadcn/ui (Radix), Lucide + Tabler icons, Sonner (toasts)
+- **Frontend**: React 19, TypeScript 5, Tailwind CSS 4, Shadcn/ui, Lucide + Tabler icons, Sonner
 - **Bridge**: Inertia.js + Laravel Wayfinder (typed route helpers in `resources/js/wayfinder/`)
 
 ## Commands
 
 ```bash
-# Development (PHP + queue + logs + Vite in parallel)
-composer run dev
-
-# Frontend only
-npm run dev
-
-# Build
+composer run dev   # PHP + queue + logs + Vite in parallel
+npm run dev        # frontend only
 npm run build
-
-# Type check
-npm run types
-
-# Lint (auto-fix)
-npm run lint
-
-# Format
+npm run types      # TypeScript check
+npm run lint       # auto-fix
 npm run format
-
-# PHP tests
 composer run test
-
-# PHP static analysis
 composer run phpstan
 ```
 
 ## Architecture
 
-### Request flow
-Browser → Inertia → Laravel route → Controller → Service → DataTable → Inertia render → React page component
+### Backend
 
-### Backend patterns
+**Controllers** (`app/Http/Controllers/<Module>/<Entity>/`) — constructor-inject service; `index()` calls `DataTable::renderInertia()`; `store/update/destroy` delegate to service; `bulkDelete()` validates `ids[]` → JSON.
 
-**Controllers** (`app/Http/Controllers/<Module>/<Entity>/`)
-- Constructor-inject the service
-- `index()` delegates to a DataTable's `renderInertia('module/entity/index')`
-- `store/update/destroy` delegate to service, return `redirect()->back()` or `redirect()->route(...)`
-- `bulkDelete()` validates `ids[]` then calls `$service->bulkDelete($ids)` → JSON response
+**Services** (`app/Services/<Module>/<Entity>/`) — extend `CoreService` (provides `create/update/delete/find/all/bulkDelete`); implement `model()` returning the Eloquent FQCN.
 
-**Services** (`app/Services/<Module>/<Entity>/`)
-- Extend `App\Services\Core\CoreService`
-- `CoreService` provides `create`, `update`, `delete`, `find`, `all`, `bulkDelete` using Eloquent directly
-- Must implement `model()` returning the FQCN of the Eloquent model
-- Place all query logic and business logic in the service
+**DataTables** (`app/DataTables/`) — extend `BaseDataTable`; implement `query()`, `dataTable()`, `getColumns()`, `filename()`.
 
-**DataTables** (`app/DataTables/`)
-- Extend `BaseDataTable`
-- Implement `query()`, `dataTable()`, `getColumns()`, `filename()`
-- `renderInertia(string $component)` passes data to the React page via Inertia
+**Multi-tenancy**: `Company` extends Stancl `Tenant`; active tenant set from session via `HandleTenancyFromSession` middleware.
 
-**Form Requests** (`app/Http/Requests/<Module>/<Entity>/`)
-- `Store<Entity>Request` and `Update<Entity>Request` per entity
+**Permissions**: Spatie Permission; names follow `READ_<MODULE>` / `READ_<MODULE>_<ENTITY>`, checked in sidebar via `can:`.
 
-**Multi-tenancy**: `Company` model extends `Tenant` (Stancl). Active tenant initialised from session via `HandleTenancyFromSession` middleware. Switch via `POST /configuration/companies/{company}/switch`.
+### Frontend
 
-**Permissions**: Spatie Laravel Permission. Permission names follow `READ_<MODULE>`, `READ_<MODULE>_<ENTITY>` convention, checked in sidebar via `can:` attribute.
+**Pages** (`resources/js/pages/<module>/<entity>/index.tsx`) — one file per entity for list + CRUD dialogs. Key state: `open`, `isEdit`, `form`, `formErrors`, `selectedIds`, `tableRef`. Use `router.post/put/delete` for mutations; `axios.delete` for bulk delete.
 
-### Frontend patterns
+**Components**: `DataTable` (`components/data-table/`), `BaseDialog` (`components/dialog/base-dialog.tsx`), layout via `<AppLayout title breadcrumbs actions>`.
 
-**Pages** (`resources/js/pages/<module>/<entity>/index.tsx`)
-- Single `index.tsx` per entity handles list + create + edit + delete in one file
-- State: `open` (dialog), `isEdit`, `form`, `formErrors`, `selectedIds`
-- `tableRef` with `{ refetch: () => void }` to reload DataTable without full navigation
-- CRUD via `router.post/put/delete` (Inertia) for create/update/delete; `axios.delete` for bulk delete
-- Errors surfaced as `formErrors` from `onError` callback
+**Navigation**: sidebar in `resources/js/config/sidebar.ts`, breadcrumbs in `resources/js/config/breadcrumbs.ts`. Each sidebar item has a `can` string matching the permission name.
 
-**DataTable** (`resources/js/components/data-table/data-table.tsx`)
-- Receives `columns`, `dataUrl`, `onSelectionChange`, `extraActions`
-- `columns` array: each entry has `accessorKey`, `header`, `sortable`, `searchable`, optional `cell` render
+**Routes**: use Ziggy `route('module.entity.action', id)` — typed via Wayfinder.
 
-**BaseDialog** (`resources/js/components/dialog/base-dialog.tsx`)
-- Props: `open`, `onOpenChange`, `title`, `description`, `onSubmit`, `onCancel`, `submitLabel`
-- Wraps form fields as `children`; handles submit confirmation internally
+## Adding a new CRUD entity
 
-**Layout**: All pages use `<AppLayout title="..." breadcrumbs={breadcrumbs} actions={...}>`
-
-**Navigation config**
-- Sidebar items: `resources/js/config/sidebar.ts` — add entries to `sidebarData.navGroups`
-- Breadcrumbs: `resources/js/config/breadcrumbs.ts` — add named entries to `breadcrumbItems`
-- Each sidebar item has a `can` string matching the Spatie permission name
-
-**Routes** (typed): Use `route('module.entity.action', id)` — ziggy routes auto-generated and typed via Wayfinder.
-
-## Adding a new CRUD entity (the Division pattern)
-
-1. **Migration** in `database/migrations/`
-2. **Model** `app/Models/<Module>/<Entity>/<Entity>.php`
-3. **Service** `app/Services/<Module>/<Entity>/<Entity>Service.php` — extend `CoreService`
-4. **DataTable** `app/DataTables/<Entities>DataTable.php` — extend `BaseDataTable`
-5. **Form Requests** `Store<Entity>Request` + `Update<Entity>Request`
-6. **Controller** `app/Http/Controllers/<Module>/<Entity>/<Entity>Controller.php`
-7. **Routes** in `routes/web.php` — add `Route::resource` + `bulk-delete` route inside the module prefix group
-8. **Frontend page** `resources/js/pages/<module>/<entity>/index.tsx` — follow divisions pattern
-9. **Sidebar entry** in `resources/js/config/sidebar.ts`
-10. **Breadcrumb entry** in `resources/js/config/breadcrumbs.ts`
+1. Migration → Model → Service (extend `CoreService`) → DataTable (extend `BaseDataTable`) → Form Requests (`Store`/`Update`)
+2. Controller → Routes (`Route::resource` + `bulk-delete`) in `routes/web.php`
+3. Frontend page (`index.tsx`) → sidebar entry → breadcrumb entry
