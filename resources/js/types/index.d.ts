@@ -13,6 +13,7 @@ export interface Auth {
     companies: Company[] | null | undefined;
     company: Company | null;
     permissions: string[];
+    unread_notifications_count: number;
 }
 
 export interface BreadcrumbItem {

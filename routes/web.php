@@ -12,6 +12,7 @@ use App\Http\Controllers\Employee\EmployeeContact\EmployeeContactController;
 use App\Http\Controllers\Employee\EmployeeDocument\EmployeeDocumentController;
 use App\Http\Controllers\Employee\EmployeeEducation\EmployeeEducationController;
 use App\Http\Controllers\Employee\EmployeeExperience\EmployeeExperienceController;
+use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\Payroll\PayrollEmployeeSalaryProfileController;
 use App\Http\Controllers\Payroll\PayrollSalaryHeadController;
 use App\Http\Controllers\Payroll\PayrollSalaryStructureController;
@@ -29,6 +30,21 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
+
+    /**
+     * Notification Module
+     */
+    Route::name('notification.')
+        ->prefix('notification')
+        ->group(function (): void {
+            Route::get('/', [NotificationController::class, 'index'])->name('index');
+            Route::get('dropdown', [NotificationController::class, 'dropdown'])->name('dropdown');
+            Route::get('{id}', [NotificationController::class, 'show'])->name('show');
+            Route::patch('{id}/read', [NotificationController::class, 'markAsRead'])->name('read');
+            Route::post('mark-all-read', [NotificationController::class, 'markAllRead'])->name('mark-all-read');
+            Route::delete('{id}', [NotificationController::class, 'destroy'])->name('destroy');
+        });
+
 
     /*
      * User Access Management Module

@@ -61,6 +61,7 @@ class HandleInertiaRequests extends Middleware
                 'companies' => $companies,
                 'company' => tenant(),
                 'permissions' => $permissions,
+                'unread_notifications_count' => $user ? $user->unreadNotifications()->count() : 0,
             ],
             'ziggy' => fn(): array => [
                 ...(new Ziggy)->toArray(),
