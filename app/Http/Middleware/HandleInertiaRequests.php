@@ -43,15 +43,12 @@ class HandleInertiaRequests extends Middleware
 
         $permissions = [];
 
-        $user = $request->user() ?? [];
-
         $companies = [];
+
+        $user = $request->user() ?? [];
 
         if ($user) {
             $permissions = $user->isSuperAdmin() ? PermissionEnum::cases() : $user->getPermissionsViaRoles()->pluck('name')->toArray();
-        }
-
-        if ($user) {
             $companies =  $user->isSuperAdmin() ? Company::all() : collect()->push(tenant());
         }
 
