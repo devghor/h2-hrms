@@ -16,9 +16,9 @@ class HandleTenancyFromSession
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $companyId = session(config('tenancy.current_company_session_key'));
-        if ($companyId && $company = Company::find($companyId)) {
-            tenancy()->initialize($company);
+        $companyId = session(config('tenancy.company_id_session_key'));
+        if ($companyId) {
+            tenancy()->initialize($companyId);
         }
 
         return $next($request);

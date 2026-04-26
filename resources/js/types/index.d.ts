@@ -11,7 +11,7 @@ export interface Company {
 export interface Auth {
     user: User;
     companies: Company[] | null | undefined;
-    current_company: Company | null;
+    company: Company | null;
     permissions: string[];
 }
 

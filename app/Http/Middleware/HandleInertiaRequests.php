@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\Uam\PermissionEnum;
 use App\Models\Configuration\Company\Company;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
@@ -40,37 +41,29 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+        $permissions = [];
+
+        $user = $request->user() ?? [];
+
+        $companies = [];
+
+        if ($user) {
+            $permissions = $user->isSuperAdmin() ? PermissionEnum::cases() : $user->getPermissionsViaRoles()->pluck('name')->toArray();
+        }
+
+        if ($user) {
+            $companies =  $user->isSuperAdmin() ? Company::all() : collect()->push(tenant());
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                'user' => $request->user(),
-                'permissions' => [
-                    'READ_GENERAL',
-                    'READ_DASHBOARD',
-                    'READ_UAM',
-                    'READ_UAM_USER',
-                    'READ_UAM_ROLE',
-                    'READ_UAM_PERMISSION',
-                    'READ_CONFIGURATION',
-                    'READ_CONFIGURATION_COMPANY',
-                    'READ_CONFIGURATION_DIVISION',
-                    'READ_CONFIGURATION_DEPARTMENT',
-                    'READ_CONFIGURATION_UNIT',
-                    'READ_CONFIGURATION_DESK',
-                    'READ_CONFIGURATION_SETTING',
-                    'READ_EMPLOYEE',
-                    'READ_EMPLOYEE_EMPLOYEE',
-                    'READ_CONFIGURATION_BRANCH',
-                    'READ_CONFIGURATION_DESIGNATION',
-                    'READ_PAYROLL',
-                    'READ_PAYROLL_SALARY_HEAD',
-                    'READ_PAYROLL_SALARY_STRUCTURE',
-                    'READ_PAYROLL_EMPLOYEE_SALARY_PROFILE',
-                ],
-                'current_company' => Company::find(session(config('tenancy.current_company_session_key'))),
-                'companies' => $request->user() ? $request->user()->companies : [],
+                'user' => $user,
+                'companies' => $companies,
+                'company' => tenant(),
+                'permissions' => $permissions,
             ],
             'ziggy' => fn(): array => [
                 ...(new Ziggy)->toArray(),

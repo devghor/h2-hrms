@@ -76,9 +76,9 @@ class CompanyController extends Controller
 
     public function switchCompany(Company $company)
     {
-        if ($this->companyService->isAuthUserCompany($company->id)) {
+        if (auth()->user()->isSuperAdmin()) {
+            session()->put(config('tenancy.company_id_session_key'), $company->id);
             tenancy()->initialize($company);
-            session()->put(config('tenancy.current_company_session_key'), $company->id);
         }
 
         return redirect()->back();

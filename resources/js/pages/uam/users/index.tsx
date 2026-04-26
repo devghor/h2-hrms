@@ -1,10 +1,10 @@
+import BulkDeleteButton from '@/components/bulk-delete-button';
 import DataTable from '@/components/data-table/data-table';
 import { RowActions } from '@/components/data-table/row-actions';
+import { BaseDialog } from '@/components/dialog/base-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import BulkDeleteButton from '@/components/bulk-delete-button';
-import { BaseDialog } from '@/components/dialog/base-dialog';
 import { breadcrumbItems } from '@/config/breadcrumbs';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -152,12 +152,15 @@ export default function Index() {
 
     const handleBulkDelete = () => {
         if (selectedIds.length === 0) return;
-        axios.delete(route('uam.users.bulk-delete'), { data: { ids: selectedIds } }).then(() => {
-            toast.success(`${selectedIds.length} user(s) deleted successfully`);
-            tableRef.current?.refetch();
-        }).catch(() => {
-            toast.error('Error deleting selected users');
-        });
+        axios
+            .delete(route('uam.users.bulk-delete'), { data: { ids: selectedIds } })
+            .then(() => {
+                toast.success(`${selectedIds.length} user(s) deleted successfully`);
+                tableRef.current?.refetch();
+            })
+            .catch(() => {
+                toast.error('Error deleting selected users');
+            });
     };
 
     return (
@@ -168,9 +171,7 @@ export default function Index() {
                 columns={columns}
                 dataUrl={route('uam.users.index')}
                 onSelectionChange={setSelectedIds}
-                extraActions={
-                    <BulkDeleteButton selectedCount={selectedIds.length} onDelete={handleBulkDelete} />
-                }
+                extraActions={<BulkDeleteButton selectedCount={selectedIds.length} onDelete={handleBulkDelete} />}
             />
 
             {/* Dialog for adding/editing user */}

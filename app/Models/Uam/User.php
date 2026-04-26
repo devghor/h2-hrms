@@ -4,16 +4,18 @@ namespace App\Models\Uam;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Enums\Uam\GlobalRoleEnum;
 use App\Models\Configuration\Company\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, Notifiable, HasRoles, BelongsToTenant;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +26,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'company_id',
     ];
 
     /**
@@ -35,6 +38,9 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    protected $guard_name = ['web'];
+
 
     /**
      * Get the attributes that should be cast.
@@ -49,8 +55,19 @@ class User extends Authenticatable
         ];
     }
 
-    public function companies()
+    public function guardName()
     {
-        return $this->belongsToMany(Company::class);
+        return ['web'];
+    }
+
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->global_role == GlobalRoleEnum::SuperAdmin->value;
     }
 }

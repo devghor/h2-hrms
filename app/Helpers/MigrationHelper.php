@@ -20,6 +20,6 @@ class MigrationHelper
 
     public static function companyIdField(Blueprint $table): void
     {
-        $table->unsignedBigInteger('company_id')->nullable();
+        $table->bigInteger('company_id')->index();
     }
 }

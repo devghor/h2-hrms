@@ -28,7 +28,7 @@ return [
     /**
      * This custom key is used by the app to store the current company ID in the session. This is used for the InitializeTenancyFromSession middleware, which is used for tenant identification when a user is impersonating another tenant.
      */
-    'current_company_session_key' => 'current_company_id',
+    'company_id_session_key' => 'company_id',
 
     /**
      * Configuration for the models used by Tenancy.

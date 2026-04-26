@@ -18,7 +18,6 @@ use App\Http\Controllers\Payroll\PayrollSalaryStructureController;
 use App\Http\Controllers\Uam\Permission\PermissionController;
 use App\Http\Controllers\Uam\Role\RoleController;
 use App\Http\Controllers\Uam\User\UserController;
-use App\Http\Middleware\HandleTenancyFromSession;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -26,7 +25,7 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-Route::middleware(['auth', 'verified', HandleTenancyFromSession::class])->group(function (): void {
+Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');

@@ -161,7 +161,7 @@ function filterSidebarItemsByPermission(items: any[], permissions: string[]): an
 export function AppSidebar() {
     const { url, props } = usePage<SharedData>();
     const companies = props.auth.companies || [];
-    const currentCompany = props.auth.current_company;
+    const currentCompany = props.auth.company;
     const permissions = props.auth.permissions || [];
 
     // Filter nav groups and items
@@ -184,7 +184,7 @@ export function AppSidebar() {
                         <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">{group.title}</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
-                                {group.items.map((item) =>
+                                {group.items.map((item: any) =>
                                     'items' in item ? (
                                         <SidebarCollapsibleItem key={item.title} item={item} />
                                     ) : (

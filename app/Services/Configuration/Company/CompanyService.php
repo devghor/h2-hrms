@@ -18,14 +18,8 @@ class CompanyService extends CoreService
     public function create(array $data): Model
     {
         $company = $this->model->create($data);
-        Auth::user()->companies()->save($company);
 
         return $company;
-    }
-
-    public function isAuthUserCompany(int $companyId): bool
-    {
-        return Auth::user()->companies->contains('id', $companyId);
     }
 
     public function getCompanyOptions(): Collection

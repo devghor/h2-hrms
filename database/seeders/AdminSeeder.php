@@ -2,80 +2,62 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Uam\GlobalRoleEnum;
 use App\Enums\Uam\PermissionEnum;
 use App\Models\Configuration\Company\Company;
 use App\Models\Uam\Role;
 use App\Models\Uam\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\PermissionRegistrar;
 
 class AdminSeeder extends Seeder
 {
-    private array $admins = [
+    private array $users = [
         [
             'user_name' => 'Super Admin',
             'email' => 'superadmin@app.com',
             'company_name' => 'Super Admin Company',
             'short_name' => 'sac',
-            'permission' => PermissionEnum::SuperAdmin,
+            'global_role' => GlobalRoleEnum::SuperAdmin,
+            'role_name' => '',
         ],
         [
             'user_name' => 'Company Admin',
             'email' => 'companyadmin@app.com',
             'company_name' => 'Dummy Company',
             'short_name' => 'dummy',
-            'permission' => PermissionEnum::CompanyAdmin,
+            'global_role' => null,
+            'role_name' => 'Company Admin',
         ],
     ];
 
     public function run(): void
     {
-        foreach ($this->admins as $admin) {
+        foreach ($this->users as $data) {
+            $company = Company::create([
+                'name' => $data['company_name'],
+                'short_name' => $data['short_name']
+            ]);
+
             $user = User::updateOrCreate(
-                ['email' => $admin['email']],
+                ['email' => $data['email']],
                 [
-                    'name' => $admin['user_name'],
+                    'name' => $data['user_name'],
                     'password' => Hash::make('password'),
+                    'company_id' => $company->id
                 ]
             );
 
-            $company = Company::updateOrCreate(
-                ['name' => $admin['company_name']],
-                ['short_name' => $admin['short_name']],
-            );
+            if ($data['global_role'] == GlobalRoleEnum::SuperAdmin) {
+                $user->global_role = $data['global_role'];
+                $user->save();
+            } else {
+                setPermissionsTeamId($company->id);
+                $role = Role::firstOrCreate(['name' => $data['role_name'], 'company_id' => $company->id]);
 
-            $user->companies()->syncWithoutDetaching([$company->id]);
+                $role->syncPermissions(PermissionEnum::cases());
 
-            // Set company context
-            app(PermissionRegistrar::class)->setPermissionsTeamId($company->id);
-
-            $role = null;
-
-            if (PermissionEnum::SuperAdmin === $admin['permission']) {
-                $role = Role::firstOrCreate([
-                    'name' => 'Super Admin',
-                    'guard_name' => 'web',
-                    'company_id' => $company->id,
-                ]);
-
-                $role->syncPermissions([PermissionEnum::SuperAdmin->value]);
-            }
-
-            if (PermissionEnum::CompanyAdmin === $admin['permission']) {
-                $role = Role::firstOrCreate([
-                    'name' => 'Company Admin',
-                    'guard_name' => 'web',
-                    'company_id' => $company->id,
-                ]);
-
-                $role->syncPermissions([PermissionEnum::CompanyAdmin->value]);
-            }
-
-            if ($role) {
-                if (!$user->hasRole($role->name)) {
-                    $user->assignRole($role);
-                }
+                $user->assignRole($role);
             }
         }
     }
