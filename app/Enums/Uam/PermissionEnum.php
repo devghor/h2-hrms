@@ -75,4 +75,10 @@ enum PermissionEnum: string
     case ReadPayrollSalaryStructure = 'READ_PAYROLL_SALARY_STRUCTURE';
     case UpdatePayrollSalaryStructure = 'UPDATE_PAYROLL_SALARY_STRUCTURE';
     case DeletePayrollSalaryStructure = 'DELETE_PAYROLL_SALARY_STRUCTURE';
+
+        // Payroll > Employee Salary Profile
+    case CreatePayrollEmployeeSalaryProfile = 'CREATE_PAYROLL_EMPLOYEE_SALARY_PROFILE';
+    case ReadPayrollEmployeeSalaryProfile = 'READ_PAYROLL_EMPLOYEE_SALARY_PROFILE';
+    case UpdatePayrollEmployeeSalaryProfile = 'UPDATE_PAYROLL_EMPLOYEE_SALARY_PROFILE';
+    case DeletePayrollEmployeeSalaryProfile = 'DELETE_PAYROLL_EMPLOYEE_SALARY_PROFILE';
 }
