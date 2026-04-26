@@ -195,7 +195,6 @@ export default function Index({ departments, designations, managers, employeeTyp
                 onSelectionChange={setSelectedIds}
                 extraActions={<BulkDeleteButton selectedCount={selectedIds.length} onDelete={handleBulkDelete} />}
             />
-
             <BaseDialog
                 open={open}
                 onOpenChange={setOpen}

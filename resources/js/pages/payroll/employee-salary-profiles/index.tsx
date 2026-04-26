@@ -27,20 +27,16 @@ export default function Index() {
             cell: ({ row }: any) => {
                 const status: string = row.employee_status ?? '—';
                 const colorMap: Record<string, string> = {
-                    'Confirmed': 'bg-green-100 text-green-800',
+                    Confirmed: 'bg-green-100 text-green-800',
                     'On Probation': 'bg-yellow-100 text-yellow-800',
-                    'Suspended': 'bg-red-100 text-red-800',
-                    'Released': 'bg-gray-100 text-gray-600',
-                    'Discharged': 'bg-gray-100 text-gray-600',
-                    'Dismissed': 'bg-red-100 text-red-700',
-                    'Retired': 'bg-blue-100 text-blue-700',
+                    Suspended: 'bg-red-100 text-red-800',
+                    Released: 'bg-gray-100 text-gray-600',
+                    Discharged: 'bg-gray-100 text-gray-600',
+                    Dismissed: 'bg-red-100 text-red-700',
+                    Retired: 'bg-blue-100 text-blue-700',
                 };
                 const cls = colorMap[status] ?? 'bg-gray-100 text-gray-600';
-                return (
-                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${cls}`}>
-                        {status}
-                    </span>
-                );
+                return <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${cls}`}>{status}</span>;
             },
         },
         {
@@ -63,11 +59,7 @@ export default function Index() {
 
     return (
         <AppLayout title="Employee Salary Profiles" breadcrumbs={breadcrumbs}>
-            <DataTable
-                ref={tableRef}
-                columns={columns}
-                dataUrl={route('payroll.employee-salary-profiles.index')}
-            />
+            <DataTable ref={tableRef} columns={columns} dataUrl={route('payroll.employee-salary-profiles.index')} />
         </AppLayout>
     );
 }
