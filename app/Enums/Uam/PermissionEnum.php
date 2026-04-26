@@ -29,6 +29,36 @@ enum PermissionEnum: string
     case DeleteUamPermission = 'DELETE_UAM_PERMISSION';
 
     /**
+     * Employee Module
+     */
+        // Employee > Employees
+    case CreateEmployeeEmployee = 'CREATE_EMPLOYEE_EMPLOYEE';
+    case ReadEmployeeEmployee = 'READ_EMPLOYEE_EMPLOYEE';
+    case UpdateEmployeeEmployee = 'UPDATE_EMPLOYEE_EMPLOYEE';
+    case DeleteEmployeeEmployee = 'DELETE_EMPLOYEE_EMPLOYEE';
+
+    /**
+     * Payroll Module
+     */
+        // Payroll > Salary Head
+    case CreatePayrollSalaryHead = 'CREATE_PAYROLL_SALARY_HEAD';
+    case ReadPayrollSalaryHead = 'READ_PAYROLL_SALARY_HEAD';
+    case UpdatePayrollSalaryHead = 'UPDATE_PAYROLL_SALARY_HEAD';
+    case DeletePayrollSalaryHead = 'DELETE_PAYROLL_SALARY_HEAD';
+
+        // Payroll > Salary Structure
+    case CreatePayrollSalaryStructure = 'CREATE_PAYROLL_SALARY_STRUCTURE';
+    case ReadPayrollSalaryStructure = 'READ_PAYROLL_SALARY_STRUCTURE';
+    case UpdatePayrollSalaryStructure = 'UPDATE_PAYROLL_SALARY_STRUCTURE';
+    case DeletePayrollSalaryStructure = 'DELETE_PAYROLL_SALARY_STRUCTURE';
+
+        // Payroll > Employee Salary Profile
+    case CreatePayrollEmployeeSalaryProfile = 'CREATE_PAYROLL_EMPLOYEE_SALARY_PROFILE';
+    case ReadPayrollEmployeeSalaryProfile = 'READ_PAYROLL_EMPLOYEE_SALARY_PROFILE';
+    case UpdatePayrollEmployeeSalaryProfile = 'UPDATE_PAYROLL_EMPLOYEE_SALARY_PROFILE';
+    case DeletePayrollEmployeeSalaryProfile = 'DELETE_PAYROLL_EMPLOYEE_SALARY_PROFILE';
+
+    /**
      * Configuration Module
      */
         // Configuration > Company
@@ -60,25 +90,4 @@ enum PermissionEnum: string
     case ReadConfigurationDesignation = 'READ_CONFIGURATION_DESIGNATION';
     case UpdateConfigurationDesignation = 'UPDATE_CONFIGURATION_DESIGNATION';
     case DeleteConfigurationDesignation = 'DELETE_CONFIGURATION_DESIGNATION';
-
-    /**
-     * Payroll Module
-     */
-        // Payroll > Salary Head
-    case CreatePayrollSalaryHead = 'CREATE_PAYROLL_SALARY_HEAD';
-    case ReadPayrollSalaryHead = 'READ_PAYROLL_SALARY_HEAD';
-    case UpdatePayrollSalaryHead = 'UPDATE_PAYROLL_SALARY_HEAD';
-    case DeletePayrollSalaryHead = 'DELETE_PAYROLL_SALARY_HEAD';
-
-        // Payroll > Salary Structure
-    case CreatePayrollSalaryStructure = 'CREATE_PAYROLL_SALARY_STRUCTURE';
-    case ReadPayrollSalaryStructure = 'READ_PAYROLL_SALARY_STRUCTURE';
-    case UpdatePayrollSalaryStructure = 'UPDATE_PAYROLL_SALARY_STRUCTURE';
-    case DeletePayrollSalaryStructure = 'DELETE_PAYROLL_SALARY_STRUCTURE';
-
-        // Payroll > Employee Salary Profile
-    case CreatePayrollEmployeeSalaryProfile = 'CREATE_PAYROLL_EMPLOYEE_SALARY_PROFILE';
-    case ReadPayrollEmployeeSalaryProfile = 'READ_PAYROLL_EMPLOYEE_SALARY_PROFILE';
-    case UpdatePayrollEmployeeSalaryProfile = 'UPDATE_PAYROLL_EMPLOYEE_SALARY_PROFILE';
-    case DeletePayrollEmployeeSalaryProfile = 'DELETE_PAYROLL_EMPLOYEE_SALARY_PROFILE';
 }
